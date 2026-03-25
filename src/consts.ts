@@ -79,6 +79,14 @@ export const SOCIAL_LINKS: SocialLink[] = [
     label: "Email",
   },
   {
+    href: "https://space.bilibili.com/9655855",
+    label: "Bilibili",
+  },
+  {
+    href: "https://v.douyin.com/HWMgjLaTtFk",
+    label: "Douyin",
+  },
+  {
     href: "/rss.xml",
     label: "RSS",
   },
@@ -91,4 +99,6 @@ export const ICON_MAP: Record<string, string> = {
   BlueSky: "bsky",
   RSS: "rss",
   Email: "mail",
+  Bilibili: "bilibili",
+  Douyin: "douyin",
 };
