@@ -26,7 +26,7 @@ const iconMap = {
 };
 ---
 
-<div class:list={["flex-wrap justify-center gap-1", { flex: centered }]}>
+<div class:list={["flex flex-wrap gap-1", centered ? "justify-center" : "justify-center sm:justify-start"]}>
   {
     SOCIALS.filter((social) => social.active).map((social) => {
       const IconComponent = iconMap[social.icon as keyof typeof iconMap];
