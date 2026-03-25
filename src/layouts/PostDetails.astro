@@ -65,7 +65,7 @@ const computedCanonicalURL =
   (Astro.site ? new URL(postPath, Astro.site).href : new URL(postPath, Astro.url.origin).href);
 
 const layoutProps = {
-  title: `${title} | ${SITE.title}`,
+  title: title,
   author,
   description,
   pubDatetime,
