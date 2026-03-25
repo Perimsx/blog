@@ -26,18 +26,18 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
   <StructuredData type="Person" data={{}} />
   <Header />
   <main id="main-content" data-layout="index">
-    <section id="hero" class="pt-6 pb-4">
-      <div class="flex flex-col sm:flex-row items-start gap-4">
-        <a href="/about" class="block mx-auto sm:mx-0 group">
+    <section id="hero" class="pt-4 pb-2 sm:pt-6 sm:pb-4">
+      <div class="flex flex-col items-center sm:flex-row sm:items-start gap-4">
+        <a href="/about" class="block group">
           <img 
             src="https://img1.tucang.cc/api/image/show/634a56a76f7455df0e2fb5419533e0cf" 
             alt="Chen Guitao" 
-            class="w-40 h-40 rounded-full object-cover flex-shrink-0 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl"
+            class="w-28 h-28 sm:w-40 sm:h-40 rounded-full object-cover flex-shrink-0 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl"
           />
         </a>
         <div class="flex-1 text-center sm:text-left">
           <div class="flex items-center gap-2 justify-center sm:justify-start">
-            <h1 class="my-2 inline-block text-2xl font-bold sm:my-4 sm:text-3xl">
+            <h1 class="my-1 inline-block text-xl font-bold sm:my-4 sm:text-3xl">
               Hi, I'm Chen Guitao.
             </h1>
             <a
@@ -55,14 +55,14 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
               <span class="sr-only">RSS Feed</span>
             </a>
           </div>
-          <p>
+          <p class="text-sm sm:text-base">
             记录成长，分享价值。<br />
             信息安全专业学生，Web 开发爱好者。
           </p>
           {
             // only display if at least one social link is enabled
             SOCIALS.filter((social) => social.active).length > 0 && (
-              <div class="mt-4 flex flex-row items-center justify-center sm:justify-start">
+              <div class="mt-3 sm:mt-4 flex flex-row items-center justify-center sm:justify-start">
                 <Socials />
               </div>
             )
@@ -76,7 +76,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
     {
       featuredPosts.length > 0 && (
         <>
-          <section id="featured" class="pt-12 pb-6">
+          <section id="featured" class="pt-6 pb-3 sm:pt-6 sm:pb-3">
             <h2 class="text-2xl font-semibold tracking-wide">Featured</h2>
             <ul>
               {featuredPosts.map((data) => (
@@ -91,7 +91,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
 
     {
       recentPosts.length > 0 && (
-        <section id="recent-posts" class="pt-12 pb-6">
+        <section id="recent-posts" class="pt-4 pb-3 sm:pt-6 sm:pb-3">
           <ul>
             {recentPosts.map(
               (data, index) =>
@@ -102,7 +102,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
       )
     }
 
-    <div class="my-8 text-center">
+    <div class="my-4 sm:my-5 text-center">
       <LinkButton href="/posts/">
         All Posts
         <IconArrowRight class="inline-block" />
