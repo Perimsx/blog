@@ -12,6 +12,7 @@ import AstroPWA from "@vite-pwa/astro";
 
 // https://astro.build/config
 export default defineConfig({
+  server: { port: 3000 },
   site: SITE.website,
   trailingSlash: "never",
   markdown: {
@@ -101,9 +102,9 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico"],
       manifest: {
-        name: "Your Blog",
-        short_name: "blog",
-        description: "A minimal static blog built with Astro.",
+        name: "Perimsx",
+        short_name: "Perimsx",
+        description: "Perimsx | 记录成长，分享价值",
         theme_color: "#006cac",
         background_color: "#fdfdfd",
         display: "standalone",

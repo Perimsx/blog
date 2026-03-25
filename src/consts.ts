@@ -31,11 +31,11 @@ interface Site {
 
 // Site configuration
 export const SITE: Site = {
-  website: "https://your-domain.com/",
-  author: "Your Name",
-  profile: "https://your-domain.com/about",
-  desc: "A minimal static blog built with Astro.",
-  title: "Your Blog",
+  website: "https://www.chenguitao.com/",
+  author: "Chen Guitao",
+  profile: "https://www.chenguitao.com/about",
+  desc: "Perimsx | 记录成长，分享价值",
+  title: "Perimsx",
   ogImage: "default-og.png",
   lightAndDarkMode: true,
   postPerIndex: 10,
@@ -71,11 +71,11 @@ export const NAV_LINKS: SocialLink[] = [
 // Social media links
 export const SOCIAL_LINKS: SocialLink[] = [
   {
-    href: "https://github.com/your-username",
+    href: "https://github.com/Perimsx",
     label: "GitHub",
   },
   {
-    href: "mailto:your-email@example.com",
+    href: "mailto:Perimsx@qq.com",
     label: "Email",
   },
   {
