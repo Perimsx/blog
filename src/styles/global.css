@@ -35,6 +35,8 @@ html[data-theme="dark"] {
   --accent: #ff6b01;
   --muted: #343f60bf;
   --border: #ab4b08;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @theme {
@@ -44,6 +46,7 @@ html[data-theme="dark"] {
   --color-accent: var(--accent);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace, system-ui, sans-serif;
 }
 
 @layer base {

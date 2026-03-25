@@ -40,8 +40,6 @@
 
 /* Base styles */
 body {
-  font-family:
-    "Atkinson", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.6;
   color: var(--text-color);
   background-color: #fff;
