@@ -1,7 +1,7 @@
 {
-  "name": "Peter Steinberger",
-  "short_name": "Peter Steinberger",
-  "description": "iOS developer, entrepreneur, founder of PSPDFKit (acquired), vibe coding my next project",
+  "name": "Perimsx",
+  "short_name": "Perimsx",
+  "description": "Perimsx | 记录成长，分享价值",
   "icons": [
     {
       "src": "/favicon.ico",
@@ -10,7 +10,8 @@
     }
   ],
   "start_url": "/",
-  "display": "browser",
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff"
+  "display": "standalone",
+  "theme_color": "#006cac",
+  "background_color": "#fdfdfd",
+  "lang": "zh-CN"
 }

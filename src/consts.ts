@@ -32,11 +32,11 @@ interface Site {
 // Site configuration
 export const SITE: Site = {
   website: "https://www.chenguitao.com/",
-  author: "Chen Guitao",
+  author: "Perimsx",
   profile: "https://www.chenguitao.com/about",
   desc: "Perimsx | 记录成长，分享价值",
   title: "Perimsx",
-  ogImage: "default-og.png",
+  ogImage: "og-image.jpg",
   lightAndDarkMode: true,
   postPerIndex: 10,
   postPerPage: 10,
