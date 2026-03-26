@@ -13,7 +13,7 @@ import AstroPWA from "@vite-pwa/astro";
 
 // https://astro.build/config
 export default defineConfig({
-  output: "hybrid",
+  output: "static",
   adapter: edgeone(),
   server: { port: 3000 },
   site: SITE.website,
