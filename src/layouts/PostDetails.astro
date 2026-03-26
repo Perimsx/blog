@@ -11,6 +11,7 @@ import Header from "@/components/Header.astro";
 import ShareLinks from "@/components/ShareLinks.astro";
 import StructuredData from "@/components/StructuredData.astro";
 import Tag from "@/components/Tag.astro";
+import BackToTop from "@/components/BackToTop.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import { getPath } from "@/utils/getPath";
@@ -119,7 +120,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
   >
     <h1
       transition:name={slugifyStr(title)}
-      class="inline-block text-2xl font-bold text-accent sm:text-3xl"
+      class="text-xl font-semibold text-accent leading-snug sm:text-2xl"
     >
       {title}
     </h1>
@@ -157,7 +158,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
 
     <EditPost class="sm:hidden" {hideEditPost} {post} />
 
-    <ul class="mt-4 mb-8 sm:my-8">
+    <ul class="mt-4 mb-8 flex flex-wrap gap-x-4 gap-y-2 sm:my-8">
       {tags.map((tag) => <Tag tag={slugifyStr(tag)} tagName={tag} />)}
     </ul>
 
@@ -167,7 +168,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
       <ShareLinks />
 
       <button
-        id="back-to-top"
+        id="static-back-to-top"
         class="focus-outline py-1 whitespace-nowrap hover:opacity-75"
       >
         <IconChevronLeft class="inline-block rotate-90" />
@@ -216,6 +217,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
       }
     </div>
   </main>
+  <BackToTop />
   <Footer />
 </Layout>
 
@@ -326,14 +328,13 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
   attachCopyButtons();
 
   /** Scrolls the document to the top when
-   * the "Back to Top" button is clicked. */
-  function backToTop() {
-    document.querySelector("#back-to-top")?.addEventListener("click", () => {
-      document.body.scrollTop = 0; // For Safari
-      document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+   * the "static-back-to-top" button is clicked. */
+  function setupStaticBackToTop() {
+    document.querySelector("#static-back-to-top")?.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
-  backToTop();
+  setupStaticBackToTop();
 
   /* Go to page start after page swap */
   document.addEventListener("astro:after-swap", () =>

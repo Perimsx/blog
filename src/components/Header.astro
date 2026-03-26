@@ -7,6 +7,7 @@ import IconX from "@/assets/icons/IconX.svg";
 import { SITE } from "@/config";
 import Hr from "./Hr.astro";
 import LinkButton from "./LinkButton.astro";
+import ContactModal from "./ContactModal.astro";
 
 const { pathname } = Astro.url;
 
@@ -22,6 +23,7 @@ const isActive = (path: string) => {
 ---
 
 <header>
+  <ContactModal />
   <a
     id="skip-to-content"
     href="#main-content"
@@ -39,7 +41,7 @@ const isActive = (path: string) => {
     >
       <a
         href="/"
-        class="absolute py-1 text-2xl leading-7 font-bold font-logo whitespace-nowrap sm:static"
+        class="absolute py-1 text-2xl leading-7 font-bold font-serif whitespace-nowrap sm:static"
       >
         {SITE.title}
       </a>
@@ -81,8 +83,30 @@ const isActive = (path: string) => {
               About
             </a>
           </li>
+          <li class="col-span-2 flex items-center justify-center gap-4 py-2 sm:gap-x-5 sm:py-0">
+            <!-- 联系站长 -->
+            <button
+              id="contact-btn"
+              class="focus-outline flex size-12 cursor-pointer items-center justify-center p-3 sm:size-8 sm:p-1 hover:brightness-110 active:scale-95 transition-all"
+              title="联系站长"
+              aria-label="联系站长"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2" y="4" width="20" height="16" rx="2" fill="#e4393c" />
+                <path d="M22 4l-10 8L2 4" stroke="white" stroke-width="2" />
+                <path d="M2 20l8-8m4 0l8 8" stroke="white" stroke-width="1.5" opacity="0.4" />
+              </svg>
+            </button>
 
-          <li class="col-span-1 flex items-center justify-center">
+            <!-- 搜索 -->
             <LinkButton
               href="/search"
               class:list={[
@@ -95,10 +119,10 @@ const isActive = (path: string) => {
               <IconSearch />
               <span class="sr-only">Search</span>
             </LinkButton>
-          </li>
-          {
-            SITE.lightAndDarkMode && (
-              <li class="col-span-1 flex items-center justify-center">
+
+            <!-- 主题切换 -->
+            {
+              SITE.lightAndDarkMode && (
                 <button
                   id="theme-btn"
                   class="focus-outline relative size-12 p-4 sm:size-8 hover:[&>svg]:stroke-accent"
@@ -109,9 +133,9 @@ const isActive = (path: string) => {
                   <IconMoon class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
                   <IconSunHigh class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
                 </button>
-              </li>
-            )
-          }
+              )
+            }
+          </li>
         </ul>
       </nav>
     </div>
@@ -142,8 +166,19 @@ const isActive = (path: string) => {
 
   toggleNav();
 
+  // 联系弹窗逻辑
+  const setupContact = () => {
+    const contactBtn = document.getElementById("contact-btn");
+    contactBtn?.addEventListener("click", () => {
+      document.dispatchEvent(new CustomEvent("open-contact-modal"));
+    });
+  };
+
+  setupContact();
+
   // Runs on view transitions navigation
   document.addEventListener("astro:after-swap", () => {
     toggleNav();
+    setupContact();
   });
 </script>
