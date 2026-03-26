@@ -10,10 +10,10 @@ export const SOCIALS = [
   },
   {
     name: "X",
-    href: "",
+    href: "https://x.com/Perimsx",
     linkTitle: `${SITE.title} on X`,
     icon: "twitter",
-    active: false,
+    active: true,
   },
   {
     name: "Bilibili",
@@ -34,7 +34,7 @@ export const SOCIALS = [
     href: "mailto:Perimsx@qq.com",
     linkTitle: `Send an email to ${SITE.title}`,
     icon: "mail",
-    active: true,
+    active: false,
   },
 ] as const;
 

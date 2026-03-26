@@ -4,6 +4,7 @@ import mdx from "@astrojs/mdx";
 import sitemap, { ChangeFreqEnum } from "@astrojs/sitemap";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
+import edgeone from "@edgeone/astro";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
 import { remarkLazyLoadImages } from "./src/utils/remarkLazyLoadImages.mjs";
@@ -12,6 +13,8 @@ import AstroPWA from "@vite-pwa/astro";
 
 // https://astro.build/config
 export default defineConfig({
+  output: "hybrid",
+  adapter: edgeone(),
   server: { port: 3000 },
   site: SITE.website,
   trailingSlash: "never",
