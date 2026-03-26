@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,600&display=swap');
 @import "./typography.css";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
@@ -31,21 +30,19 @@ html[data-theme="dark"] {
   --color-accent: var(--accent);
   --color-muted: var(--muted);
   --color-border: var(--border);
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-display: "Newsreader", serif;
-  --font-logo: "Newsreader", serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-sans: "未来圆SC", "Inter", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+  --font-serif: "Lora", "Noto Serif SC", "Songti SC", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 @layer base {
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-semibold tracking-tight text-balance;
+    @apply font-sans font-bold tracking-tight text-balance;
   }
-  .font-display { font-family: "Newsreader", serif !important; }
   .font-logo { 
-    font-family: "Newsreader", serif !important; 
-    font-style: italic;
-    font-weight: 700;
+    @apply font-sans;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
 
   * {
@@ -96,10 +93,10 @@ html[data-theme="dark"] {
     overflow-wrap: break-word;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    text-autospace: normal;
   }
   body {
     @apply flex min-h-svh flex-col bg-background font-sans text-foreground selection:bg-accent/75 selection:text-background;
+    font-weight: normal;
     letter-spacing: 0.02em;
   }
   a,
