@@ -1,0 +1,59 @@
+---
+import { getCollection } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import Card from "@/components/Card.astro";
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import TagItem from "@/components/Tag.astro";
+import { SITE } from "@/config";
+import Layout from "@/layouts/Layout.astro";
+import getSortedPosts from "@/utils/getSortedPosts";
+import getUniqueTags from "@/utils/getUniqueTags";
+import { slugifyStr } from "@/utils/slugify";
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection("blog");
+  const tags = getUniqueTags(posts);
+
+  return tags.map(({ tag, tagName }) => {
+    return {
+      params: { tag },
+      props: { tag, tagName, posts },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+const { tag, tagName, posts } = Astro.props;
+
+const sortedPosts = getSortedPosts(
+  posts.filter((post) =>
+    post.data.tags.map((t: string) => slugifyStr(t)).includes(tag)
+  )
+);
+
+const allTags = getUniqueTags(posts);
+---
+
+<Layout title={`标签: ${tagName} | ${SITE.title}`} description={`所有包含标签「${tagName}」的文章`}>
+  <Header />
+  <main id="main-content" class="mx-auto w-full max-w-3xl px-4 pb-12">
+    <h1 class="text-2xl font-semibold sm:text-3xl mt-8">
+      标签: <span class="text-accent">{tagName}</span>
+    </h1>
+    <p class="mt-2 mb-6 italic">共 {sortedPosts.length} 篇文章</p>
+
+    <ul>
+      {sortedPosts.map((data) => <Card {...data} />)}
+    </ul>
+
+    <hr class="my-8 border-dashed" />
+
+    <h2 class="mb-4 text-lg font-semibold">所有标签</h2>
+    <ul class="flex flex-wrap gap-2">
+      {allTags.map(({ tag: t, tagName: tn }) => (
+        <TagItem tag={t} tagName={tn} size="sm" />
+      ))}
+    </ul>
+  </main>
+  <Footer />
+</Layout>

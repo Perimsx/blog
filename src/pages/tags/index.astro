@@ -5,20 +5,20 @@ import Header from "@/components/Header.astro";
 import Tag from "@/components/Tag.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
-import Main from "@/layouts/Main.astro";
 import getUniqueTags from "@/utils/getUniqueTags";
 
 const posts = await getCollection("blog");
-
 const tags = getUniqueTags(posts);
 ---
 
-<Layout title={`Tags | ${SITE.title}`}>
+<Layout title={`标签 | ${SITE.title}`} description="按标签浏览所有博客文章">
   <Header />
-  <Main pageTitle="Tags" pageDesc="All the tags used in posts.">
-    <ul>
-      {tags.map(({ tag, tagName }) => <Tag {tag} {tagName} size="lg" />)}
+  <main id="main-content" class="mx-auto w-full max-w-3xl px-4 pb-12">
+    <h1 class="text-2xl font-semibold sm:text-3xl mt-8">标签</h1>
+    <p class="mt-2 mb-6 italic">共 {tags.length} 个标签</p>
+    <ul class="flex flex-wrap gap-2">
+      {tags.map(({ tag, tagName }) => <Tag tag={tag} tagName={tagName} size="lg" />)}
     </ul>
-  </Main>
+  </main>
   <Footer />
 </Layout>
