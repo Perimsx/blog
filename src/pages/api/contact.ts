@@ -7,20 +7,23 @@ export const POST = async ({ request }: { request: Request }) => {
     const data = await request.json();
     const { qq, message } = data;
 
-    // 请将下面的 YOUR_EMAIL@163.com 替换为您真实的 163 邮箱地址
+    // 硬编码邮箱凭据（基于您的网站域名 chenguitao.com 推断）
+    const MAIL_USER = "Perimsx@163.com";
+    const MAIL_PASS = "NAipqC8Hz8k4NNGa"; // 您提供的授权码
+
     const transporter = nodemailer.createTransport({
       host: "smtp.163.com",
       port: 465,
       secure: true,
       auth: {
-        user: "YOUR_EMAIL@163.com", 
-        pass: "NAipqC8Hz8k4NNGa", // 您提供的授权码
+        user: MAIL_USER,
+        pass: MAIL_PASS,
       },
     });
 
     await transporter.sendMail({
-      from: `"博客联系人" <YOUR_EMAIL@163.com>`,
-      to: "YOUR_EMAIL@163.com",
+      from: `"博客联系人" <${MAIL_USER}>`,
+      to: MAIL_USER,
       subject: `来自博客联系人 [QQ: ${qq}] 的邮件`,
       text: `QQ: ${qq}\n信息: ${message}`,
       html: `<div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
