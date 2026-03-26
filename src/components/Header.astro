@@ -1,5 +1,4 @@
 ---
-import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
@@ -69,39 +68,20 @@ const isActive = (path: string) => {
         >
           <li class="col-span-2">
             <a href="/posts" class:list={{ "active-nav": isActive("/posts") }}>
-              Posts
+              文章
             </a>
           </li>
-          <!-- <li class="col-span-2">
+          <li class="col-span-2">
             <a href="/tags" class:list={{ "active-nav": isActive("/tags") }}>
-              Tags
+              标签
             </a>
-          </li> -->
+          </li>
           <li class="col-span-2">
             <a href="/about" class:list={{ "active-nav": isActive("/about") }}>
-              About
+              关于
             </a>
           </li>
-          {
-            SITE.showArchives && (
-              <li class="col-span-2">
-                <LinkButton
-                  href="/archives"
-                  class:list={[
-                    "focus-outline flex justify-center p-3 sm:p-1",
-                    {
-                      "active-nav [&>svg]:stroke-accent": isActive("/archives"),
-                    },
-                  ]}
-                  ariaLabel="archives"
-                  title="Archives"
-                >
-                  <IconArchive class="hidden sm:inline-block" />
-                  <span class="sm:sr-only">Archives</span>
-                </LinkButton>
-              </li>
-            )
-          }
+
           <li class="col-span-1 flex items-center justify-center">
             <LinkButton
               href="/search"
