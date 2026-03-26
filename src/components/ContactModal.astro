@@ -1,0 +1,166 @@
+---
+---
+<div id="contact-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="flex min-h-screen items-center justify-center p-4">
+    <!-- 背景遮罩：强化模糊感 -->
+    <div class="fixed inset-0 bg-black/40 backdrop-blur-md transition-opacity duration-300 opacity-0" id="modal-backdrop"></div>
+    
+    <!-- 弹窗内容：缩减内边距，移除冗余留白 -->
+    <div 
+      class="relative w-full max-w-[22rem] rounded-[1.5rem] bg-background/80 backdrop-blur-xl p-7 shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] transition-all duration-300 scale-90 opacity-0 border border-white/5" 
+      id="modal-content"
+    >
+      <button id="close-modal" class="absolute top-5 right-5 flex size-7 items-center justify-center rounded-full bg-foreground/5 text-foreground/40 hover:bg-accent hover:text-background transition-all duration-200" aria-label="关闭">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      
+      <header class="mb-5 text-center">
+        <div class="inline-flex size-11 items-center justify-center rounded-xl bg-accent/10 text-accent mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <h2 id="modal-title" class="text-xl font-bold text-foreground">联系站长</h2>
+        <p class="text-xs text-foreground/50 mt-1">快速留言，我会尽快回复</p>
+      </header>
+      
+      <form id="contact-form" class="space-y-4">
+        <div>
+          <label for="qq" class="block text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1.5 ml-1">QQ 号</label>
+          <input 
+            type="text" 
+            id="qq" 
+            name="qq" 
+            required 
+            placeholder="12345678" 
+            class="w-full rounded-xl border-2 border-foreground/5 bg-foreground/5 px-4 py-2.5 outline-none focus:border-accent/30 focus:bg-background transition-all text-sm placeholder:text-foreground/15"
+          />
+        </div>
+        
+        <div>
+          <label for="message" class="block text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1.5 ml-1">留言内容</label>
+          <textarea 
+            id="message" 
+            name="message" 
+            rows="3" 
+            required 
+            placeholder="今天有什么想分享的吗？" 
+            class="w-full rounded-xl border-2 border-foreground/5 bg-foreground/5 px-4 py-2.5 outline-none focus:border-accent/30 focus:bg-background transition-all text-sm resize-none placeholder:text-foreground/15"
+          ></textarea>
+        </div>
+        
+        <button 
+          type="submit" 
+          id="submit-btn" 
+          class="group relative w-full overflow-hidden rounded-xl bg-accent px-6 py-3 font-bold text-sm text-background transition-all hover:brightness-105 active:scale-[0.98]"
+        >
+          <span class="relative z-10 flex items-center justify-center gap-1.5">
+            发送邮件
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5">
+               <line x1="22" y1="2" x2="11" y2="13"></line>
+               <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </span>
+        </button>
+        
+        <div id="status-msg" class="flex items-center justify-center gap-2 text-sm font-semibold mt-4 hidden py-2 rounded-xl animate-in fade-in slide-in-from-bottom-2"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('contact-modal');
+  const backdrop = document.getElementById('modal-backdrop');
+  const closeBtn = document.getElementById('close-modal');
+  const modalContent = document.getElementById('modal-content');
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const statusMsg = document.getElementById('status-msg');
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  // 打开弹窗逻辑
+  document.addEventListener('open-contact-modal', () => {
+    modal?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
+    // 异步触发动画，确保过渡生效
+    requestAnimationFrame(() => {
+      backdrop?.classList.remove('opacity-0');
+      backdrop?.classList.add('opacity-100');
+      modalContent?.classList.remove('scale-90', 'opacity-0');
+      modalContent?.classList.add('scale-100', 'opacity-100');
+    });
+  });
+
+  const closeModal = () => {
+    backdrop?.classList.remove('opacity-100');
+    backdrop?.classList.add('opacity-0');
+    modalContent?.classList.remove('scale-100', 'opacity-100');
+    modalContent?.classList.add('scale-90', 'opacity-0');
+    
+    document.body.style.overflow = '';
+    
+    setTimeout(() => {
+      modal?.classList.add('hidden');
+      if (statusMsg) statusMsg.classList.add('hidden');
+      if (form) form.reset();
+    }, 300);
+  };
+
+  backdrop?.addEventListener('click', closeModal);
+  closeBtn?.addEventListener('click', closeModal);
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    const originalContent = submitBtn.innerHTML;
+    submitBtn.innerHTML = `<span class="flex items-center justify-center gap-2 animate-pulse">处理中...</span>`;
+    
+    if (statusMsg) statusMsg.classList.add('hidden');
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      
+      if (statusMsg) {
+        statusMsg.classList.remove('hidden', 'bg-red-500/10', 'bg-green-500/10', 'text-red-500', 'text-green-500');
+        statusMsg.classList.add(result.success ? 'bg-green-500/10' : 'bg-red-500/10');
+        statusMsg.classList.add(result.success ? 'text-green-500' : 'text-red-500');
+        statusMsg.innerHTML = result.success 
+          ? `<span>✨ ${result.message}</span>` 
+          : `<span>⚠️ 错误: ${result.error}</span>`;
+      }
+
+      if (result.success) {
+        setTimeout(closeModal, 2000);
+      }
+    } catch (err) {
+      if (statusMsg) {
+        statusMsg.classList.remove('hidden');
+        statusMsg.classList.add('bg-red-500/10', 'text-red-500');
+        statusMsg.innerHTML = '<span>📡 网络波动，请稍后再试</span>';
+      }
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalContent;
+    }
+  });
+
+  // 快捷键退出
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal?.classList.contains('hidden')) {
+      closeModal();
+    }
+  });
+</script>

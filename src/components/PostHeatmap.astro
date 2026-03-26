@@ -1,0 +1,129 @@
+---
+import { getCollection } from "astro:content";
+
+// 获取所有已发布的博客文章
+const allPosts = await getCollection("blog");
+const postDates = allPosts.map(post => {
+  const date = post.data.pubDatetime;
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+});
+
+// 统计频率
+const dateCounts: Record<number, number> = {};
+postDates.forEach(date => {
+  dateCounts[date] = (dateCounts[date] || 0) + 1;
+});
+
+// 计算日期范围：过去 365 天，对齐到周日
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const daysToDisplay = 371; // 53 weeks
+const startDate = new Date(today);
+startDate.setDate(today.getDate() - daysToDisplay + 1);
+const startDayOfWeek = startDate.getDay();
+startDate.setDate(startDate.getDate() - startDayOfWeek);
+
+// 准备渲染网格
+interface DayData {
+  date: Date;
+  count: number;
+  level: number;
+  isFuture: boolean;
+}
+
+const weeks: DayData[][] = [];
+let currentDay = new Date(startDate);
+
+for (let i = 0; i < 53; i++) {
+  const week: DayData[] = [];
+  for (let j = 0; j < 7; j++) {
+    const time = currentDay.getTime();
+    const count = dateCounts[time] || 0;
+    let level = 0; // 0-4
+    if (count > 0) level = Math.min(4, Math.floor(count / 1) + 1); 
+    
+    week.push({
+      date: new Date(currentDay),
+      count,
+      level,
+      isFuture: currentDay > today,
+    });
+    currentDay.setDate(currentDay.getDate() + 1);
+  }
+  weeks.push(week);
+}
+
+// 月份标记
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const months: { name: string; index: number }[] = [];
+let lastMonth = -1;
+weeks.forEach((week, i) => {
+  const month = week[0].date.getMonth();
+  if (month !== lastMonth) {
+    months.push({ name: monthNames[month], index: i });
+    lastMonth = month;
+  }
+});
+---
+
+<div class="post-heatmap-container w-full overflow-x-auto py-4">
+  <div class="min-w-[670px] flex flex-col items-center">
+    <div class="flex text-[10px] text-foreground/40 mb-2 w-full max-w-[650px]">
+      {months.map(m => (
+        <span style={`margin-left: ${m.index * 12.3}px; position: absolute;`}>{m.name}</span>
+      ))}
+    </div>
+    
+    <svg width="650" height="100" class="mt-4">
+      {weeks.map((week, i) => (
+        <g transform={`translate(${i * 12.3}, 0)`}>
+          {week.map((day, j) => (
+            <rect
+              width="10"
+              height="10"
+              x="0"
+              y={j * 12.3}
+              rx="2"
+              ry="2"
+              class={`day-rect level-${day.level} ${day.isFuture ? 'opacity-0' : ''}`}
+              data-date={day.date.toDateString()}
+              data-count={day.count}
+            >
+              <title>{day.count} 篇文章 - {day.date.toLocaleDateString()}</title>
+            </rect>
+          ))}
+        </g>
+      ))}
+    </svg>
+
+    <div class="flex items-center justify-end w-full max-w-[650px] mt-2 gap-1.5 text-[10px] text-foreground/40 font-mono">
+      <span>Less</span>
+      <div class="size-2.5 rounded-[2px] bg-foreground/5 dark:bg-foreground/10"></div>
+      <div class="size-2.5 rounded-[2px] bg-accent/20"></div>
+      <div class="size-2.5 rounded-[2px] bg-accent/50"></div>
+      <div class="size-2.5 rounded-[2px] bg-accent/80"></div>
+      <div class="size-2.5 rounded-[2px] bg-accent"></div>
+      <span>More</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .day-rect {
+    transition: all 0.2s;
+  }
+  .day-rect:hover {
+    stroke: var(--color-foreground);
+    stroke-width: 1px;
+    opacity: 0.8;
+  }
+
+  /* 各种等级的颜色方案，使用主题变量 --color-accent */
+  .level-0 { fill: color-mix(in srgb, var(--color-foreground) 5%, transparent); }
+  .level-1 { fill: color-mix(in srgb, var(--color-accent) 20%, transparent); }
+  .level-2 { fill: color-mix(in srgb, var(--color-accent) 50%, transparent); }
+  .level-3 { fill: color-mix(in srgb, var(--color-accent) 80%, transparent); }
+  .level-4 { fill: var(--color-accent); }
+
+  :global(.dark) .level-0 { fill: color-mix(in srgb, var(--color-foreground) 10%, transparent); }
+</style>

@@ -1,0 +1,188 @@
+---
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import { SITE } from "@/config";
+import Layout from "@/layouts/Layout.astro";
+import Main from "@/layouts/Main.astro";
+
+const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
+---
+
+<Layout title={`Contact | ${SITE.title}`} description="联系站长 Perimsx">
+  <Header />
+  <Main pageTitle="Contact" pageDesc="Send me a message ...">
+    <div class="space-y-6">
+      <p class="text-foreground/80">
+        有任何问题或建议，欢迎留言。也可以通过以下方式联系我：
+      </p>
+
+      <div class="flex gap-4 flex-wrap">
+        <a
+          href="mailto:Perimsx@qq.com"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-accent text-white rounded hover:opacity-90 transition-opacity"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+          </svg>
+          发送邮件
+        </a>
+        <a
+          href="https://qm.qq.com/cgi-bin/qm/qr?k=YOUR_QQ_QR_CODE"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded hover:bg-accent/20 transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5 0 .65-.25 1.24-.66 1.67-.41.43-.66 1.02-.66 1.67 0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5c0-.65.25-1.24.66-1.67.41-.43.66-1.02.66-1.67 0-1.38-1.12-2.5-2.5-2.5-.83 0-1.57.41-2.01 1.03-.37.52-.59 1.15-.59 1.83 0 .68.22 1.31.59 1.83.44.62 1.18 1.03 2.01 1.03 1.38 0 2.5-1.12 2.5-2.5 0-.65-.25-1.24-.66-1.67-.41-.43-.66-1.02-.66-1.67C14.5 6.12 13.38 5 12 5z"
+          />
+          <path
+            d="M7.88 11.67c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm4.12 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm4 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"
+          ></path>
+        </a>
+      </div>
+
+      <hr class="border-border" />
+
+      <form id="contact-form" class="space-y-4 max-w-lg">
+        <div>
+          <label for="name" class="block text-sm font-medium text-foreground mb-1">
+            姓名（选填）
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="你的名字"
+            class="w-full px-3 py-2 border border-border rounded bg-background text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent"
+          />
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-foreground mb-1">
+            邮箱 <span class="text-accent">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="方便我回复你"
+            required
+            class="w-full px-3 py-2 border border-border rounded bg-background text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent"
+          />
+        </div>
+
+        <div>
+          <label for="qq" class="block text-sm font-medium text-foreground mb-1">
+            QQ（选填）
+          </label>
+          <input
+            type="text"
+            id="qq"
+            name="qq"
+            placeholder="方便的话可以留下 QQ 号"
+            class="w-full px-3 py-2 border border-border rounded bg-background text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent"
+          />
+        </div>
+
+        <div>
+          <label for="message" class="block text-sm font-medium text-foreground mb-1">
+            留言内容 <span class="text-accent">*</span>
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            rows="5"
+            placeholder="想说点什么..."
+            required
+            class="w-full px-3 py-2 border border-border rounded bg-background text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent resize-y"
+          ></textarea>
+        </div>
+
+        <div id="form-status" class="hidden text-sm"></div>
+
+        <button
+          type="submit"
+          id="submit-btn"
+          class="px-6 py-2 bg-accent text-white rounded font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          发送留言
+        </button>
+      </form>
+    </div>
+  </Main>
+  <Footer />
+</Layout>
+
+<script>
+  const form = document.getElementById("contact-form") as HTMLFormElement;
+  const status = document.getElementById("form-status") as HTMLDivElement;
+  const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const data = {
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      qq: formData.get("qq") as string,
+      message: formData.get("message") as string,
+    };
+
+    if (!data.email || !data.message) {
+      status.textContent = "请填写邮箱和留言内容";
+      status.className = "text-sm text-red-500";
+      status.classList.remove("hidden");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "发送中...";
+    status.classList.add("hidden");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        status.textContent = "发送成功！我会尽快回复你。";
+        status.className = "text-sm text-green-500";
+        status.classList.remove("hidden");
+        form.reset();
+      } else {
+        status.textContent = result.error || "发送失败，请重试。";
+        status.className = "text-sm text-red-500";
+        status.classList.remove("hidden");
+      }
+    } catch {
+      status.textContent = "网络错误，请检查网络后重试。";
+      status.className = "text-sm text-red-500";
+      status.classList.remove("hidden");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "发送留言";
+    }
+  });
+</script>

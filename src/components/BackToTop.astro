@@ -1,0 +1,48 @@
+---
+---
+<button
+  id="back-to-top"
+  class="fixed bottom-8 right-8 z-50 flex size-12 translate-y-20 flex-col items-center justify-center rounded-xl border border-white/10 bg-background/40 p-2 text-foreground/60 shadow-2xl backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-accent hover:text-background active:scale-95 disabled:pointer-events-none opacity-0"
+  aria-label="Back to Top"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    stroke-width="2.5"
+    class="fill-none stroke-current"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+    <path d="M12 5l0 14"></path>
+    <path d="M18 11l-6 -6"></path>
+    <path d="M6 11l6 -6"></path>
+  </svg>
+</button>
+
+<script>
+  function toggleBackToTop() {
+    const backToTopBtn = document.querySelector("#back-to-top") as HTMLButtonElement;
+    if (!backToTopBtn) return;
+
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.remove("translate-y-20", "opacity-0");
+        backToTopBtn.classList.add("translate-y-0", "opacity-100");
+      } else {
+        backToTopBtn.classList.add("translate-y-20", "opacity-0");
+        backToTopBtn.classList.remove("translate-y-0", "opacity-100");
+      }
+    });
+
+    backToTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  // 初始化
+  toggleBackToTop();
+
+  // 视图转换兼容
+  document.addEventListener("astro:after-swap", toggleBackToTop);
+</script>
