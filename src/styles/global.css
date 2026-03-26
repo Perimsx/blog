@@ -1,9 +1,8 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,600&display=swap');
 @import "./typography.css";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
-
 
 :root,
 html[data-theme="light"] {
@@ -32,11 +31,23 @@ html[data-theme="dark"] {
   --color-accent: var(--accent);
   --color-muted: var(--muted);
   --color-border: var(--border);
-  --font-sans: system-ui, -apple-system, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Newsreader", serif;
+  --font-logo: "Newsreader", serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 @layer base {
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold tracking-tight text-balance;
+  }
+  .font-display { font-family: "Newsreader", serif !important; }
+  .font-logo { 
+    font-family: "Newsreader", serif !important; 
+    font-style: italic;
+    font-weight: 700;
+  }
+
   * {
     @apply border-border outline-accent/75;
     scrollbar-width: auto;
