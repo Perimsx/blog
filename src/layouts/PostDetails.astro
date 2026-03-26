@@ -171,7 +171,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
         class="focus-outline py-1 whitespace-nowrap hover:opacity-75"
       >
         <IconChevronLeft class="inline-block rotate-90" />
-        <span>Back to Top</span>
+        <span>返回顶部</span>
       </button>
     </div>
 
@@ -193,7 +193,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
           >
             <IconChevronLeft class="inline-block flex-shrink-0 mt-0.5" />
             <div class="min-w-0">
-              <span class="block text-sm text-foreground/70">Previous Post</span>
+              <span class="block text-sm text-foreground/70">上一篇</span>
               <div class="text-accent/85">{prevPost.title}</div>
             </div>
           </a>
@@ -207,7 +207,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
             id="next-post-link"
           >
             <div class="min-w-0">
-              <span class="block text-sm text-foreground/70">Next Post</span>
+              <span class="block text-sm text-foreground/70">下一篇</span>
               <div class="text-accent/85">{nextPost.title}</div>
             </div>
             <IconChevronRight class="inline-block flex-shrink-0 mt-0.5" />
