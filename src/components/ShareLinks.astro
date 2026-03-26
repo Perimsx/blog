@@ -1,38 +1,45 @@
 ---
-import IconBlueSky from "@/assets/icons/IconBlueSky.svg";
 import IconBrandX from "@/assets/icons/IconBrandX.svg";
 import IconFacebook from "@/assets/icons/IconFacebook.svg";
-import IconLinkedin from "@/assets/icons/IconLinkedin.svg";
-import IconMail from "@/assets/icons/IconMail.svg";
-import IconPinterest from "@/assets/icons/IconPinterest.svg";
+import IconQQ from "@/assets/icons/IconQQ.svg";
 import IconTelegram from "@/assets/icons/IconTelegram.svg";
-import IconWhatsapp from "@/assets/icons/IconWhatsapp.svg";
+import IconWechat from "@/assets/icons/IconWechat.svg";
 import { SHARE_LINKS } from "@/constants";
 import LinkButton from "./LinkButton.astro";
 
 const URL = Astro.url;
 
 const iconMap = {
-  whatsapp: IconWhatsapp,
-  facebook: IconFacebook,
+  wechat: IconWechat,
+  qq: IconQQ,
   twitter: IconBrandX,
-  bluesky: IconBlueSky,
-  linkedin: IconLinkedin,
   telegram: IconTelegram,
-  pinterest: IconPinterest,
-  mail: IconMail,
+  facebook: IconFacebook,
 };
 ---
 
 <div
   class="flex flex-col flex-wrap items-center justify-center gap-2 sm:gap-1 sm:items-start"
 >
-  <span class="italic">Share this post on:</span>
+  <span class="italic">分享到：</span>
   <div class="text-center flex flex-wrap gap-1">
     {
       SHARE_LINKS.map((social) => {
         const IconComponent = iconMap[social.icon as keyof typeof iconMap];
-        return (
+        const isWechat = social.icon === "wechat";
+        return isWechat ? (
+          <button
+            id="wechat-share-btn"
+            class="group inline-block p-3 sm:p-2 hover:rotate-6 transition-transform"
+            title={social.linkTitle}
+            data-url={URL}
+          >
+            {IconComponent && (
+              <IconComponent class="inline-block size-8 sm:size-6 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent" />
+            )}
+            <span class="sr-only">{social.linkTitle}</span>
+          </button>
+        ) : (
           <LinkButton
             href={`${social.href + URL}`}
             class="p-3 sm:p-2 hover:rotate-6"
@@ -48,3 +55,47 @@ const iconMap = {
     }
   </div>
 </div>
+
+<!-- 微信二维码弹窗 -->
+<div id="wechat-qrcode-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-background border border-border rounded-lg p-6 text-center max-w-xs mx-4 shadow-xl">
+    <p class="mb-4 text-foreground font-medium">扫码分享到微信</p>
+    <div id="wechat-qrcode" class="flex justify-center mb-4"></div>
+    <button id="wechat-modal-close" class="text-sm text-foreground/60 hover:text-foreground transition-colors">关闭</button>
+  </div>
+</div>
+
+<script is:inline data-astro-rerun>
+(function() {
+  const btn = document.getElementById('wechat-share-btn');
+  const modal = document.getElementById('wechat-qrcode-modal');
+  const closeBtn = document.getElementById('wechat-modal-close');
+  const qrContainer = document.getElementById('wechat-qrcode');
+
+  if (!btn || !modal || !closeBtn || !qrContainer) return;
+
+  function generateQR(url) {
+    // 简洁的 QR 码生成 - 使用第三方 API
+    qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}" alt="QR Code" width="200" height="200" style="border-radius: 8px;" />`;
+  }
+
+  btn.addEventListener('click', () => {
+    const url = btn.getAttribute('data-url');
+    generateQR(url);
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  });
+})();
+</script>
