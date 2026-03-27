@@ -1,6 +1,6 @@
 ---
 pubDatetime: '2026-02-07T00:00:00.000Z'
-title: 动态规划从入门到精通：核心思想、状态设计与经典问题
+title: 动态规划入门
 featured: false
 draft: false
 tags:

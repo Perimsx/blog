@@ -1,6 +1,6 @@
 ---
 pubDatetime: '2026-02-07T00:00:00.000Z'
-title: 十大排序算法深度对比：原理、复杂度与适用场景
+title: 十大排序算法
 featured: false
 draft: false
 tags:
