@@ -12,7 +12,6 @@ import Header from "@/components/Header.astro";
 import ShareLinks from "@/components/ShareLinks.astro";
 import StructuredData from "@/components/StructuredData.astro";
 import Tag from "@/components/Tag.astro";
-import BackToTop from "@/components/BackToTop.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import { getPath } from "@/utils/getPath";
@@ -215,7 +214,6 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
       }
     </div>
   </main>
-  <BackToTop />
   <Footer />
 </Layout>
 

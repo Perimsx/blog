@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from "astro:transitions";
+import BackToTop from "@/components/BackToTop.astro";
 import { SITE } from "@/config";
 import "@/styles/global.css";
 
@@ -158,6 +159,7 @@ const structuredData =
   </head>
   <body>
     <slot />
+    <BackToTop />
   </body>
 </html>
 
