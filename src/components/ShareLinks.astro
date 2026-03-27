@@ -19,10 +19,10 @@ const iconMap = {
 ---
 
 <div
-  class="flex flex-col flex-wrap items-center justify-center gap-2 sm:gap-1 sm:items-start"
+  class="flex items-center gap-1"
 >
-  <span class="italic">分享到：</span>
-  <div class="text-center flex flex-wrap gap-1">
+  <span class="text-sm text-foreground/60 mr-1">分享到</span>
+  <div class="flex gap-1">
     {
       SHARE_LINKS.map((social) => {
         const IconComponent = iconMap[social.icon as keyof typeof iconMap];
@@ -30,23 +30,23 @@ const iconMap = {
         return isWechat ? (
           <button
             id="wechat-share-btn"
-            class="group inline-block p-3 sm:p-2 hover:rotate-6 transition-transform"
+            class="group inline-block p-2 hover:rotate-6 transition-transform"
             title={social.linkTitle}
             data-url={URL}
           >
             {IconComponent && (
-              <IconComponent class="inline-block size-8 sm:size-6 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent" />
+              <IconComponent class="inline-block size-5 fill-transparent stroke-current stroke-2 opacity-80 group-hover:fill-transparent" />
             )}
             <span class="sr-only">{social.linkTitle}</span>
           </button>
         ) : (
           <LinkButton
             href={`${social.href + URL}`}
-            class="p-3 sm:p-2 hover:rotate-6"
+            class="p-2 hover:rotate-6"
             title={social.linkTitle}
           >
             {IconComponent && (
-              <IconComponent class="inline-block size-8 sm:size-6 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent" />
+              <IconComponent class="inline-block size-5 fill-transparent stroke-current stroke-2 opacity-80 group-hover:fill-transparent" />
             )}
             <span class="sr-only">{social.linkTitle}</span>
           </LinkButton>

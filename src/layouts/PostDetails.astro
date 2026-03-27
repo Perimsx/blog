@@ -30,6 +30,7 @@ const {
   title,
   author,
   description,
+  coverImage,
   ogImage: initOgImage,
   canonicalURL,
   pubDatetime,
@@ -44,9 +45,14 @@ const { Content } = await render(post);
 const readingTime = calculateReadingTime(post.body ?? "");
 
 let ogImageUrl: string | undefined;
+const articleImage = coverImage ?? heroImage;
 
 // Determine OG image source
-if (typeof initOgImage === "string") {
+if (typeof coverImage === "string") {
+  ogImageUrl = coverImage; // Shared cover image (remote URL)
+} else if (coverImage?.src) {
+  ogImageUrl = coverImage.src; // Shared local cover asset
+} else if (typeof initOgImage === "string") {
   ogImageUrl = initOgImage; // Remote OG image (absolute URL)
 } else if (initOgImage?.src) {
   ogImageUrl = initOgImage.src; // Local asset
@@ -104,6 +110,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
       pubDatetime,
       modDatetime,
       url: computedCanonicalURL,
+      coverImage: ogImage,
       ogImage,
       tags,
       wordCount,
@@ -143,9 +150,9 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
     </div>
     <article id="article" class="article-detail mx-auto prose mt-8 max-w-3xl">
       {
-        heroImage && (
+        articleImage && (
           <AdaptiveImage
-            src={heroImage}
+            src={articleImage}
             alt={title}
             class="mb-8 aspect-video w-full rounded-md object-cover"
             loading="lazy"
@@ -157,27 +164,15 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
 
 
 
-    <hr class="my-8 border-dashed" />
-
-    <EditPost class="sm:hidden" {hideEditPost} {post} />
-
-    <ul class="mt-4 mb-8 flex flex-wrap gap-x-4 gap-y-2 sm:my-8">
-      {tags.map((tag) => <Tag tag={slugifyStr(tag)} tagName={tag} />)}
-    </ul>
-
-    <div
-      class="flex flex-col items-center justify-between gap-6 sm:flex-row sm:items-end sm:gap-4"
-    >
+    <div class="flex flex-wrap items-center justify-between gap-4 mt-4 mb-4 sm:my-6">
+      <ul class="flex flex-wrap gap-x-4 gap-y-2">
+        {tags.map((tag) => <Tag tag={slugifyStr(tag)} tagName={tag} />)}
+      </ul>
       <ShareLinks />
-
-      <button
-        id="static-back-to-top"
-        class="focus-outline py-1 whitespace-nowrap hover:opacity-75"
-      >
-        <IconChevronLeft class="inline-block rotate-90" />
-        <span>返回顶部</span>
-      </button>
     </div>
+
+    <!-- Mobile only: EditPost below tags -->
+    <EditPost class="sm:hidden" {hideEditPost} {post} />
 
     <hr class="my-6 border-dashed" />
 
@@ -329,15 +324,6 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
     }
   }
   attachCopyButtons();
-
-  /** Scrolls the document to the top when
-   * the "static-back-to-top" button is clicked. */
-  function setupStaticBackToTop() {
-    document.querySelector("#static-back-to-top")?.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  }
-  setupStaticBackToTop();
 
   /* Go to page start after page swap */
   document.addEventListener("astro:after-swap", () =>

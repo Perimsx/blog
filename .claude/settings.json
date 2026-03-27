@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude mcp:*)",
+      "Bash(uvx --version)",
+      "Bash(uv --version)",
+      "Bash(pip install:*)",
+      "Bash(uvx minimax-coding-plan-mcp:*)"
+    ]
+  }
+}

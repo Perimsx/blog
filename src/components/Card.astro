@@ -13,8 +13,9 @@ export interface Props extends CollectionEntry<"blog"> {
 
 const { variant = "h2", data, id, filePath, body, showImage = true } = Astro.props;
 
-const { title, description, pubDatetime, modDatetime, timezone, heroImage } = data;
+const { title, description, pubDatetime, modDatetime, timezone, coverImage, heroImage } = data;
 const readingTime = calculateReadingTime(body ?? "");
+const articleImage = coverImage ?? heroImage;
 
 const headerProps = {
   style: { viewTransitionName: slugifyStr(title) },
@@ -41,13 +42,13 @@ const headerProps = {
       <span class="text-sm italic opacity-80">• {readingTime}</span>
     </div>
     <div class="flex gap-4 items-start">
-      {showImage && heroImage && (
+      {showImage && articleImage && (
         <a 
           href={getPath(id, filePath)}
           class="flex-shrink-0 hidden sm:block group"
         >
           <AdaptiveImage
-            src={heroImage}
+            src={articleImage}
             alt={title}
             width={140}
             height={79}

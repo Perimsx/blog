@@ -2,47 +2,101 @@
 ---
 <button
   id="back-to-top"
-  class="fixed bottom-8 right-8 z-50 flex size-12 translate-y-20 flex-col items-center justify-center rounded-xl border border-white/10 bg-background/40 p-2 text-foreground/60 shadow-2xl backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-accent hover:text-background active:scale-95 disabled:pointer-events-none opacity-0"
+  class="fixed bottom-6 right-6 z-50 opacity-0 translate-y-4 pointer-events-none transition-all duration-500 group"
   aria-label="Back to Top"
 >
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    stroke-width="2.5"
-    class="fill-none stroke-current"
-  >
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-    <path d="M12 5l0 14"></path>
-    <path d="M18 11l-6 -6"></path>
-    <path d="M6 11l6 -6"></path>
-  </svg>
+  <!-- Progress ring container -->
+  <div class="relative flex size-12 items-center justify-center">
+    <!-- Background ring -->
+    <svg
+      class="absolute inset-0 size-12 -rotate-90"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle
+        cx="24"
+        cy="24"
+        r="20"
+        stroke="currentColor"
+        stroke-width="3"
+        class="text-foreground/10"
+      />
+      <!-- Progress ring -->
+      <circle
+        id="scroll-progress-ring"
+        cx="24"
+        cy="24"
+        r="20"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-dasharray="125.66"
+        stroke-dashoffset="125.66"
+        class="text-accent transition-[stroke-dashoffset] duration-100"
+      />
+    </svg>
+
+    <!-- Arrow icon -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="text-foreground/60 group-hover:text-accent transition-all duration-300 group-hover:-translate-y-0.5"
+    >
+      <path d="M12 19V5M5 12l7-7 7 7" />
+    </svg>
+  </div>
+
+  <!-- Label -->
+  <span class="absolute -top-7 left-1/2 -translate-x-1/2 text-xs font-medium text-foreground/40 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+    Top
+  </span>
 </button>
 
 <script>
-  function toggleBackToTop() {
+  function initBackToTop() {
     const backToTopBtn = document.querySelector("#back-to-top") as HTMLButtonElement;
-    if (!backToTopBtn) return;
+    const progressRing = document.querySelector(
+      "#scroll-progress-ring",
+    ) as SVGCircleElement;
 
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > 300) {
-        backToTopBtn.classList.remove("translate-y-20", "opacity-0");
-        backToTopBtn.classList.add("translate-y-0", "opacity-100");
+    if (!backToTopBtn || !progressRing) return;
+
+    const circumference = 125.66; // 2 * PI * 20
+
+    const updateProgress = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+      const offset = circumference - progress * circumference;
+      progressRing.style.strokeDashoffset = String(offset);
+
+      // Show/hide button
+      if (scrollTop > 300) {
+        backToTopBtn.classList.remove("opacity-0", "translate-y-4", "pointer-events-none");
+        backToTopBtn.classList.add("opacity-100", "translate-y-0", "pointer-events-auto");
       } else {
-        backToTopBtn.classList.add("translate-y-20", "opacity-0");
-        backToTopBtn.classList.remove("translate-y-0", "opacity-100");
+        backToTopBtn.classList.add("opacity-0", "translate-y-4", "pointer-events-none");
+        backToTopBtn.classList.remove("opacity-100", "translate-y-0", "pointer-events-auto");
       }
-    });
+    };
+
+    window.addEventListener("scroll", updateProgress, { passive: true });
 
     backToTopBtn.addEventListener("click", () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
+
+    updateProgress();
   }
 
-  // 初始化
-  toggleBackToTop();
-
-  // 视图转换兼容
-  document.addEventListener("astro:after-swap", toggleBackToTop);
+  initBackToTop();
+  document.addEventListener("astro:after-swap", initBackToTop);
 </script>

@@ -92,7 +92,6 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
     {
       recentPosts.length > 0 && (
         <section id="recent-posts" class="pt-4 pb-0 sm:pt-6 sm:pb-1">
-          <h2 class="text-2xl font-semibold tracking-wide">最近文章</h2>
           <ul class="[&>li:last-child]:mb-1">
             {recentPosts.map(
               (data, index) => index < SITE.postPerIndex && <Card variant="h3" {...data} />,

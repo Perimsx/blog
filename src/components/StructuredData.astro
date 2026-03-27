@@ -46,7 +46,7 @@ if (type === "BlogPosting") {
       "@type": "WebPage",
       "@id": data.url,
     },
-    image: data.ogImage || siteOgImage,
+    image: data.coverImage || data.ogImage || data.heroImage || siteOgImage,
     articleSection: data.tags?.[0] || "Technology",
     keywords: data.tags?.join(", ") || "",
     wordCount: data.wordCount,

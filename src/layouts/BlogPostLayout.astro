@@ -13,7 +13,8 @@ type Props = CollectionEntry<"blog">["data"] & {
   readingTime?: string;
 };
 
-const { title, description, pubDatetime, modDatetime, heroImage, slug, readingTime } = Astro.props;
+const { title, description, pubDatetime, modDatetime, coverImage, heroImage, slug, readingTime } = Astro.props;
+const articleImage = coverImage ?? heroImage;
 
 // Enforce canonical URL to always be /posts/ path without trailing slash
 // This matches Vercel's trailingSlash: false configuration
@@ -152,9 +153,9 @@ const canonicalURL = new URL(canonicalPath, Astro.site).toString();
 
     <article id="article" class="mx-auto prose mt-8 max-w-3xl">
       {
-        heroImage && (
+        articleImage && (
           <AdaptiveImage
-            src={heroImage}
+            src={articleImage}
             alt={title}
             class="mb-8 aspect-video w-full rounded-md object-cover"
             loading="lazy"

@@ -1,6 +1,6 @@
 ---
 pubDatetime: '2026-02-07T00:00:00.000Z'
-title: 动态规划入门
+title: 动态规划核心思路
 featured: false
 draft: false
 tags:
@@ -8,8 +8,7 @@ tags:
   - LeetCode
   - 编程
 description: DP三要素与四步解题法，0-1背包、LCS、编辑距离、LIS经典问题详解与代码实现
-heroImage: ./covers/algo002-cover.webp
-ogImage: ./covers/algo002-og.webp
+coverImage: ./covers/algo002-cover.webp
 ---
 动态规划（Dynamic Programming，简称 DP）是算法领域中最强大也最令人望而生畏的技术之一。它的名字听起来高深莫测——实际上 Richard Bellman 在 20 世纪 50 年代提出这个名字时，故意选了一个"听起来很厉害"的词来争取研究经费。然而，动态规划的核心思想却极其朴素：**将复杂问题分解为重叠的子问题，通过存储子问题的解来避免重复计算**。
 
