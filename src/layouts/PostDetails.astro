@@ -122,7 +122,8 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
   >
     <h1
       transition:name={slugifyStr(title)}
-      class="text-2xl font-semibold text-accent leading-tight sm:text-3xl lg:text-[2.2rem]"
+      title={title}
+      class="block w-full text-2xl font-semibold text-accent leading-tight sm:text-3xl lg:text-[2.2rem] lg:truncate"
     >
       {title}
     </h1>
