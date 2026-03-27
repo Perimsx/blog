@@ -121,7 +121,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
   >
     <h1
       transition:name={slugifyStr(title)}
-      class="text-xl font-semibold text-accent leading-snug sm:text-2xl"
+      class="text-2xl font-semibold text-accent leading-tight sm:text-3xl lg:text-[2.2rem]"
     >
       {title}
     </h1>
@@ -132,14 +132,14 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
           readingTime && (
             <>
               <span class="text-foreground/30">•</span>
-              <span class="text-sm text-foreground/60">{readingTime}</span>
+              <span class="text-[0.95rem] text-foreground/60">{readingTime}</span>
             </>
           )
         }
       </div>
       <EditPost class="max-sm:hidden" {hideEditPost} {post} />
     </div>
-    <article id="article" class="mx-auto prose mt-6 max-w-3xl">
+    <article id="article" class="article-detail mx-auto prose mt-8 max-w-3xl">
       {
         heroImage && (
           <img
