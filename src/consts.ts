@@ -31,9 +31,9 @@ interface Site {
 
 // Site configuration
 export const SITE: Site = {
-  website: "https://www.chenguitao.com/",
+  website: "https://chenguitao.com/",
   author: "Perimsx",
-  profile: "https://www.chenguitao.com/about",
+  profile: "https://chenguitao.com/about",
   desc: "Perimsx | 记录成长，分享价值",
   title: "Perimsx",
   ogImage: "og-image.jpg",
@@ -79,7 +79,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
     label: "GitHub",
   },
   {
-    href: "mailto:Perimsx@qq.com",
+    href: "mailto:1722288011@qq.com",
     label: "Email",
   },
   {

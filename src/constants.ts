@@ -31,7 +31,7 @@ export const SOCIALS = [
   },
   {
     name: "Mail",
-    href: "mailto:Perimsx@qq.com",
+    href: "mailto:1722288011@qq.com",
     linkTitle: `Send an email to ${SITE.title}`,
     icon: "mail",
     active: false,
