@@ -4,8 +4,6 @@ import Header from "@/components/Header.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import Main from "@/layouts/Main.astro";
-
-const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
 ---
 
 <Layout title={`Contact | ${SITE.title}`} description="联系站长 Perimsx">
@@ -60,14 +58,14 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
 
       <hr class="border-border" />
 
-      <form id="contact-form" class="space-y-4 max-w-lg">
+      <form id="contact-page-form" class="space-y-4 max-w-lg">
         <div>
-          <label for="name" class="block text-sm font-medium text-foreground mb-1">
+          <label for="contact-page-name" class="block text-sm font-medium text-foreground mb-1">
             姓名（选填）
           </label>
           <input
             type="text"
-            id="name"
+            id="contact-page-name"
             name="name"
             placeholder="你的名字"
             class="w-full px-3 py-2 border border-border rounded bg-background text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent"
@@ -75,26 +73,25 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
         </div>
 
         <div>
-          <label for="email" class="block text-sm font-medium text-foreground mb-1">
-            邮箱 <span class="text-accent">*</span>
+          <label for="contact-page-email" class="block text-sm font-medium text-foreground mb-1">
+            邮箱（选填）
           </label>
           <input
             type="email"
-            id="email"
+            id="contact-page-email"
             name="email"
             placeholder="方便我回复你"
-            required
             class="w-full px-3 py-2 border border-border rounded bg-background text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent"
           />
         </div>
 
         <div>
-          <label for="qq" class="block text-sm font-medium text-foreground mb-1">
-            QQ（选填）
+          <label for="contact-page-qq" class="block text-sm font-medium text-foreground mb-1">
+            QQ（选填，推荐）
           </label>
           <input
             type="text"
-            id="qq"
+            id="contact-page-qq"
             name="qq"
             placeholder="方便的话可以留下 QQ 号"
             class="w-full px-3 py-2 border border-border rounded bg-background text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent"
@@ -102,11 +99,11 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
         </div>
 
         <div>
-          <label for="message" class="block text-sm font-medium text-foreground mb-1">
+          <label for="contact-page-message" class="block text-sm font-medium text-foreground mb-1">
             留言内容 <span class="text-accent">*</span>
           </label>
           <textarea
-            id="message"
+            id="contact-page-message"
             name="message"
             rows="5"
             placeholder="想说点什么..."
@@ -115,11 +112,11 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
           ></textarea>
         </div>
 
-        <div id="form-status" class="hidden text-sm"></div>
+        <div id="contact-page-status" class="hidden text-sm"></div>
 
         <button
           type="submit"
-          id="submit-btn"
+          id="contact-page-submit"
           class="px-6 py-2 bg-accent text-white rounded font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           发送留言
@@ -131,12 +128,13 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
 </Layout>
 
 <script>
-  const form = document.getElementById("contact-form") as HTMLFormElement;
-  const status = document.getElementById("form-status") as HTMLDivElement;
-  const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+  const form = document.getElementById("contact-page-form") as HTMLFormElement | null;
+  const status = document.getElementById("contact-page-status") as HTMLDivElement | null;
+  const submitBtn = document.getElementById("contact-page-submit") as HTMLButtonElement | null;
 
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (!status || !submitBtn) return;
 
     const formData = new FormData(form);
     const data = {
@@ -146,8 +144,15 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
       message: formData.get("message") as string,
     };
 
-    if (!data.email || !data.message) {
-      status.textContent = "请填写邮箱和留言内容";
+    if (!data.message?.trim()) {
+      status.textContent = "请填写留言内容";
+      status.className = "text-sm text-red-500";
+      status.classList.remove("hidden");
+      return;
+    }
+
+    if (!data.email?.trim() && !data.qq?.trim()) {
+      status.textContent = "请至少留下邮箱或 QQ";
       status.className = "text-sm text-red-500";
       status.classList.remove("hidden");
       return;

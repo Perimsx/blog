@@ -3,14 +3,21 @@
 <div id="contact-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
   <div class="flex min-h-screen items-center justify-center p-4">
     <!-- 背景遮罩：强化模糊感 -->
-    <div class="fixed inset-0 bg-black/40 backdrop-blur-md transition-opacity duration-300 opacity-0" id="modal-backdrop"></div>
+    <div
+      class="fixed inset-0 bg-black/40 backdrop-blur-md transition-opacity duration-300 opacity-0"
+      data-contact-modal-backdrop
+    ></div>
     
     <!-- 弹窗内容：缩减内边距，移除冗余留白 -->
     <div 
       class="relative w-full max-w-[22rem] rounded-[1.5rem] bg-background/80 backdrop-blur-xl p-7 shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] transition-all duration-300 scale-90 opacity-0 border border-white/5" 
       id="modal-content"
     >
-      <button id="close-modal" class="absolute top-5 right-5 flex size-7 items-center justify-center rounded-full bg-foreground/5 text-foreground/40 hover:bg-accent hover:text-background transition-all duration-200" aria-label="关闭">
+      <button
+        data-contact-modal-close
+        class="absolute top-5 right-5 flex size-7 items-center justify-center rounded-full bg-foreground/5 text-foreground/40 hover:bg-accent hover:text-background transition-all duration-200"
+        aria-label="关闭"
+      >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -27,12 +34,12 @@
         <p class="text-xs text-foreground/50 mt-1">快速留言，我会尽快回复</p>
       </header>
       
-      <form id="contact-form" class="space-y-4">
+      <form data-contact-modal-form class="space-y-4">
         <div>
-          <label for="qq" class="block text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1.5 ml-1">QQ 号</label>
+          <label for="contact-modal-qq" class="block text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1.5 ml-1">QQ 号</label>
           <input 
             type="text" 
-            id="qq" 
+            id="contact-modal-qq" 
             name="qq" 
             required 
             placeholder="12345678" 
@@ -41,9 +48,9 @@
         </div>
         
         <div>
-          <label for="message" class="block text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1.5 ml-1">留言内容</label>
+          <label for="contact-modal-message" class="block text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1.5 ml-1">留言内容</label>
           <textarea 
-            id="message" 
+            id="contact-modal-message" 
             name="message" 
             rows="3" 
             required 
@@ -54,7 +61,7 @@
         
         <button 
           type="submit" 
-          id="submit-btn" 
+          data-contact-modal-submit
           class="group relative w-full overflow-hidden rounded-xl bg-accent px-6 py-3 font-bold text-sm text-background transition-all hover:brightness-105 active:scale-[0.98]"
         >
           <span class="relative z-10 flex items-center justify-center gap-1.5">
@@ -66,23 +73,23 @@
           </span>
         </button>
         
-        <div id="status-msg" class="flex items-center justify-center gap-2 text-sm font-semibold mt-4 hidden py-2 rounded-xl animate-in fade-in slide-in-from-bottom-2"></div>
+        <div data-contact-modal-status class="flex items-center justify-center gap-2 text-sm font-semibold mt-4 hidden py-2 rounded-xl animate-in fade-in slide-in-from-bottom-2"></div>
       </form>
     </div>
   </div>
 </div>
 
 <script>
-  const modal = document.getElementById('contact-modal');
-  const backdrop = document.getElementById('modal-backdrop');
-  const closeBtn = document.getElementById('close-modal');
-  const modalContent = document.getElementById('modal-content');
-  const form = document.getElementById('contact-form') as HTMLFormElement;
-  const statusMsg = document.getElementById('status-msg');
-  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const modal = document.getElementById("contact-modal");
+  const backdrop = modal?.querySelector("[data-contact-modal-backdrop]");
+  const closeBtn = modal?.querySelector("[data-contact-modal-close]");
+  const modalContent = document.getElementById("modal-content");
+  const form = modal?.querySelector("[data-contact-modal-form]") as HTMLFormElement | null;
+  const statusMsg = modal?.querySelector("[data-contact-modal-status]");
+  const submitBtn = modal?.querySelector("[data-contact-modal-submit]") as HTMLButtonElement | null;
 
   // 打开弹窗逻辑
-  document.addEventListener('open-contact-modal', () => {
+  document.addEventListener("open-contact-modal", () => {
     modal?.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     
@@ -113,8 +120,9 @@
   backdrop?.addEventListener('click', closeModal);
   closeBtn?.addEventListener('click', closeModal);
 
-  form?.addEventListener('submit', async (e) => {
+  form?.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (!submitBtn) return;
     submitBtn.disabled = true;
     const originalContent = submitBtn.innerHTML;
     submitBtn.innerHTML = `<span class="flex items-center justify-center gap-2 animate-pulse">处理中...</span>`;
@@ -158,8 +166,8 @@
   });
 
   // 快捷键退出
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !modal?.classList.contains('hidden')) {
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal?.classList.contains("hidden")) {
       closeModal();
     }
   });
