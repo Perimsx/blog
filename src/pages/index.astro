@@ -78,7 +78,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
         <>
           <section id="featured" class="pt-6 pb-3 sm:pt-6 sm:pb-3">
             <h2 class="text-2xl font-semibold tracking-wide">精选文章</h2>
-            <ul>
+            <ul class="[&>li:last-child]:mb-1">
               {featuredPosts.map((data) => (
                 <Card variant="h3" {...data} />
               ))}
@@ -91,9 +91,9 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
 
     {
       recentPosts.length > 0 && (
-        <section id="recent-posts" class="pt-4 pb-3 sm:pt-6 sm:pb-3">
+        <section id="recent-posts" class="pt-4 pb-0 sm:pt-6 sm:pb-1">
           <h2 class="text-2xl font-semibold tracking-wide">最近文章</h2>
-          <ul>
+          <ul class="[&>li:last-child]:mb-1">
             {recentPosts.map(
               (data, index) => index < SITE.postPerIndex && <Card variant="h3" {...data} />,
             )}
@@ -102,7 +102,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
       )
     }
 
-    <div class="my-4 sm:my-5 text-center">
+    <div class="mt-1 mb-4 sm:mt-2 sm:mb-5 text-center">
       <LinkButton href="/posts/">
         所有文章
         <IconArrowRight class="inline-block" />
