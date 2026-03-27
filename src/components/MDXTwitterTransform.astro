@@ -22,7 +22,6 @@ const { content } = Astro.props;
     const paragraphs = mdxContent.querySelectorAll("p");
 
     let foundTwitterEmbeds = false;
-    let foundYoutubeEmbeds = false;
 
     paragraphs.forEach((paragraph) => {
       const content = paragraph.innerHTML;
@@ -46,7 +45,6 @@ const { content } = Astro.props;
         // Replace the paragraph with our placeholder
         paragraph.replaceWith(placeholder);
       } else if (youtubeMatch && youtubeMatch[1]) {
-        foundYoutubeEmbeds = true;
         let videoId = youtubeMatch[1];
 
         // Extract video ID from URL if needed
@@ -68,7 +66,6 @@ const { content } = Astro.props;
             height="315"
             src="https://www.youtube.com/embed/${videoId}"
             title="YouTube video player"
-            frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
           ></iframe>
