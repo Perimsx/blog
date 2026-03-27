@@ -1,16 +1,19 @@
 ---
 layout: ../layouts/AboutLayout.astro
-title: "About"
+title: "关于"
 description: "Perimsx | 记录成长，分享价值"
 ---
 
 import PostHeatmap from "../components/PostHeatmap.astro";
 
-<div class="about-hero flex flex-col sm:flex-row">
-  <div class="about-hero-media sm:flex-shrink-0">
-    <img src="https://img1.tucang.cc/api/image/show/634a56a76f7455df0e2fb5419533e0cf" alt="Perimsx" class="w-full h-auto rounded-lg shadow-md" />
-  </div>
-  <div class="about-hero-copy flex-1 min-w-0">
+<div class="about-hero">
+  <img
+    class="about-avatar"
+    src="https://img1.tucang.cc/api/image/show/634a56a76f7455df0e2fb5419533e0cf"
+    alt="Perimsx 头像"
+    loading="eager"
+  />
+  <div class="about-hero-copy">
     <h2>你好，我是 Perimsx</h2>
     <p>一名即将毕业的信息安全专业学生。这里主要记录我的网络安全学习心得、开发实践经历与技术笔记。</p>
   </div>

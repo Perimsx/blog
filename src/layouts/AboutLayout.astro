@@ -16,13 +16,12 @@ const { frontmatter } = Astro.props;
 
 <Layout title={`${frontmatter.title} | ${SITE.title}`} description={frontmatter.description}>
   <Header />
-  <main id="main-content" class="ui-page mx-auto w-full max-w-3xl px-4 pb-6 sm:pb-10">
-    <section id="about" class="prose mt-4 mb-14 w-full max-w-none prose-img:border-0 sm:mt-6 sm:mb-20">
-      <h1 class="about-page-title">{frontmatter.title}</h1>
+  <main id="main-content" class="ui-page mx-auto w-full max-w-3xl px-4 pb-4 sm:pb-6">
+    <section id="about" class="prose mt-4 mb-6 w-full max-w-none prose-img:border-0 sm:mt-6 sm:mb-8">
       <slot />
     </section>
   </main>
-  <Footer />
+  <Footer noMarginTop />
 </Layout>
 
 <style is:global>
@@ -35,63 +34,74 @@ const { frontmatter } = Astro.props;
   }
 
   #about .about-hero {
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.6rem;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1.3rem;
   }
 
-  #about > h1.about-page-title {
-    margin: 0 0 1.1rem;
-    font-size: clamp(1.65rem, 7vw, 2rem);
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-  }
-
-  #about .about-hero-media {
-    width: min(100%, 17.5rem);
-    margin-inline: auto;
-  }
-
-  #about .about-hero-media img {
+  #about .about-avatar {
+    width: 5.5rem;
+    height: 5.5rem;
     margin: 0;
-    border-radius: 1rem;
+    border-radius: 999px;
+    object-fit: cover;
+    border: 1px solid color-mix(in srgb, var(--color-border) 85%, transparent);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--color-border) 55%, transparent);
   }
 
   #about .about-hero-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     width: 100%;
+    min-width: 0;
   }
 
   #about .about-hero-copy > h2 {
     margin-top: 0;
-    margin-bottom: 0.55rem;
-    font-size: clamp(1.36rem, 5.8vw, 1.72rem);
+    margin-bottom: 0.26rem;
+    font-size: clamp(1.06rem, 4.25vw, 1.26rem);
     line-height: 1.22;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.018em;
   }
 
   #about .about-hero-copy > p {
     margin: 0;
     max-width: 34rem;
-    font-size: 0.92rem;
-    line-height: 1.72;
+    font-size: 0.9rem;
+    line-height: 1.68;
   }
 
   #about .about-block + .about-block {
-    margin-top: 1.7rem;
+    margin-top: 1.2rem;
   }
 
   #about .about-block > h2 {
-    margin: 0 0 0.65rem;
-    font-size: clamp(1.2rem, 5.6vw, 1.52rem);
-    line-height: 1.28;
-    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.52rem;
+    margin: 0 0 0.58rem;
+    font-size: clamp(1.02rem, 4.5vw, 1.2rem);
+    line-height: 1.32;
+    letter-spacing: -0.015em;
+  }
+
+  #about .about-block > h2::before {
+    content: "";
+    flex: none;
+    width: 0.42rem;
+    height: 0.42rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-accent) 72%, transparent);
   }
 
   #about .about-block > p,
   #about .about-note {
     margin: 0;
-    font-size: 0.92rem;
-    line-height: 1.72;
+    font-size: 0.9rem;
+    line-height: 1.68;
   }
 
   #about .about-list {
@@ -105,11 +115,11 @@ const { frontmatter } = Astro.props;
   }
 
   #about .about-links {
-    margin-top: 0.55rem;
+    margin-top: 0.4rem;
   }
 
   #about .about-note {
-    margin-top: 0.65rem;
+    margin-top: 0.5rem;
   }
 
   #about :where(a) {
@@ -117,38 +127,35 @@ const { frontmatter } = Astro.props;
   }
 
   @media (min-width: 641px) {
-    #about > h1.about-page-title {
-      margin-bottom: 1.45rem;
-      font-size: 2.15rem;
-    }
-
     #about .about-hero {
-      gap: 1.5rem;
-      margin-bottom: 1.9rem;
+      grid-template-columns: 5.8rem minmax(0, 1fr);
+      gap: 1.05rem;
+      margin-bottom: 1.2rem;
     }
 
-    #about .about-hero-media {
-      width: min(100%, 18.5rem);
-      margin-inline: 0;
+    #about .about-avatar {
+      width: 5.8rem;
+      height: 5.8rem;
     }
 
     #about .about-hero-copy > h2 {
-      margin-bottom: 0.65rem;
-      font-size: clamp(1.65rem, 3vw, 1.95rem);
+      margin-bottom: 0.32rem;
+      font-size: clamp(1.16rem, 2.2vw, 1.36rem);
     }
 
     #about .about-hero-copy > p {
-      font-size: 0.96rem;
-      line-height: 1.78;
+      font-size: 0.94rem;
+      line-height: 1.72;
     }
 
     #about .about-block + .about-block {
-      margin-top: 2rem;
+      margin-top: 1.35rem;
     }
 
     #about .about-block > h2 {
-      margin-bottom: 0.8rem;
-      font-size: clamp(1.42rem, 2.8vw, 1.68rem);
+      gap: 0.56rem;
+      margin-bottom: 0.7rem;
+      font-size: clamp(1.08rem, 1.8vw, 1.24rem);
     }
 
     #about .about-list {
@@ -162,14 +169,19 @@ const { frontmatter } = Astro.props;
 
     #about .about-block > p,
     #about .about-note {
-      font-size: 0.95rem;
-      line-height: 1.76;
+      font-size: 0.93rem;
+      line-height: 1.72;
     }
   }
 
   @media (max-width: 640px) {
     #about {
-      margin-bottom: 4.5rem;
+      margin-bottom: 2rem;
+    }
+
+    #about .about-avatar {
+      width: 4.9rem;
+      height: 4.9rem;
     }
 
     #about .about-block > h2 {

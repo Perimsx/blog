@@ -11,9 +11,10 @@ import LinkButton from "./LinkButton.astro";
 
 export interface Props {
   centered?: boolean;
+  compactOnMobile?: boolean;
 }
 
-const { centered = false } = Astro.props;
+const { centered = false, compactOnMobile = false } = Astro.props;
 
 const iconMap = {
   github: IconGitHub,
@@ -26,18 +27,34 @@ const iconMap = {
 };
 ---
 
-<div class:list={["flex flex-wrap gap-1", centered ? "justify-center" : "justify-center sm:justify-start"]}>
+<div
+  class:list={[
+    "flex flex-wrap",
+    compactOnMobile ? "gap-0.5 sm:gap-1" : "gap-1",
+    centered ? "justify-center" : "justify-center sm:justify-start",
+  ]}
+>
   {
     SOCIALS.filter((social) => social.active).map((social) => {
       const IconComponent = iconMap[social.icon as keyof typeof iconMap];
       return (
         <LinkButton
           href={social.href}
-          class="p-2 hover:rotate-6 sm:p-1"
+          class:list={[
+            "hover:rotate-6",
+            compactOnMobile ? "p-1.5 sm:p-1" : "p-2 sm:p-1",
+          ]}
           title={social.linkTitle}
         >
           {IconComponent && (
-            <IconComponent class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110" />
+            <IconComponent
+              class:list={[
+                "inline-block fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent",
+                compactOnMobile
+                  ? "size-5 scale-105 sm:size-6 sm:scale-110"
+                  : "size-6 scale-125 sm:scale-110",
+              ]}
+            />
           )}
           <span class="sr-only">{social.linkTitle}</span>
         </LinkButton>

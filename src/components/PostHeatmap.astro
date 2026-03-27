@@ -71,7 +71,7 @@ const svgWidth = (weeks.length - 1) * columnGap + cellSize;
 const svgHeight = (7 - 1) * columnGap + cellSize;
 ---
 
-<div class="post-heatmap-container py-2 sm:py-4">
+<div class="post-heatmap-container py-1 sm:py-2">
   <div class="heatmap-shell">
     <div class="month-row" aria-hidden="true">
       {months.map((m, monthIndex) => (
@@ -160,7 +160,7 @@ const svgHeight = (7 - 1) * columnGap + cellSize;
   }
 
   .heatmap-legend {
-    margin-top: 0.75rem;
+    margin-top: 0.5rem;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -191,7 +191,7 @@ const svgHeight = (7 - 1) * columnGap + cellSize;
 
   @media (max-width: 480px) {
     .post-heatmap-container {
-      padding-block: 0.15rem 0;
+      padding-block: 0.1rem 0;
     }
 
     .month-row {
@@ -206,7 +206,7 @@ const svgHeight = (7 - 1) * columnGap + cellSize;
 
     .heatmap-legend {
       justify-content: flex-start;
-      margin-top: 0.55rem;
+      margin-top: 0.35rem;
       gap: 0.25rem;
       font-size: 9px;
     }
