@@ -21,6 +21,7 @@ pnpm-debug.log*
 
 # Vercel
 .vercel/
+.edgeone/
 
 # Temporary directories used for importing posts
 temp-*/
