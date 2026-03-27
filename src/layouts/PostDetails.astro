@@ -2,6 +2,7 @@
 import { type CollectionEntry, render } from "astro:content";
 import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
 import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
+import AdaptiveImage from "@/components/AdaptiveImage.astro";
 import BackButton from "@/components/BackButton.astro";
 import Datetime from "@/components/Datetime.astro";
 import EditPost from "@/components/EditPost.astro";
@@ -142,9 +143,9 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
     <article id="article" class="article-detail mx-auto prose mt-8 max-w-3xl">
       {
         heroImage && (
-          <img
+          <AdaptiveImage
             src={heroImage}
-            alt=""
+            alt={title}
             class="mb-8 aspect-video w-full rounded-md object-cover"
             loading="lazy"
           />

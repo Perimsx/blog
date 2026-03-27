@@ -7,6 +7,8 @@ tags:
   - 图论
   - 最短路径
 description: BFS/DFS遍历、Dijkstra/Floyd最短路径、Prim/Kruskal最小生成树、拓扑排序完整解析
+heroImage: ./covers/algo003-cover.webp
+ogImage: ./covers/algo003-og.webp
 ---
 图（Graph）是计算机科学中最通用、最强大的数据结构之一。社交网络中的人际关系、互联网中的网页链接、地图中的城市与公路、编译器中的函数调用关系——这些现实世界的问题都可以自然地抽象为图模型。掌握图算法，是从"编程入门"迈向"算法进阶"的关键一步。
 
