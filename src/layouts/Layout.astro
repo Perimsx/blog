@@ -16,6 +16,7 @@ export interface Props {
   pubDatetime?: Date;
   modDatetime?: Date | null;
   scrollSmooth?: boolean;
+  disableAutoStructuredData?: boolean;
 }
 
 const {
@@ -29,13 +30,14 @@ const {
   pubDatetime,
   modDatetime,
   scrollSmooth = false,
+  disableAutoStructuredData = false,
 } = Astro.props;
 
 const socialImageURL = new URL(ogImage, Astro.url);
 const ogType = requestedOgType ?? (pubDatetime ? "article" : "website");
 
 const structuredData =
-  ogType === "article" && pubDatetime
+  !disableAutoStructuredData && ogType === "article" && pubDatetime
     ? {
         "@context": "https://schema.org",
         "@type": "BlogPosting",

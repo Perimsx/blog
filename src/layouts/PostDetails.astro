@@ -74,6 +74,7 @@ const layoutProps = {
   canonicalURL: computedCanonicalURL,
   ogImage,
   scrollSmooth: true,
+  disableAutoStructuredData: true,
 };
 
 /* ========== Prev/Next Posts ========== */
@@ -101,7 +102,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
       author,
       pubDatetime,
       modDatetime,
-      url: Astro.url.href,
+      url: computedCanonicalURL,
       ogImage,
       tags,
       wordCount,
