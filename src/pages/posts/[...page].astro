@@ -10,9 +10,42 @@ import Layout from "@/layouts/Layout.astro";
 import Main from "@/layouts/Main.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
 
-export const getStaticPaths = (async ({ paginate }) => {
+export const getStaticPaths = (async () => {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
-  return paginate(getSortedPosts(posts), { pageSize: SITE.postPerPage });
+  const sortedPosts = getSortedPosts(posts);
+  const pageSize = SITE.postPerPage;
+  const lastPage = Math.ceil(sortedPosts.length / pageSize);
+
+  return Array.from({ length: Math.max(lastPage - 1, 0) }, (_, index) => {
+    const currentPage = index + 2;
+    const start = (currentPage - 1) * pageSize;
+    const end = Math.min(start + pageSize, sortedPosts.length) - 1;
+    const currentUrl = `/posts/${currentPage}`;
+    const prevUrl = currentPage === 2 ? "/posts" : `/posts/${currentPage - 1}`;
+    const nextUrl = currentPage === lastPage ? undefined : `/posts/${currentPage + 1}`;
+
+    return {
+      params: { page: String(currentPage) },
+      props: {
+        page: {
+          data: sortedPosts.slice(start, start + pageSize),
+          start,
+          end,
+          total: sortedPosts.length,
+          currentPage,
+          size: pageSize,
+          lastPage,
+          url: {
+            current: currentUrl,
+            prev: prevUrl,
+            next: nextUrl,
+            first: currentPage === 1 ? undefined : "/posts",
+            last: currentPage === lastPage ? undefined : `/posts/${lastPage}`,
+          },
+        },
+      },
+    };
+  });
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
