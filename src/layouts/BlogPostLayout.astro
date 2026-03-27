@@ -65,7 +65,10 @@ const canonicalURL = new URL(canonicalPath, Astro.site).toString();
     class="mx-auto w-full max-w-3xl px-4 pb-12 mt-8"
     data-pagefind-body
   >
-    <h1 title={title} class="block w-full text-2xl font-bold text-accent sm:text-3xl lg:truncate">
+    <h1
+      title={title}
+      class="block w-full text-[1.9rem] font-bold text-accent sm:text-[2.15rem] lg:text-[2rem] lg:truncate"
+    >
       {title}
     </h1>
     <div class="flex items-center justify-between gap-4">
