@@ -25,19 +25,19 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
   <StructuredData type="WebSite" data={{}} />
   <StructuredData type="Person" data={{}} />
   <Header />
-  <main id="main-content" data-layout="index">
-    <section id="hero" class="pt-4 pb-2 sm:pt-6 sm:pb-4">
-      <div class="flex flex-col items-center sm:flex-row sm:items-start gap-4">
+  <main id="main-content" data-layout="index" class="ui-page">
+    <section id="hero" class="pt-2 pb-1 sm:pt-5 sm:pb-2">
+      <div class="flex flex-col items-center gap-3 sm:flex-row sm:items-start sm:gap-3.5">
         <a href="/about" class="block group">
           <img 
             src="https://img1.tucang.cc/api/image/show/634a56a76f7455df0e2fb5419533e0cf" 
             alt="Perimsx" 
-            class="w-28 h-28 sm:w-40 sm:h-40 rounded-full object-cover flex-shrink-0 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl"
+            class="h-24 w-24 rounded-full object-cover flex-shrink-0 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl sm:h-40 sm:w-40"
           />
         </a>
         <div class="flex-1 text-center sm:text-left">
           <div class="flex items-center gap-2 justify-center sm:justify-start">
-            <h1 class="my-1 inline-block text-xl font-bold font-serif sm:my-4 sm:text-3xl">
+            <h1 class="my-1 inline-block text-[1.15rem] font-bold font-serif sm:my-2.5 sm:text-3xl">
               Hi, I'm Perimsx.
             </h1>
             <a
@@ -55,14 +55,14 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
               <span class="sr-only">RSS Feed</span>
             </a>
           </div>
-          <p class="text-sm sm:text-base">
+          <p class="text-[0.94rem] leading-7 sm:text-base">
             记录成长，分享价值。<br />
             信息安全专业学生，Web 开发爱好者。
           </p>
           {
             // only display if at least one social link is enabled
             SOCIALS.filter((social) => social.active).length > 0 && (
-              <div class="mt-3 sm:mt-4 flex flex-row items-center justify-center sm:justify-start">
+              <div class="mt-2 flex flex-row items-center justify-center sm:mt-2.5 sm:justify-start">
                 <Socials />
               </div>
             )
@@ -76,9 +76,9 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
     {
       featuredPosts.length > 0 && (
         <>
-          <section id="featured" class="pt-6 pb-3 sm:pt-6 sm:pb-3">
-            <h2 class="text-2xl font-semibold tracking-wide">精选文章</h2>
-            <ul class="[&>li:last-child]:mb-1">
+          <section id="featured" class="pt-4 pb-2 sm:pt-4 sm:pb-2">
+            <h2 class="text-[1.35rem] font-semibold tracking-wide sm:text-2xl">精选文章</h2>
+            <ul class="[&>li:first-child]:mt-3 sm:[&>li:first-child]:mt-4 [&>li:last-child]:mb-1">
               {featuredPosts.map((data) => (
                 <Card variant="h3" {...data} />
               ))}
@@ -91,8 +91,8 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
 
     {
       recentPosts.length > 0 && (
-        <section id="recent-posts" class="pt-4 pb-0 sm:pt-6 sm:pb-1">
-          <ul class="[&>li:last-child]:mb-1">
+        <section id="recent-posts" class="pt-2 pb-0 sm:pt-3 sm:pb-1">
+          <ul class="[&>li:first-child]:mt-3 sm:[&>li:first-child]:mt-4 [&>li:last-child]:mb-1">
             {recentPosts.map(
               (data, index) => index < SITE.postPerIndex && <Card variant="h3" {...data} />,
             )}
@@ -101,7 +101,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
       )
     }
 
-    <div class="mt-1 mb-4 sm:mt-2 sm:mb-5 text-center">
+    <div class="mt-1 mb-4 text-center sm:mt-2 sm:mb-5">
       <LinkButton href="/posts/">
         所有文章
         <IconArrowRight class="inline-block" />

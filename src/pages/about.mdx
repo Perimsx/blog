@@ -6,30 +6,35 @@ description: "Perimsx | 记录成长，分享价值"
 
 import PostHeatmap from "../components/PostHeatmap.astro";
 
-<div class="flex flex-col md:flex-row gap-8 items-start mb-8">
-  <div class="w-full md:w-auto md:flex-shrink-0 md:max-w-[281px]">
+<div class="about-hero flex flex-col sm:flex-row">
+  <div class="about-hero-media sm:flex-shrink-0">
     <img src="https://img1.tucang.cc/api/image/show/634a56a76f7455df0e2fb5419533e0cf" alt="Perimsx" class="w-full h-auto rounded-lg shadow-md" />
   </div>
-  <div class="flex-1 min-w-0">
-    <h2 class="mt-0">你好，我是 Perimsx </h2>
+  <div class="about-hero-copy flex-1 min-w-0">
+    <h2>你好，我是 Perimsx</h2>
     <p>一名即将毕业的信息安全专业学生。这里主要记录我的网络安全学习心得、开发实践经历与技术笔记。</p>
   </div>
 </div>
 
-## 文章热力图
+<div class="about-block about-block-heatmap">
+  <h2>文章热力图</h2>
+  <PostHeatmap />
+</div>
 
-<PostHeatmap />
+<div class="about-block">
+  <h2>近期活动</h2>
+  <ul class="about-list about-timeline">
+    <li><strong>2026 年 3 月</strong> · 使用 Astro 和 React 框架重构个人博客主站（<a href="https://chenguitao.com">chenguitao.com</a>）</li>
+    <li><strong>2026 年 2 月</strong> · 使用 Nuxt 4 重构个人博客（<a href="https://blog.coet.ink">blog.coet.ink</a>）</li>
+  </ul>
+</div>
 
-## 近期活动
-
-- **2026 年 3 月** · 使用 Astro 和 React 框架重构个人博客主站（[chenguitao.com](https://chenguitao.com/)）
-- **2026 年 2 月** · 使用 Nuxt 4 重构个人博客（[blog.coet.ink](https://blog.coet.ink/)）
-
-## 鸣谢与开源规划
-
-本站的开发离不开开源社区的启发，特别感谢以下大佬的开源项目与创意设计：
-
-* **Zhilu**: [blog-v3](https://github.com/L33Z22L11/blog-v3)
-* **lxchapu**: [astro-gyoza](https://github.com/lxchapu/astro-gyoza)
-
-当前博客待细节优化后也即将开源，欢迎关注仓库：[Perimsx/blog](https://github.com/Perimsx/blog)。
+<div class="about-block">
+  <h2>鸣谢与开源规划</h2>
+  <p>本站的开发离不开开源社区的启发，特别感谢以下大佬的开源项目与创意设计：</p>
+  <ul class="about-list about-links">
+    <li><strong>Zhilu</strong> · <a href="https://github.com/L33Z22L11/blog-v3">blog-v3</a></li>
+    <li><strong>lxchapu</strong> · <a href="https://github.com/lxchapu/astro-gyoza">astro-gyoza</a></li>
+  </ul>
+  <p class="about-note">当前博客待细节优化后也即将开源，欢迎关注仓库：<a href="https://github.com/Perimsx/blog">Perimsx/blog</a>。</p>
+</div>

@@ -31,9 +31,9 @@ html[data-theme="light"] {
 html[data-theme="dark"] {
   --background: #212737;
   --foreground: #eaedf3;
-  --accent: #ff6b01;
+  --accent: #73bdf2;
   --muted: #343f60bf;
-  --border: #ab4b08;
+  --border: #415572;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 300;
@@ -129,6 +129,26 @@ html[data-theme="dark"] {
   }
 }
 
-.active-nav {
+  .active-nav {
   @apply underline decoration-wavy decoration-2 underline-offset-4;
+}
+
+@media (max-width: 640px) {
+  .ui-page {
+    letter-spacing: 0.01em;
+  }
+
+  .ui-page h2 {
+    font-size: clamp(1.28rem, 5.4vw, 1.5rem);
+    line-height: 1.28;
+  }
+
+  .ui-page h3 {
+    font-size: clamp(1.02rem, 4.8vw, 1.16rem);
+    line-height: 1.35;
+  }
+
+  .ui-page p {
+    line-height: 1.75;
+  }
 }

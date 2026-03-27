@@ -142,4 +142,28 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
       font-family: system-ui;
     }
   }
+
+  @media (max-width: 640px) {
+    #pagefind-search {
+      --pagefind-ui-text-size: 0.95rem;
+    }
+
+    #pagefind-search .pagefind-ui__search-input {
+      font-size: 0.95rem;
+      padding-block: 0.8rem;
+    }
+
+    #pagefind-search .pagefind-ui__search-clear,
+    #pagefind-search .pagefind-ui__message,
+    #pagefind-search .pagefind-ui__result-excerpt,
+    #pagefind-search .pagefind-ui__result-link {
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+
+    #pagefind-search .pagefind-ui__result-title {
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+  }
 </style>

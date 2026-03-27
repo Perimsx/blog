@@ -36,11 +36,11 @@ const allTags = getUniqueTags(posts);
 
 <Layout title={`标签: ${tagName} | ${SITE.title}`} description={`所有包含标签「${tagName}」的文章`}>
   <Header />
-  <main id="main-content" class="mx-auto w-full max-w-3xl px-4 pb-12">
-    <h1 class="text-2xl font-semibold sm:text-3xl mt-8">
+  <main id="main-content" class="ui-page mx-auto w-full max-w-3xl px-4 pb-10 sm:pb-12">
+    <h1 class="mt-6 text-[1.75rem] font-semibold tracking-tight sm:mt-8 sm:text-3xl">
       标签: <span class="text-accent">{tagName}</span>
     </h1>
-    <p class="mt-2 mb-6 italic">共 {sortedPosts.length} 篇文章</p>
+    <p class="mt-2 mb-5 text-sm italic sm:mb-6">共 {sortedPosts.length} 篇文章</p>
 
     <ul>
       {sortedPosts.map((data) => <Card {...data} />)}
@@ -48,8 +48,8 @@ const allTags = getUniqueTags(posts);
 
     <hr class="my-8 border-dashed" />
 
-    <h2 class="mb-4 text-lg font-semibold">所有标签</h2>
-    <ul class="flex flex-wrap gap-2">
+    <h2 class="mb-4 text-[1.05rem] font-semibold sm:text-lg">所有标签</h2>
+    <ul class="flex flex-wrap gap-x-3 gap-y-2 sm:gap-2">
       {allTags.map(({ tag: t, tagName: tn }) => (
         <TagItem tag={t} tagName={tn} size="sm" />
       ))}

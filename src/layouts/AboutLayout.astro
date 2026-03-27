@@ -16,11 +16,158 @@ const { frontmatter } = Astro.props;
 
 <Layout title={`${frontmatter.title} | ${SITE.title}`} description={frontmatter.description}>
   <Header />
-  <main id="main-content" class="mx-auto w-full max-w-3xl px-4 pb-12">
-    <section id="about" class="prose mb-28 max-w-3xl prose-img:border-0 mt-8">
-      <h1 class="text-2xl tracking-wider sm:text-3xl">{frontmatter.title}</h1>
+  <main id="main-content" class="ui-page mx-auto w-full max-w-3xl px-4 pb-8 sm:pb-12">
+    <section id="about" class="prose mt-5 mb-16 w-full max-w-none prose-img:border-0 sm:mt-8 sm:mb-24">
+      <h1 class="about-page-title">{frontmatter.title}</h1>
       <slot />
     </section>
   </main>
   <Footer />
 </Layout>
+
+<style is:global>
+  #about {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: 0;
+    overflow-x: clip;
+  }
+
+  #about .about-hero {
+    align-items: flex-start;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  #about > h1.about-page-title {
+    margin: 0 0 1.5rem;
+    font-size: clamp(1.9rem, 8vw, 2.45rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  #about .about-hero-media {
+    width: min(100%, 19rem);
+    margin-inline: auto;
+  }
+
+  #about .about-hero-media img {
+    margin: 0;
+    border-radius: 1rem;
+  }
+
+  #about .about-hero-copy {
+    width: 100%;
+  }
+
+  #about .about-hero-copy > h2 {
+    margin-top: 0;
+    margin-bottom: 0.7rem;
+    font-size: clamp(1.6rem, 7.2vw, 2.05rem);
+    line-height: 1.16;
+    letter-spacing: -0.02em;
+  }
+
+  #about .about-hero-copy > p {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 0.96rem;
+    line-height: 1.82;
+  }
+
+  #about .about-block + .about-block {
+    margin-top: 2.15rem;
+  }
+
+  #about .about-block > h2 {
+    margin: 0 0 0.85rem;
+    font-size: clamp(1.48rem, 6.4vw, 1.9rem);
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+  }
+
+  #about .about-block > p,
+  #about .about-note {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+
+  #about .about-list {
+    margin: 0;
+    padding-left: 1.05rem;
+  }
+
+  #about .about-list li {
+    margin-block: 0.55rem;
+    line-height: 1.72;
+  }
+
+  #about .about-links {
+    margin-top: 0.75rem;
+  }
+
+  #about .about-note {
+    margin-top: 0.8rem;
+  }
+
+  #about :where(a) {
+    word-break: break-word;
+  }
+
+  @media (min-width: 641px) {
+    #about > h1.about-page-title {
+      margin-bottom: 1.9rem;
+      font-size: 2.65rem;
+    }
+
+    #about .about-hero {
+      gap: 2rem;
+      margin-bottom: 2.45rem;
+    }
+
+    #about .about-hero-media {
+      width: min(100%, 22rem);
+      margin-inline: 0;
+    }
+
+    #about .about-hero-copy > h2 {
+      margin-bottom: 0.85rem;
+      font-size: clamp(2rem, 4.6vw, 2.35rem);
+    }
+
+    #about .about-hero-copy > p {
+      font-size: 1rem;
+      line-height: 1.9;
+    }
+
+    #about .about-block + .about-block {
+      margin-top: 2.7rem;
+    }
+
+    #about .about-block > h2 {
+      margin-bottom: 1rem;
+      font-size: clamp(1.75rem, 4vw, 2.15rem);
+    }
+
+    #about .about-list {
+      padding-left: 1.15rem;
+    }
+
+    #about .about-list li {
+      margin-block: 0.65rem;
+      line-height: 1.8;
+    }
+  }
+
+  @media (max-width: 640px) {
+    #about {
+      margin-bottom: 4.5rem;
+    }
+
+    #about .about-block > h2 {
+      text-wrap: balance;
+    }
+  }
+</style>
