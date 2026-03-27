@@ -16,8 +16,8 @@ const { frontmatter } = Astro.props;
 
 <Layout title={`${frontmatter.title} | ${SITE.title}`} description={frontmatter.description}>
   <Header />
-  <main id="main-content" class="ui-page mx-auto w-full max-w-3xl px-4 pb-8 sm:pb-12">
-    <section id="about" class="prose mt-5 mb-16 w-full max-w-none prose-img:border-0 sm:mt-8 sm:mb-24">
+  <main id="main-content" class="ui-page mx-auto w-full max-w-3xl px-4 pb-6 sm:pb-10">
+    <section id="about" class="prose mt-4 mb-14 w-full max-w-none prose-img:border-0 sm:mt-6 sm:mb-20">
       <h1 class="about-page-title">{frontmatter.title}</h1>
       <slot />
     </section>
@@ -36,19 +36,19 @@ const { frontmatter } = Astro.props;
 
   #about .about-hero {
     align-items: flex-start;
-    gap: 1.25rem;
-    margin-bottom: 2rem;
+    gap: 1rem;
+    margin-bottom: 1.6rem;
   }
 
   #about > h1.about-page-title {
-    margin: 0 0 1.5rem;
-    font-size: clamp(1.9rem, 8vw, 2.45rem);
-    line-height: 1.08;
+    margin: 0 0 1.1rem;
+    font-size: clamp(1.65rem, 7vw, 2rem);
+    line-height: 1.1;
     letter-spacing: -0.03em;
   }
 
   #about .about-hero-media {
-    width: min(100%, 19rem);
+    width: min(100%, 17.5rem);
     margin-inline: auto;
   }
 
@@ -63,53 +63,53 @@ const { frontmatter } = Astro.props;
 
   #about .about-hero-copy > h2 {
     margin-top: 0;
-    margin-bottom: 0.7rem;
-    font-size: clamp(1.6rem, 7.2vw, 2.05rem);
-    line-height: 1.16;
+    margin-bottom: 0.55rem;
+    font-size: clamp(1.36rem, 5.8vw, 1.72rem);
+    line-height: 1.22;
     letter-spacing: -0.02em;
   }
 
   #about .about-hero-copy > p {
     margin: 0;
     max-width: 34rem;
-    font-size: 0.96rem;
-    line-height: 1.82;
+    font-size: 0.92rem;
+    line-height: 1.72;
   }
 
   #about .about-block + .about-block {
-    margin-top: 2.15rem;
+    margin-top: 1.7rem;
   }
 
   #about .about-block > h2 {
-    margin: 0 0 0.85rem;
-    font-size: clamp(1.48rem, 6.4vw, 1.9rem);
-    line-height: 1.22;
+    margin: 0 0 0.65rem;
+    font-size: clamp(1.2rem, 5.6vw, 1.52rem);
+    line-height: 1.28;
     letter-spacing: -0.02em;
   }
 
   #about .about-block > p,
   #about .about-note {
     margin: 0;
-    font-size: 0.95rem;
-    line-height: 1.8;
+    font-size: 0.92rem;
+    line-height: 1.72;
   }
 
   #about .about-list {
     margin: 0;
-    padding-left: 1.05rem;
+    padding-left: 0.95rem;
   }
 
   #about .about-list li {
-    margin-block: 0.55rem;
-    line-height: 1.72;
+    margin-block: 0.42rem;
+    line-height: 1.65;
   }
 
   #about .about-links {
-    margin-top: 0.75rem;
+    margin-top: 0.55rem;
   }
 
   #about .about-note {
-    margin-top: 0.8rem;
+    margin-top: 0.65rem;
   }
 
   #about :where(a) {
@@ -118,46 +118,52 @@ const { frontmatter } = Astro.props;
 
   @media (min-width: 641px) {
     #about > h1.about-page-title {
-      margin-bottom: 1.9rem;
-      font-size: 2.65rem;
+      margin-bottom: 1.45rem;
+      font-size: 2.15rem;
     }
 
     #about .about-hero {
-      gap: 2rem;
-      margin-bottom: 2.45rem;
+      gap: 1.5rem;
+      margin-bottom: 1.9rem;
     }
 
     #about .about-hero-media {
-      width: min(100%, 22rem);
+      width: min(100%, 18.5rem);
       margin-inline: 0;
     }
 
     #about .about-hero-copy > h2 {
-      margin-bottom: 0.85rem;
-      font-size: clamp(2rem, 4.6vw, 2.35rem);
+      margin-bottom: 0.65rem;
+      font-size: clamp(1.65rem, 3vw, 1.95rem);
     }
 
     #about .about-hero-copy > p {
-      font-size: 1rem;
-      line-height: 1.9;
+      font-size: 0.96rem;
+      line-height: 1.78;
     }
 
     #about .about-block + .about-block {
-      margin-top: 2.7rem;
+      margin-top: 2rem;
     }
 
     #about .about-block > h2 {
-      margin-bottom: 1rem;
-      font-size: clamp(1.75rem, 4vw, 2.15rem);
+      margin-bottom: 0.8rem;
+      font-size: clamp(1.42rem, 2.8vw, 1.68rem);
     }
 
     #about .about-list {
-      padding-left: 1.15rem;
+      padding-left: 1.05rem;
     }
 
     #about .about-list li {
-      margin-block: 0.65rem;
-      line-height: 1.8;
+      margin-block: 0.5rem;
+      line-height: 1.7;
+    }
+
+    #about .about-block > p,
+    #about .about-note {
+      font-size: 0.95rem;
+      line-height: 1.76;
     }
   }
 
