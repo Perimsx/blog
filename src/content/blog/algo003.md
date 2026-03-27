@@ -1,7 +1,6 @@
 ---
-author: Your Name
 pubDatetime: '2026-02-07T00:00:00.000Z'
-title: 图算法全景解析 — 从遍历到最短路径与生成树
+title: 图算法全景解析：遍历、最短路径与最小生成树
 featured: false
 draft: false
 tags:
@@ -9,7 +8,6 @@ tags:
   - 最短路径
 description: BFS/DFS遍历、Dijkstra/Floyd最短路径、Prim/Kruskal最小生成树、拓扑排序完整解析
 ---
-
 图（Graph）是计算机科学中最通用、最强大的数据结构之一。社交网络中的人际关系、互联网中的网页链接、地图中的城市与公路、编译器中的函数调用关系——这些现实世界的问题都可以自然地抽象为图模型。掌握图算法，是从"编程入门"迈向"算法进阶"的关键一步。
 
 本文将系统讲解图的基本概念、两种核心遍历方式（BFS 和 DFS）、三大最短路径算法（Dijkstra、Floyd-Warshall、Bellman-Ford）、两种最小生成树算法（Prim、Kruskal）以及拓扑排序。所有代码均使用 Python 编写并附有详细注释。
