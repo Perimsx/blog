@@ -80,7 +80,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
             <h2 class="text-2xl font-semibold tracking-wide">精选文章</h2>
             <ul>
               {featuredPosts.map((data) => (
-                <Card variant="h3" {...data} showImage={false} />
+                <Card variant="h3" {...data} />
               ))}
             </ul>
           </section>
@@ -92,10 +92,10 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
     {
       recentPosts.length > 0 && (
         <section id="recent-posts" class="pt-4 pb-3 sm:pt-6 sm:pb-3">
+          <h2 class="text-2xl font-semibold tracking-wide">最近文章</h2>
           <ul>
             {recentPosts.map(
-              (data, index) =>
-                index < SITE.postPerIndex && <Card variant="h3" {...data} showImage={false} />,
+              (data, index) => index < SITE.postPerIndex && <Card variant="h3" {...data} />,
             )}
           </ul>
         </section>
