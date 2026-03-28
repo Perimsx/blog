@@ -45,12 +45,7 @@ export const POST = async ({ request }: { request: Request }) => {
       });
     }
 
-    if (!email && !qq) {
-      return new Response(JSON.stringify({ success: false, error: "请至少留下邮箱或 QQ" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+
 
     await transporter.sendMail({
       from: `"博客联系人" <${MAIL_USER}>`,
