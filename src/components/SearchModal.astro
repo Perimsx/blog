@@ -1,0 +1,746 @@
+---
+---
+
+<div
+  id="search-modal"
+  class="fixed inset-0 isolate z-[130] hidden overflow-y-auto"
+  aria-labelledby="search-modal-input"
+  role="dialog"
+  aria-modal="true"
+>
+  <div class="relative flex min-h-screen items-start justify-center px-4 pt-[15vh] pb-8 sm:px-6">
+    <div
+      class="absolute inset-0 bg-slate-950/22 opacity-0 backdrop-blur-[12px] transition-opacity duration-300 dark:bg-black/72"
+      data-search-modal-backdrop
+      aria-hidden="true"
+    ></div>
+
+    <div
+      id="search-modal-panel"
+      class="relative isolate z-[131] w-full max-w-[46rem] translate-y-3 scale-[0.985] transition-transform duration-300"
+    >
+      <form
+        class="search-shell overflow-hidden rounded-[1.45rem] border border-[color:color-mix(in_srgb,var(--color-accent)_72%,white)] bg-white shadow-[0_20px_52px_-30px_rgba(37,99,235,0.28)] transition-[border-radius,box-shadow,border-color] duration-300 dark:border-[color:color-mix(in_srgb,var(--color-accent)_72%,#0f172a)] dark:bg-slate-950"
+        data-search-form
+      >
+        <div class="search-modal-header flex items-center gap-3 px-4 py-3 sm:px-5 sm:py-3.5">
+          <svg class="shrink-0 text-slate-800 dark:text-slate-100" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7.5"></circle>
+            <path d="m20 20-3.5-3.5"></path>
+          </svg>
+          <input
+            id="search-modal-input"
+            data-search-input
+            type="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="键入开始搜索"
+            class="min-w-0 flex-1 border-0 bg-transparent p-0 text-[1rem] text-slate-900 outline-none placeholder:text-slate-400 sm:text-[1.08rem] dark:text-slate-100 dark:placeholder:text-slate-500"
+          />
+          <button
+            data-search-modal-close
+            class="inline-flex size-8 items-center justify-center rounded-full text-[color:color-mix(in_srgb,var(--color-accent)_88%,#1e3a8a)] transition-all duration-200 hover:rotate-90 hover:bg-[color:color-mix(in_srgb,var(--color-accent)_10%,white)] active:scale-95 dark:hover:bg-slate-800"
+            aria-label="关闭搜索"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div
+          data-search-results-wrap
+          class="hidden border-t border-slate-200/90 bg-white dark:border-slate-800/90 dark:bg-slate-950"
+        >
+          <div data-search-results class="search-results-list max-h-[52vh] overflow-y-auto pt-2 pb-3"></div>
+          <div class="search-hints mt-2.5 flex items-center justify-center gap-3 text-[0.8rem] text-slate-500 dark:text-slate-400">
+            <span class="inline-flex items-center gap-1"><kbd>↑</kbd><kbd>↓</kbd> 切换</span>
+            <span class="inline-flex items-center gap-1"><kbd>↵</kbd> 选择</span>
+            <span class="inline-flex items-center gap-1"><kbd>Esc</kbd> 关闭</span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const PAGEFIND_BUNDLE_PATH = "/pagefind/";
+  const modal = document.getElementById("search-modal");
+  const backdrop = modal?.querySelector("[data-search-modal-backdrop]");
+  const closeBtn = modal?.querySelector("[data-search-modal-close]");
+  const panel = document.getElementById("search-modal-panel");
+  const input = modal?.querySelector("[data-search-input]");
+  const resultsWrap = modal?.querySelector("[data-search-results-wrap]");
+  const resultsRoot = modal?.querySelector("[data-search-results]");
+  const searchForm = modal?.querySelector("[data-search-form]");
+
+  let pagefindApi;
+  let isInitializing = false;
+  let searchSerial = 0;
+  let activeResultIndex = 0;
+  let flatResults = [];
+
+  window.__searchModalCleanup?.();
+
+  const escapeHtml = (value = "") =>
+    value
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+  const showResultsPanel = (show) => {
+    resultsWrap?.classList.toggle("hidden", !show);
+    searchForm?.classList.toggle("is-expanded", show);
+  };
+
+  const normalizeResultUrl = (rawUrl = "") => {
+    if (!rawUrl) return "#";
+
+    try {
+      const normalized = new URL(rawUrl, window.location.origin);
+      let pathname = normalized.pathname;
+
+      if (pathname.startsWith("/client/")) {
+        pathname = pathname.slice("/client".length);
+      } else if (pathname === "/client") {
+        pathname = "/";
+      }
+
+      if (pathname.length > 1 && pathname.endsWith("/")) {
+        pathname = pathname.slice(0, -1);
+      }
+
+      return `${pathname || "/"}${normalized.search}${normalized.hash}`;
+    } catch (_) {
+      let pathname = rawUrl.trim();
+
+      if (pathname.startsWith("/client/")) {
+        pathname = pathname.slice("/client".length);
+      } else if (pathname === "/client") {
+        pathname = "/";
+      }
+
+      if (pathname.length > 1 && pathname.endsWith("/")) {
+        pathname = pathname.slice(0, -1);
+      }
+
+      return pathname || "#";
+    }
+  };
+
+  const uniqueBy = (items = [], getKey) => {
+    const seen = new Set();
+    return items.filter((item) => {
+      const key = getKey(item);
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+
+  const renderUnavailableState = () => {
+    if (!resultsRoot) return;
+
+    showResultsPanel(true);
+    resultsRoot.innerHTML = `
+      <div class="status-panel status-panel--warning status-panel--compact">
+        <div class="status-panel__eyebrow">
+          <span class="status-panel__pill">索引未就绪</span>
+        </div>
+        <h2 class="status-panel__title">搜索索引还没准备好</h2>
+        <p class="status-panel__desc">
+          先执行一次 <code class="rounded bg-black/85 px-1.5 py-0.5 text-[0.78rem] text-white">npm run build</code>，然后重启 <code class="rounded bg-black/85 px-1.5 py-0.5 text-[0.78rem] text-white">npm run dev</code>。
+        </p>
+      </div>
+    `;
+    flatResults = [];
+  };
+
+  const renderIdleState = () => {
+    if (!resultsRoot) return;
+
+    showResultsPanel(false);
+    resultsRoot.innerHTML = "";
+    flatResults = [];
+    activeResultIndex = 0;
+  };
+
+  const renderLoadingState = (query) => {
+    if (!resultsRoot) return;
+
+    showResultsPanel(true);
+    resultsRoot.innerHTML = `
+      <div class="space-y-2.5 px-2 py-2.5 sm:px-3 sm:py-3">
+        <div class="h-20 animate-pulse rounded-[0.9rem] bg-slate-100 dark:bg-slate-800"></div>
+        <div class="h-20 animate-pulse rounded-[0.9rem] bg-slate-100 dark:bg-slate-800"></div>
+        <div class="h-20 animate-pulse rounded-[0.9rem] bg-slate-100 dark:bg-slate-800"></div>
+      </div>
+    `;
+    flatResults = [];
+  };
+
+  const renderEmptyState = (query) => {
+    if (!resultsRoot) return;
+
+    showResultsPanel(true);
+    resultsRoot.innerHTML = `
+      <div class="status-panel status-panel--info status-panel--compact">
+        <div class="status-panel__eyebrow">
+          <span class="status-panel__pill">暂无结果</span>
+        </div>
+        <h2 class="status-panel__title">没有找到和 “${escapeHtml(query)}” 相关的文章</h2>
+        <p class="status-panel__desc">试试更短的关键词，或者换一个标签词。</p>
+      </div>
+    `;
+    flatResults = [];
+  };
+
+  const updateActiveResult = () => {
+    if (!resultsRoot) return;
+
+    const links = [...resultsRoot.querySelectorAll("[data-search-result-link]")];
+    links.forEach((link, index) => {
+      link.classList.toggle("is-active", index === activeResultIndex);
+      if (index === activeResultIndex) {
+        link.scrollIntoView({ block: "nearest" });
+      }
+    });
+  };
+
+  const renderResults = (_query, _took, items) => {
+    if (!resultsRoot) return;
+
+    flatResults = items.flatMap((item) => [
+      { title: item.title, url: item.pageUrl },
+      ...item.matches,
+    ]);
+    activeResultIndex = 0;
+    let resultIndex = 0;
+
+    const listHtml = items
+      .map((item) => {
+        const articleIndex = resultIndex++;
+        const articleHtml = `
+          <a
+            href="${escapeHtml(item.pageUrl)}"
+            data-search-result-link
+            data-result-index="${articleIndex}"
+            class="search-result-card search-result-card--article group block px-4 py-2.5 text-left transition-all duration-150 hover:bg-slate-100/70 dark:hover:bg-slate-900/60 sm:px-5"
+          >
+            <div class="min-w-0">
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex min-w-0 items-center gap-2">
+                  <span class="search-result-meta-dot"></span>
+                  <h3 class="truncate text-[0.92rem] font-semibold leading-5 text-slate-900 dark:text-slate-100 sm:text-[0.98rem]">
+                    ${escapeHtml(item.title)}
+                  </h3>
+                </div>
+                <span class="search-result-badge shrink-0">
+                  ${item.matches.length ? `${item.matches.length} 处命中` : "全文"}
+                </span>
+              </div>
+              <div class="mt-1 flex items-center gap-2 text-[0.76rem]">
+                <span class="font-bold uppercase tracking-wider text-slate-400/80 dark:text-slate-500/80">文章</span>
+                <span class="text-slate-300 dark:text-slate-700">/</span>
+                <span class="truncate text-slate-400 dark:text-slate-500">${escapeHtml(item.pathLabel)}</span>
+              </div>
+              ${item.excerpt ? `<p class="search-result-summary mt-1.5 text-[0.82rem] leading-5 text-slate-500 line-clamp-1 dark:text-slate-400">${item.excerpt}</p>` : ""}
+            </div>
+          </a>
+        `;
+
+        const matchesHtml = item.matches
+          .map((match) => {
+            const sectionIndex = resultIndex++;
+            return `
+              <a
+                href="${escapeHtml(match.url)}"
+                data-search-result-link
+                data-result-index="${sectionIndex}"
+                class="search-result-card search-result-card--section block px-3 py-1.5 text-left transition-all duration-150 hover:bg-slate-100/70 dark:hover:bg-slate-900/60 sm:px-4"
+              >
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400/80 dark:text-slate-500/80">章节</span>
+                    <h4 class="truncate text-[0.86rem] font-medium leading-5 text-[color:var(--color-accent)] dark:text-sky-300">
+                      ${escapeHtml(match.heading)}
+                    </h4>
+                  </div>
+                  <p class="search-result-excerpt mt-0.5 text-[0.78rem] leading-5 text-slate-500 line-clamp-1 dark:text-slate-400">
+                    ${match.excerpt || "预览不可用"}
+                  </p>
+                </div>
+              </a>
+            `;
+          })
+          .join("");
+
+        return `
+          <section class="search-result-group pt-1 pb-1.5">
+            <div class="mb-0.5">${articleHtml}</div>
+            ${
+              matchesHtml
+                ? `<div class="mx-4 space-y-0.5 border-l border-slate-200/70 ml-[2.35rem] dark:border-slate-800/80">${matchesHtml}</div>`
+                : ""
+            }
+          </section>
+        `;
+      })
+      .join("");
+
+    showResultsPanel(true);
+    resultsRoot.innerHTML = listHtml;
+    updateActiveResult();
+  };
+
+  const ensurePagefindBundle = async () => {
+    try {
+      const response = await fetch(`${PAGEFIND_BUNDLE_PATH}pagefind.js`, { cache: "no-store" });
+      return response.ok;
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const initSearch = async () => {
+    if (pagefindApi || isInitializing) return;
+
+    isInitializing = true;
+
+    try {
+      if (!(await ensurePagefindBundle())) {
+        renderUnavailableState();
+        return;
+      }
+
+      pagefindApi = await import(/* @vite-ignore */ `${PAGEFIND_BUNDLE_PATH}pagefind.js`);
+      await pagefindApi.options({
+        basePath: PAGEFIND_BUNDLE_PATH,
+        excerptLength: 28,
+      });
+      await pagefindApi.init();
+    } finally {
+      isInitializing = false;
+    }
+  };
+
+  const navigateToResult = (url) => {
+    const normalizedUrl = normalizeResultUrl(url);
+    if (!normalizedUrl || normalizedUrl === "#") return;
+
+    closeModal(true);
+    window.location.assign(normalizedUrl);
+  };
+
+  const performSearch = async (rawQuery) => {
+    const query = rawQuery.trim();
+    searchSerial += 1;
+    const currentSerial = searchSerial;
+
+    if (!query) {
+      renderIdleState();
+      return;
+    }
+
+    await initSearch();
+    if (!pagefindApi) {
+      renderUnavailableState();
+      return;
+    }
+
+    renderLoadingState(query);
+
+    try {
+      const startedAt = performance.now();
+      const response = await pagefindApi.debouncedSearch(query, {}, 120);
+      if (currentSerial !== searchSerial || !response) return;
+
+      const results = await Promise.all(
+        (response.results || []).slice(0, 8).map(async (entry) => {
+          const data = await entry.data();
+          const pageTitle = data.meta?.title || "未命名文章";
+          const pageUrl = normalizeResultUrl(data.url || data.meta?.url || "#");
+          const pathLabel = pageUrl.replace(/^\/+/, "/");
+          const matches = uniqueBy(
+            (Array.isArray(data.sub_results) ? data.sub_results : [])
+              .map((item) => ({
+                heading:
+                  item?.title && item.title !== pageTitle ? item.title.trim() : "",
+                url: normalizeResultUrl(item?.url || pageUrl),
+                excerpt: item?.excerpt || "",
+              }))
+              .filter((item) => item.heading || item.excerpt),
+            (item) => `${item.url}::${item.heading}`,
+          ).slice(0, 3);
+
+          return {
+            title: pageTitle,
+            pageUrl,
+            pathLabel,
+            excerpt: data.excerpt || "",
+            matches,
+          };
+        }),
+      );
+
+      const took = Math.max(1, Math.round(performance.now() - startedAt));
+
+      if (!results.length) {
+        renderEmptyState(query);
+        return;
+      }
+
+      renderResults(query, took, results);
+    } catch (_) {
+      if (currentSerial !== searchSerial || !resultsRoot) return;
+
+      showResultsPanel(true);
+      resultsRoot.innerHTML = `
+        <div class="status-panel status-panel--error status-panel--compact">
+          <div class="status-panel__eyebrow">
+            <span class="status-panel__pill">请求失败</span>
+          </div>
+          <h2 class="status-panel__title">搜索失败了</h2>
+          <p class="status-panel__desc">刷新页面后再试一次；如果本地开发中仍有问题，先执行一次 <code class="rounded bg-black/85 px-1.5 py-0.5 text-[0.78rem] text-white">npm run build</code>。</p>
+        </div>
+      `;
+    }
+  };
+
+  const focusSearchInput = () => {
+    if (input instanceof HTMLInputElement) {
+      window.setTimeout(() => input.focus(), 50);
+    }
+  };
+
+  const openModal = async () => {
+    modal?.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+
+    await initSearch();
+
+    requestAnimationFrame(() => {
+      backdrop?.classList.remove("opacity-0");
+      backdrop?.classList.add("opacity-100");
+      panel?.classList.remove("is-closing");
+      panel?.classList.remove("translate-y-3", "scale-[0.985]");
+      panel?.classList.add("translate-y-0", "scale-100", "is-opening");
+      focusSearchInput();
+    });
+  };
+
+  const closeModal = (immediate = false) => {
+    if (immediate) {
+      backdrop?.classList.remove("opacity-100");
+      backdrop?.classList.add("opacity-0");
+      panel?.classList.remove("is-opening", "is-closing", "translate-y-0", "scale-100");
+      panel?.classList.add("translate-y-3", "scale-[0.985]");
+      document.body.style.overflow = "";
+      modal?.classList.add("hidden");
+      return;
+    }
+
+    backdrop?.classList.remove("opacity-100");
+    backdrop?.classList.add("opacity-0");
+    panel?.classList.remove("is-opening");
+    panel?.classList.add("is-closing");
+    panel?.classList.remove("translate-y-0", "scale-100");
+    panel?.classList.add("translate-y-3", "scale-[0.985]");
+    document.body.style.overflow = "";
+
+    window.setTimeout(() => {
+      modal?.classList.add("hidden");
+      panel?.classList.remove("is-closing");
+    }, 220);
+  };
+
+  const onOpen = () => openModal();
+  const onBackdropClick = () => closeModal();
+  const onCloseClick = () => closeModal();
+  const onInput = (event) => {
+    performSearch(event.currentTarget?.value || "");
+  };
+  const onResultClick = (event) => {
+    const link = event.target.closest("[data-search-result-link]");
+    if (!(link instanceof HTMLAnchorElement)) return;
+
+    event.preventDefault();
+    navigateToResult(link.href);
+  };
+  const onKeyDown = (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      if (modal?.classList.contains("hidden")) {
+        openModal();
+      } else {
+        closeModal();
+      }
+      return;
+    }
+
+    if (e.key === "Escape" && !modal?.classList.contains("hidden")) {
+      closeModal();
+      return;
+    }
+
+    if (modal?.classList.contains("hidden")) {
+      return;
+    }
+
+    if (e.key === "ArrowDown" && flatResults.length) {
+      e.preventDefault();
+      activeResultIndex = (activeResultIndex + 1) % flatResults.length;
+      updateActiveResult();
+      return;
+    }
+
+    if (e.key === "ArrowUp" && flatResults.length) {
+      e.preventDefault();
+      activeResultIndex = (activeResultIndex - 1 + flatResults.length) % flatResults.length;
+      updateActiveResult();
+      return;
+    }
+
+    if (e.key === "Enter" && flatResults.length && document.activeElement === input) {
+      const target = resultsRoot?.querySelector(`[data-result-index="${activeResultIndex}"]`);
+      if (target instanceof HTMLAnchorElement) {
+        e.preventDefault();
+        navigateToResult(target.href);
+      }
+    }
+  };
+
+  document.addEventListener("open-search-modal", onOpen);
+  backdrop?.addEventListener("click", onBackdropClick);
+  closeBtn?.addEventListener("click", onCloseClick);
+  input?.addEventListener("input", onInput);
+  resultsRoot?.addEventListener("click", onResultClick);
+  document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("astro:after-swap", initSearch);
+
+  initSearch();
+
+  window.__searchModalCleanup = () => {
+    document.removeEventListener("open-search-modal", onOpen);
+    backdrop?.removeEventListener("click", onBackdropClick);
+    closeBtn?.removeEventListener("click", onCloseClick);
+    input?.removeEventListener("input", onInput);
+    resultsRoot?.removeEventListener("click", onResultClick);
+    document.removeEventListener("keydown", onKeyDown);
+    document.removeEventListener("astro:after-swap", initSearch);
+  };
+</script>
+
+<style>
+  #search-modal-panel {
+    opacity: 1 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transform-origin: top center;
+  }
+
+  #search-modal-panel .search-shell {
+    background-color: #ffffff !important;
+  }
+
+  html[data-theme="dark"] #search-modal-panel .search-shell {
+    background-color: #020617 !important;
+  }
+
+  .search-shell.is-expanded {
+    border-radius: 1.55rem;
+    border-color: color-mix(in srgb, var(--color-accent) 82%, white);
+    box-shadow: 0 26px 62px -34px rgba(37, 99, 235, 0.26), 0 0 0 1px rgba(37, 99, 235, 0.12);
+  }
+
+  html[data-theme="dark"] .search-shell.is-expanded {
+    border-color: color-mix(in srgb, var(--color-accent) 80%, #0f172a);
+    box-shadow: 0 26px 62px -34px rgba(14, 116, 244, 0.22), 0 0 0 1px rgba(59, 130, 246, 0.12);
+  }
+
+  .search-results-list {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.6) transparent;
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .search-result-card.is-active {
+    background: color-mix(in srgb, var(--color-accent) 8%, white);
+  }
+
+  html[data-theme="dark"] .search-result-card.is-active {
+    background: color-mix(in srgb, var(--color-accent) 12%, #0f172a);
+  }
+
+  .search-result-group {
+    border-bottom: 1px solid rgba(226, 232, 240, 0.75);
+  }
+
+  html[data-theme="dark"] .search-result-group {
+    border-bottom-color: rgba(30, 41, 59, 0.9);
+  }
+
+  .search-result-group:last-child {
+    border-bottom: 0;
+  }
+
+  .search-result-card--article {
+    background: transparent;
+  }
+
+  .search-result-card--section {
+    background: transparent;
+  }
+
+  html[data-theme="dark"] .search-result-card--article {
+    background: transparent;
+  }
+
+  html[data-theme="dark"] .search-result-card--section {
+    background: transparent;
+  }
+
+  .search-result-meta-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 99px;
+    background-color: var(--color-accent);
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+
+  .search-result-badge {
+    flex-shrink: 0;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--color-accent) 6%, #f1f5f9);
+    padding: 0.15rem 0.45rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: color-mix(in srgb, var(--color-accent) 70%, #475569);
+  }
+
+  html[data-theme="dark"] .search-result-badge {
+    background: color-mix(in srgb, var(--color-accent) 10%, #1e293b);
+    color: color-mix(in srgb, var(--color-accent) 80%, #94a3b8);
+  }
+
+  .search-result-summary,
+  .search-result-excerpt {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+  }
+
+  .search-result-summary {
+    -webkit-line-clamp: 1;
+  }
+
+  .search-result-excerpt {
+    -webkit-line-clamp: 2;
+  }
+
+  .search-hints kbd {
+    display: inline-flex;
+    min-width: 1.6rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.45rem;
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    padding: 0.18rem 0.35rem;
+    font-size: 0.76rem;
+    line-height: 1;
+    background: rgba(248, 250, 252, 0.9);
+  }
+
+  html[data-theme="dark"] .search-hints kbd {
+    border-color: rgba(71, 85, 105, 0.9);
+    background: rgba(15, 23, 42, 0.92);
+  }
+
+  #search-modal-input[type="search"]::-webkit-search-decoration,
+  #search-modal-input[type="search"]::-webkit-search-cancel-button,
+  #search-modal-input[type="search"]::-webkit-search-results-button,
+  #search-modal-input[type="search"]::-webkit-search-results-decoration {
+    display: none;
+    -webkit-appearance: none;
+  }
+
+  #search-modal-input[type="search"]::-ms-clear,
+  #search-modal-input[type="search"]::-ms-reveal {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  #search-modal-panel.is-opening .search-modal-header {
+    animation: search-modal-slide-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  #search-modal-panel.is-opening .search-modal-body {
+    animation: search-modal-slide-in 0.38s 0.04s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  #search-modal-panel.is-closing .search-modal-header,
+  #search-modal-panel.is-closing .search-modal-body {
+    animation: search-modal-slide-out 0.18s ease-in both;
+  }
+
+  @keyframes search-modal-slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes search-modal-slide-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #search-modal-panel,
+    #search-modal-panel * {
+      animation: none !important;
+      transition-duration: 0ms !important;
+    }
+  }
+
+  @media (max-width: 640px) {
+    #search-modal-panel {
+      max-width: 100%;
+    }
+
+    .search-shell {
+      border-radius: 1.05rem !important;
+    }
+
+    .search-shell.is-expanded {
+      border-radius: 1.15rem !important;
+    }
+
+    .search-hints {
+      gap: 0.75rem;
+      font-size: 0.78rem;
+      flex-wrap: wrap;
+    }
+  }
+</style>

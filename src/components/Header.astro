@@ -6,8 +6,8 @@ import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconX from "@/assets/icons/IconX.svg";
 import { SITE } from "@/config";
 import Hr from "./Hr.astro";
-import LinkButton from "./LinkButton.astro";
 import ContactModal from "./ContactModal.astro";
+import SearchModal from "./SearchModal.astro";
 
 const { pathname } = Astro.url;
 
@@ -24,6 +24,7 @@ const isActive = (path: string) => {
 
 <header>
   <ContactModal />
+  <SearchModal />
   <a
     id="skip-to-content"
     href="#main-content"
@@ -41,7 +42,7 @@ const isActive = (path: string) => {
     >
       <a
         href="/"
-        class="absolute py-1 text-2xl leading-7 font-bold font-serif whitespace-nowrap sm:static"
+        class="font-logo absolute py-1 text-2xl leading-7 whitespace-nowrap sm:static"
       >
         {SITE.title}
       </a>
@@ -107,25 +108,23 @@ const isActive = (path: string) => {
             </button>
 
             <!-- 搜索 -->
-            <LinkButton
-              href="/search"
-              class:list={[
-                "focus-outline flex p-2.5 sm:p-1",
-                { "[&>svg]:stroke-accent": isActive("/search") },
-              ]}
-              ariaLabel="search"
-              title="Search"
+            <button
+              id="search-btn"
+              class="focus-outline flex cursor-pointer p-2.5 sm:p-1"
+              aria-label="搜索"
+              title="搜索"
+              type="button"
             >
               <IconSearch />
-              <span class="sr-only">Search</span>
-            </LinkButton>
+              <span class="sr-only">搜索</span>
+            </button>
 
             <!-- 主题切换 -->
             {
               SITE.lightAndDarkMode && (
                 <button
                   id="theme-btn"
-                  class="focus-outline relative size-10 p-3 sm:size-8 hover:[&>svg]:stroke-accent"
+                  class="theme-toggle-btn focus-outline relative size-10 p-3 sm:size-8 hover:[&>svg]:stroke-accent"
                   title="Toggles light & dark"
                   aria-label="auto"
                   aria-live="polite"
@@ -169,16 +168,29 @@ const isActive = (path: string) => {
   // 联系弹窗逻辑
   const setupContact = () => {
     const contactBtn = document.getElementById("contact-btn");
-    contactBtn?.addEventListener("click", () => {
+    if (!(contactBtn instanceof HTMLButtonElement)) return;
+
+    contactBtn.onclick = () => {
       document.dispatchEvent(new CustomEvent("open-contact-modal"));
-    });
+    };
+  };
+
+  const setupSearch = () => {
+    const searchBtn = document.getElementById("search-btn");
+    if (!(searchBtn instanceof HTMLButtonElement)) return;
+
+    searchBtn.onclick = () => {
+      document.dispatchEvent(new CustomEvent("open-search-modal"));
+    };
   };
 
   setupContact();
+  setupSearch();
 
   // Runs on view transitions navigation
   document.addEventListener("astro:after-swap", () => {
     toggleNav();
     setupContact();
+    setupSearch();
   });
 </script>
