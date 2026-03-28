@@ -12,6 +12,9 @@ import Header from "@/components/Header.astro";
 import ShareLinks from "@/components/ShareLinks.astro";
 import StructuredData from "@/components/StructuredData.astro";
 import Tag from "@/components/Tag.astro";
+import Grid from "@/components/mdx/Grid.astro";
+import Card from "@/components/mdx/Card.astro";
+import Callout from "@/components/mdx/Callout.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import { getPath } from "@/utils/getPath";
@@ -45,6 +48,7 @@ const readingTime = calculateReadingTime(post.body ?? "");
 
 let ogImageUrl: string | undefined;
 const articleImage = coverImage ?? heroImage;
+const postPath = getPath(post.id, post.filePath, post.data.url, true);
 
 // Determine OG image source
 if (typeof coverImage === "string") {
@@ -59,14 +63,13 @@ if (typeof coverImage === "string") {
 
 // Use dynamic OG image if enabled and no remote|local ogImage
 if (!ogImageUrl && SITE.dynamicOgImage) {
-  ogImageUrl = `${getPath(post.id, post.filePath)}/index.png`;
+  ogImageUrl = `${postPath}/index.png`;
 }
 
 // Resolve OG image URL (or fallback to SITE.ogImage / default `og.png`)
 const ogImage = ogImageUrl ? new URL(ogImageUrl, Astro.url.origin).href : undefined;
 
-// Generate the canonical URL - always use the full path with year
-const postPath = getPath(post.id, post.filePath, true);
+// Generate the canonical URL
 const computedCanonicalURL =
   canonicalURL ||
   (Astro.site ? new URL(postPath, Astro.site).href : new URL(postPath, Astro.url.origin).href);
@@ -85,18 +88,23 @@ const layoutProps = {
 
 /* ========== Prev/Next Posts ========== */
 
-const allPosts = posts.map(({ data: { title }, id }) => ({
-  slug: id,
-  title,
+const allPosts = posts.map((entry) => ({
+  path: getPath(entry.id, entry.filePath, entry.data.url, true),
+  key: entry.id,
+  title: entry.data.title,
 }));
 
-const currentPostIndex = allPosts.findIndex((a) => a.slug === post.id);
+const currentPostIndex = allPosts.findIndex((entry) => entry.key === post.id);
 
-const prevPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
-const nextPost = currentPostIndex !== allPosts.length ? allPosts[currentPostIndex + 1] : null;
-
-// Calculate word count for structured data
+const prevPost = currentPostIndex > 0 ? allPosts[currentPostIndex - 1] : null;
+const nextPost = currentPostIndex >= 0 && currentPostIndex < allPosts.length - 1 ? allPosts[currentPostIndex + 1] : null;
 const wordCount = (post.body ?? "").split(/\s+/).length;
+
+const mdxComponents = {
+  Grid,
+  Card,
+  Callout,
+};
 ---
 
 <Layout {...layoutProps}>
@@ -129,18 +137,18 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
     <h1
       transition:name={slugifyStr(title)}
       title={title}
-      class="block w-full text-[1.9rem] font-semibold text-accent leading-tight sm:text-[2.15rem] lg:text-[2rem] lg:truncate"
+      class="block w-full text-[1.78rem] leading-[1.16] font-semibold text-accent sm:text-[1.98rem] lg:text-[1.9rem] lg:truncate"
     >
       {title}
     </h1>
-    <div class="flex items-center justify-between gap-4 mt-2 mb-6">
+    <div class="mt-1.5 mb-5 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
         {
           readingTime && (
             <>
               <span class="text-foreground/30">•</span>
-              <span class="text-[0.95rem] text-foreground/60">{readingTime}</span>
+              <span class="text-[0.95rem] italic text-foreground/60">{readingTime}</span>
             </>
           )
         }
@@ -153,12 +161,12 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
           <AdaptiveImage
             src={articleImage}
             alt={title}
-            class="mb-8 aspect-video w-full rounded-md object-cover"
+            class="mb-6 aspect-video w-full rounded-md object-cover"
             loading="lazy"
           />
         )
       }
-      <Content />
+      <Content components={mdxComponents} />
     </article>
 
 
@@ -179,13 +187,13 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
     <div 
       data-pagefind-ignore 
       class="flex flex-col sm:flex-row justify-between gap-6"
-      data-prev-url={prevPost ? `/posts/${prevPost.slug}` : ''}
-      data-next-url={nextPost ? `/posts/${nextPost.slug}` : ''}
+      data-prev-url={prevPost?.path ?? ""}
+      data-next-url={nextPost?.path ?? ""}
     >
       {
         prevPost && (
           <a
-            href={`/posts/${prevPost.slug}`}
+            href={prevPost.path}
             class="flex gap-2 hover:opacity-75 items-start"
             id="prev-post-link"
           >
@@ -200,7 +208,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
       {
         nextPost && (
           <a
-            href={`/posts/${nextPost.slug}`}
+            href={nextPost.path}
             class="flex gap-2 hover:opacity-75 items-start justify-end text-right ml-auto"
             id="next-post-link"
           >
@@ -269,7 +277,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
       heading.classList.add("group");
       const link = document.createElement("a");
       link.className =
-        "heading-link ml-2 opacity-0 group-hover:opacity-100 focus:opacity-100";
+        "heading-link ml-2 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100";
       link.href = "#" + heading.id;
 
       const span = document.createElement("span");

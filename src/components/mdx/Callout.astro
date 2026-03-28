@@ -1,0 +1,23 @@
+---
+interface Props {
+  title?: string;
+  variant?: "note" | "warning" | "tip" | "danger" | "info";
+}
+
+const { title, variant = "note" } = Astro.props;
+
+const styles = {
+  note: "border-border/70 bg-muted/22 text-foreground/85",
+  warning: "border-amber-500/20 bg-amber-500/8 text-amber-900/90 dark:text-amber-200/90",
+  tip: "border-emerald-500/20 bg-emerald-500/8 text-emerald-900/90 dark:text-emerald-200/90",
+  danger: "border-rose-500/20 bg-rose-500/8 text-rose-900/90 dark:text-rose-200/90",
+  info: "border-sky-500/20 bg-sky-500/8 text-sky-900/90 dark:text-sky-200/90",
+};
+
+const currentStyle = styles[variant] || styles.note;
+---
+
+<aside class:list={["not-prose my-8 rounded-[1.25rem] border px-6 py-5 text-[0.92rem] leading-7 shadow-sm", currentStyle]}>
+  {title && <p class="mb-3 font-semibold tracking-tight text-foreground">{title}</p>}
+  <div class="callout-content opacity-90"><slot /></div>
+</aside>
