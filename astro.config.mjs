@@ -1,4 +1,7 @@
 // @ts-check
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap, { ChangeFreqEnum } from "@astrojs/sitemap";
@@ -7,11 +10,51 @@ import tailwindcss from "@tailwindcss/vite";
 import edgeone from "@edgeone/astro";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
+import { remarkCodeBlockTitle } from "./src/utils/remarkCodeBlockTitle.mjs";
 import { remarkLazyLoadImages } from "./src/utils/remarkLazyLoadImages.mjs";
+import { remarkProxyExternalImages } from "./src/utils/remarkProxyExternalImages.mjs";
+import { validateBlogContent } from "./src/utils/validateBlogContent.mjs";
 import { SITE } from "./src/config";
 import AstroPWA from "@vite-pwa/astro";
 
 // https://astro.build/config
+validateBlogContent();
+
+const projectRoot = fileURLToPath(new URL(".", import.meta.url));
+const pagefindDistDir = path.join(projectRoot, "dist", "pagefind");
+
+const pagefindMimeTypes = {
+  ".js": "application/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".wasm": "application/wasm",
+  ".css": "text/css; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
+  ".html": "text/html; charset=utf-8",
+};
+
+function servePagefindFromDist() {
+  return {
+    name: "serve-pagefind-from-dist",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use("/pagefind", (req, res, next) => {
+        const requestPath = decodeURIComponent((req.url || "/").split("?")[0] || "/");
+        const relativePath = requestPath === "/" ? "/pagefind.js" : requestPath;
+        const filePath = path.resolve(pagefindDistDir, `.${relativePath}`);
+
+        if (!filePath.startsWith(pagefindDistDir) || !fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+          next();
+          return;
+        }
+
+        const ext = path.extname(filePath);
+        res.setHeader("Content-Type", pagefindMimeTypes[ext] || "application/octet-stream");
+        res.end(fs.readFileSync(filePath));
+      });
+    },
+  };
+}
+
 export default defineConfig({
   output: "static",
   adapter: edgeone(),
@@ -23,7 +66,9 @@ export default defineConfig({
       remarkToc,
       // @ts-ignore - TypeScript has issues with remark plugin tuple syntax
       [remarkCollapse, { test: "Table of contents" }],
-      remarkLazyLoadImages
+      remarkCodeBlockTitle,
+      remarkLazyLoadImages,
+      remarkProxyExternalImages,
     ],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
@@ -156,7 +201,7 @@ export default defineConfig({
         "@": "/src",
       },
     },
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), servePagefindFromDist()],
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"],
     },

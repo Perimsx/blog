@@ -36,6 +36,7 @@ function getPreferredTheme() {
 }
 
 let themeValue = getPreferredTheme();
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 function setPreference(isManualChange = false) {
   if (isManualChange) {
@@ -48,6 +49,82 @@ function setPreference(isManualChange = false) {
     // Don't save to localStorage, just update the display
   }
   reflectPreference();
+}
+
+function runFallbackAnimation(trigger) {
+  const root = document.documentElement;
+  const toggleButton = trigger instanceof HTMLElement ? trigger : null;
+
+  root.classList.add("theme-animating");
+  toggleButton?.classList.add("is-animating");
+
+  window.clearTimeout(window.__themeAnimationTimeout);
+  window.__themeAnimationTimeout = window.setTimeout(() => {
+    root.classList.remove("theme-animating");
+    toggleButton?.classList.remove("is-animating");
+  }, 360);
+}
+
+function animateThemeTransition(trigger) {
+  const toggleButton = trigger instanceof HTMLElement ? trigger : document.querySelector("#theme-btn");
+
+  if (!document.startViewTransition || prefersReducedMotion.matches) {
+    setPreference(true);
+    runFallbackAnimation(toggleButton);
+    return;
+  }
+
+  const rect = toggleButton?.getBoundingClientRect();
+  const originX = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
+  const originY = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
+  const endRadius = Math.hypot(
+    Math.max(originX, window.innerWidth - originX),
+    Math.max(originY, window.innerHeight - originY),
+  );
+
+  toggleButton?.classList.add("is-animating");
+
+  const transition = document.startViewTransition(() => {
+    setPreference(true);
+  });
+
+  transition.ready
+    .then(() => {
+      const reveal = [
+        `circle(0px at ${originX}px ${originY}px)`,
+        `circle(${endRadius}px at ${originX}px ${originY}px)`,
+      ];
+
+      document.documentElement.animate(
+        {
+          clipPath: reveal,
+        },
+        {
+          duration: 520,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          pseudoElement: "::view-transition-new(root)",
+        },
+      );
+
+      document.documentElement.animate(
+        {
+          opacity: [1, 0.88],
+        },
+        {
+          duration: 220,
+          easing: "ease-out",
+          pseudoElement: "::view-transition-old(root)",
+        },
+      );
+    })
+    .catch(() => {
+      runFallbackAnimation(toggleButton);
+    })
+    .finally(() => {
+      window.setTimeout(() => {
+        toggleButton?.classList.remove("is-animating");
+      }, 420);
+    });
 }
 
 function reflectPreference() {
@@ -74,21 +151,13 @@ window.onload = () => {
     reflectPreference();
 
     // now this script can find and listen for clicks on the control
-    document.querySelector("#theme-btn")?.addEventListener("click", () => {
+    const themeButton = document.querySelector("#theme-btn");
+    if (!themeButton) return;
+
+    themeButton.onclick = () => {
       themeValue = themeValue === "light" ? "dark" : "light";
-      
-      // Use View Transitions API if available
-      if (!document.startViewTransition) {
-        // Fallback for browsers that don't support View Transitions
-        setPreference(true); // true = manual change
-        return;
-      }
-      
-      // Use View Transitions for smooth theme switching
-      document.startViewTransition(() => {
-        setPreference(true); // true = manual change
-      });
-    });
+      animateThemeTransition(themeButton);
+    };
   }
 
   setThemeFeature();

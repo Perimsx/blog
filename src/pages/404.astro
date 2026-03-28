@@ -2,28 +2,30 @@
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
 import LinkButton from "@/components/LinkButton.astro";
+import StatusPanel from "@/components/StatusPanel.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 ---
 
-<Layout title={`404 Not Found | ${SITE.title}`} description="页面未找到。您访问的页面不存在。">
+<Layout title={`页面未找到 | ${SITE.title}`} description="页面未找到。您访问的内容不存在，或链接已失效。">
   <Header />
 
   <main
     id="main-content"
     class="ui-page mx-auto flex max-w-3xl flex-1 items-center justify-center px-4"
   >
-    <div class="mb-14 flex flex-col items-center justify-center">
-      <h1 class="text-7xl font-bold text-accent sm:text-9xl">404</h1>
-      <span aria-hidden="true">¯\_(ツ)_/¯</span>
-      <p class="mt-4 text-xl sm:text-3xl">Page Not Found</p>
+    <StatusPanel
+      code="404"
+      title="页面未找到"
+      description="你访问的链接可能已经失效，或者地址里多带了前缀与尾斜杠。"
+    >
       <LinkButton
         href="/"
-        class="my-5 text-base underline decoration-dashed underline-offset-8 sm:my-6 sm:text-lg"
+        class="text-base underline decoration-dashed underline-offset-8 sm:text-lg"
       >
-        Go back home
+        返回首页
       </LinkButton>
-    </div>
+    </StatusPanel>
   </main>
 
   <Footer />

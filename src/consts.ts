@@ -34,7 +34,7 @@ export const SITE: Site = {
   website: "https://chenguitao.com/",
   author: "Perimsx",
   profile: "https://chenguitao.com/about",
-  desc: "Perimsx | 记录成长，分享价值",
+  desc: "记录成长，分享价值。信息安全专业学生，Web 开发爱好者。",
   title: "Perimsx",
   ogImage: "og-image.jpg",
   lightAndDarkMode: true,

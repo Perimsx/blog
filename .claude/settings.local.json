@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Read(//c/Users/Chen/.claude/agents/**)"
+      "Read(//c/Users/Chen/.claude/agents/**)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "additionalDirectories": [
       "c:\\Users\\Chen\\.claude\\agents"

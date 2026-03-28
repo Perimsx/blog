@@ -1,14 +1,30 @@
 import { BLOG_PATH } from "@/content.config";
 import { slugifyStr } from "./slugify";
 
+function normalizeCustomPostPath(customPath?: string) {
+  if (!customPath) return undefined;
+
+  const trimmedPath = customPath.trim();
+  if (!trimmedPath) return undefined;
+
+  return trimmedPath.replace(/^\/+/, "").replace(/^posts\/+/, "").replace(/\/+$/, "");
+}
+
 /**
  * Get full path of a blog post
  * @param id - id of the blog post (aka slug)
  * @param filePath - the blog post full file location
+ * @param customPath - custom URL path from frontmatter
  * @param includeBase - whether to include `/posts` in return value
  * @returns blog post path
  */
-export function getPath(id: string, filePath: string | undefined, includeBase = true) {
+export function getPath(
+  id: string,
+  filePath: string | undefined,
+  customPath?: string,
+  includeBase = true
+) {
+  const normalizedCustomPath = normalizeCustomPostPath(customPath);
   const pathSegments = filePath
     ?.replace(BLOG_PATH, "")
     .split("/")
@@ -18,6 +34,10 @@ export function getPath(id: string, filePath: string | undefined, includeBase = 
     .map((segment) => slugifyStr(segment)); // slugify each segment path
 
   const basePath = includeBase ? "/posts" : "";
+
+  if (normalizedCustomPath) {
+    return [basePath, normalizedCustomPath].join("/");
+  }
 
   // Making sure `id` does not contain the directory
   const blogId = id.split("/");

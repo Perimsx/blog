@@ -49,11 +49,19 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
+const pageTitle =
+  page.currentPage > 1
+    ? `文章归档 第 ${page.currentPage} 页 | ${SITE.title}`
+    : `文章归档 | ${SITE.title}`;
+const pageDesc =
+  page.currentPage > 1
+    ? `按时间浏览第 ${page.currentPage} 页文章列表。`
+    : "按时间浏览全部公开文章。";
 ---
 
-<Layout title={`Posts | ${SITE.title}`}>
+<Layout title={pageTitle} description={pageDesc}>
   <Header />
-  <Main pageTitle="Posts" pageDesc="All the articles I've posted.">
+  <Main pageTitle="所有文章" pageDesc={pageDesc}>
     <ul>
       {page.data.map((data) => <Card {...data} />)}
     </ul>

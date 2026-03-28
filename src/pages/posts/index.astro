@@ -6,8 +6,9 @@ import Header from "@/components/Header.astro";
 import { SITE } from "@/consts";
 import Layout from "@/layouts/Layout.astro";
 import getPostsByGroupCondition from "@/utils/getPostsByGroupCondition";
+import postFilter from "@/utils/postFilter";
 
-const posts = await getCollection("blog", ({ data }) => !data.draft);
+const posts = await getCollection("blog", postFilter);
 
 const months = [
   "一月",
@@ -25,7 +26,7 @@ const months = [
 ];
 ---
 
-<Layout title={`Posts | ${SITE.title}`} description="Perimsx 博客文章归档，涵盖信息安全、Web 开发、技术实践等内容。">
+<Layout title={`文章归档 | ${SITE.title}`} description="按时间浏览 Perimsx 的全部公开文章，涵盖信息安全、Web 开发与技术实践。">
   <Header />
   <main id="main-content" class="ui-page mx-auto w-full max-w-3xl px-4 pb-6 sm:pb-4">
     <h1 class="mt-6 text-[1.75rem] font-semibold tracking-tight sm:mt-8 sm:text-3xl">所有文章</h1>

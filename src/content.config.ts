@@ -20,6 +20,7 @@ const blog = defineCollection({
       ogImage: image().or(z.string()).optional(),
       heroImage: image().or(z.string()).optional(),
       description: z.string(),
+      url: z.string().trim().min(1),
       canonicalURL: z.string().optional(),
       hideEditPost: z.boolean().optional(),
       timezone: z.string().optional(),

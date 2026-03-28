@@ -13,9 +13,10 @@ export interface Props extends CollectionEntry<"blog"> {
 
 const { variant = "h2", data, id, filePath, body, showImage = true } = Astro.props;
 
-const { title, description, pubDatetime, modDatetime, timezone, coverImage, heroImage } = data;
+const { title, description, pubDatetime, modDatetime, timezone, coverImage, heroImage, url } = data;
 const readingTime = calculateReadingTime(body ?? "");
 const articleImage = coverImage ?? heroImage;
+const postPath = getPath(id, filePath, url);
 
 const headerProps = {
   style: { viewTransitionName: slugifyStr(title) },
@@ -26,7 +27,7 @@ const headerProps = {
 <li class="my-5 sm:my-6">
   <div>
     <a
-      href={getPath(id, filePath)}
+      href={postPath}
       class="inline-block text-base font-medium text-accent decoration-dashed underline-offset-4 focus-visible:no-underline focus-visible:underline-offset-0 sm:text-lg"
     >
       {
@@ -44,7 +45,7 @@ const headerProps = {
     <div class="flex items-start gap-3 sm:gap-4">
       {showImage && articleImage && (
         <a 
-          href={getPath(id, filePath)}
+          href={postPath}
           class="flex-shrink-0 hidden sm:block group"
         >
           <AdaptiveImage

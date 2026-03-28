@@ -2,29 +2,29 @@
 ---
 <div
   id="contact-modal"
-  class="fixed inset-0 z-[100] hidden overflow-y-auto"
+  class="fixed inset-0 isolate z-[120] hidden overflow-y-auto"
   aria-labelledby="modal-title"
   role="dialog"
   aria-modal="true"
 >
   <div class="relative flex min-h-screen items-center justify-center p-4 sm:p-6">
     <div
-      class="absolute inset-0 bg-slate-200/60 opacity-0 backdrop-blur-sm transition-opacity duration-300"
+      class="absolute inset-0 bg-slate-950/28 opacity-0 transition-opacity duration-300 dark:bg-black/60"
       data-contact-modal-backdrop
       aria-hidden="true"
     ></div>
 
-    <section
+    <div
       id="contact-modal-panel"
-      class="relative z-10 w-full max-w-[20rem] scale-95 overflow-hidden rounded-[1rem] border border-slate-200/80 bg-white opacity-0 shadow-[0_16px_40px_-24px_rgba(15,23,42,0.28)] transition-all duration-300 dark:border-white/10 dark:bg-slate-950"
+      class="relative isolate z-[121] w-full max-w-[20rem] translate-y-3 scale-[0.97] overflow-hidden rounded-[1rem] border border-slate-200 bg-white shadow-[0_22px_56px_-28px_rgba(15,23,42,0.28)] transition-transform duration-300 dark:border-slate-800 dark:bg-slate-950"
     >
-      <header class="flex items-center justify-between border-b border-slate-200/80 px-4 py-3 dark:border-white/10">
+      <header class="contact-modal-header flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-800">
         <h2 id="modal-title" class="text-[0.95rem] font-bold tracking-tight text-slate-900 dark:text-slate-100">
           建议与留言
         </h2>
         <button
           data-contact-modal-close
-          class="inline-flex size-7 items-center justify-center rounded-full text-slate-400 transition-all duration-200 hover:bg-slate-100 hover:text-slate-700 active:scale-95 dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-white"
+          class="inline-flex size-7 items-center justify-center rounded-full text-slate-400 transition-all duration-200 hover:rotate-90 hover:bg-slate-100 hover:text-slate-700 active:scale-95 dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-white"
           aria-label="关闭"
           type="button"
         >
@@ -35,22 +35,22 @@
         </button>
       </header>
 
-      <div class="px-5 py-5">
+      <div class="contact-modal-body px-5 py-5">
         <form data-contact-modal-form class="space-y-4">
-          <div class="space-y-1.5">
+          <div class="contact-modal-field space-y-1.5">
             <label for="contact-modal-qq" class="block text-[0.8rem] font-medium text-slate-700 dark:text-slate-200">
-              QQ 号（选填）
+              邮箱/QQ
             </label>
             <input
               id="contact-modal-qq"
               name="qq"
               type="text"
               placeholder="方便我回复你"
-              class="h-10 w-full rounded-[0.75rem] border border-slate-200 bg-slate-50 px-3 text-[0.85rem] text-slate-700 outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-slate-300 focus:bg-white dark:border-white/10 dark:bg-slate-900 dark:text-white/90 dark:placeholder:text-white/40 dark:focus:border-white/20 dark:focus:bg-slate-800"
+              class="h-10 w-full rounded-[0.75rem] border border-slate-200 bg-slate-50 px-3 text-[0.85rem] text-slate-700 outline-none transition-all duration-200 placeholder:text-slate-400 focus:-translate-y-px focus:border-slate-300 focus:bg-white focus:shadow-[0_10px_20px_-18px_rgba(15,23,42,0.5)] dark:border-white/10 dark:bg-slate-900 dark:text-white/90 dark:placeholder:text-white/40 dark:focus:border-white/20 dark:focus:bg-slate-800"
             />
           </div>
 
-          <div class="space-y-1.5">
+          <div class="contact-modal-field space-y-1.5">
             <label for="contact-modal-message" class="block text-[0.8rem] font-medium text-slate-700 dark:text-slate-200">
               建议
             </label>
@@ -60,20 +60,20 @@
               rows="4"
               required
               placeholder="你的建议或想说的话..."
-              class="min-h-[5.5rem] w-full resize-none rounded-[0.75rem] border border-slate-200 bg-slate-50 px-3 py-2.5 text-[0.85rem] leading-5 text-slate-700 outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-slate-300 focus:bg-white dark:border-white/10 dark:bg-slate-900 dark:text-white/90 dark:placeholder:text-white/40 dark:focus:border-white/20 dark:focus:bg-slate-800"
+              class="min-h-[5.5rem] w-full resize-none rounded-[0.75rem] border border-slate-200 bg-slate-50 px-3 py-2.5 text-[0.85rem] leading-5 text-slate-700 outline-none transition-all duration-200 placeholder:text-slate-400 focus:-translate-y-px focus:border-slate-300 focus:bg-white focus:shadow-[0_10px_20px_-18px_rgba(15,23,42,0.5)] dark:border-white/10 dark:bg-slate-900 dark:text-white/90 dark:placeholder:text-white/40 dark:focus:border-white/20 dark:focus:bg-slate-800"
             ></textarea>
           </div>
 
           <button
             type="submit"
             data-contact-modal-submit
-            class="w-full rounded-[0.75rem] bg-slate-900 py-2.5 text-[0.78rem] font-semibold text-white transition-all duration-200 hover:bg-slate-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+            class="contact-modal-submit-row w-full rounded-[0.75rem] bg-slate-900 py-2.5 text-[0.78rem] font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-[0_16px_30px_-18px_rgba(15,23,42,0.55)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
           >
             发送
           </button>
         </form>
       </div>
-    </section>
+    </div>
   </div>
 </div>
 
@@ -93,19 +93,24 @@
     requestAnimationFrame(() => {
       backdrop?.classList.remove("opacity-0");
       backdrop?.classList.add("opacity-100");
-      modalPanel?.classList.remove("scale-95", "opacity-0");
-      modalPanel?.classList.add("scale-100", "opacity-100");
+      modalPanel?.classList.remove("is-closing");
+      modalPanel?.classList.remove("translate-y-3", "scale-[0.97]");
+      modalPanel?.classList.add("translate-y-0", "scale-100");
+      modalPanel?.classList.add("is-opening");
     });
   };
 
   const closeModal = () => {
     backdrop?.classList.remove("opacity-100");
     backdrop?.classList.add("opacity-0");
-    modalPanel?.classList.remove("scale-100", "opacity-100");
-    modalPanel?.classList.add("scale-95", "opacity-0");
+    modalPanel?.classList.remove("is-opening");
+    modalPanel?.classList.add("is-closing");
+    modalPanel?.classList.remove("translate-y-0", "scale-100");
+    modalPanel?.classList.add("translate-y-3", "scale-[0.97]");
     document.body.style.overflow = "";
     setTimeout(() => {
       modal?.classList.add("hidden");
+      modalPanel?.classList.remove("is-closing");
       (form as HTMLFormElement)?.reset();
       (submitBtn as HTMLButtonElement)?.removeAttribute("disabled");
       if (submitBtn) submitBtn.textContent = "发送";
@@ -170,3 +175,81 @@
     document.removeEventListener("keydown", onKeyDown);
   };
 </script>
+
+<style>
+  #contact-modal-panel {
+    opacity: 1 !important;
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transform-origin: top center;
+  }
+
+  html[data-theme="dark"] #contact-modal-panel {
+    background-color: #020617 !important;
+  }
+
+  #contact-modal-panel.is-opening .contact-modal-header {
+    animation: contact-modal-slide-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  #contact-modal-panel.is-opening .contact-modal-field:nth-of-type(1) {
+    animation: contact-modal-slide-in 0.46s 0.04s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  #contact-modal-panel.is-opening .contact-modal-field:nth-of-type(2) {
+    animation: contact-modal-slide-in 0.5s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  #contact-modal-panel.is-opening .contact-modal-submit-row {
+    animation: contact-modal-slide-in 0.54s 0.12s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  #contact-modal-panel.is-closing .contact-modal-header {
+    animation: contact-modal-slide-out 0.22s ease-in both;
+  }
+
+  #contact-modal-panel.is-closing .contact-modal-field:nth-of-type(1) {
+    animation: contact-modal-slide-out 0.2s 0.02s ease-in both;
+  }
+
+  #contact-modal-panel.is-closing .contact-modal-field:nth-of-type(2) {
+    animation: contact-modal-slide-out 0.18s 0.03s ease-in both;
+  }
+
+  #contact-modal-panel.is-closing .contact-modal-submit-row {
+    animation: contact-modal-slide-out 0.16s ease-in both;
+  }
+
+  @keyframes contact-modal-slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes contact-modal-slide-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #contact-modal-panel,
+    #contact-modal-panel * {
+      animation: none !important;
+      transition-duration: 0ms !important;
+    }
+  }
+</style>

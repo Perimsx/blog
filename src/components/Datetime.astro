@@ -25,10 +25,10 @@ const {
 } = Astro.props;
 
 /* ========== Formatted Datetime ========== */
-const latestDatetime = modDatetime && modDatetime > pubDatetime ? modDatetime : pubDatetime;
+const hasUpdated = Boolean(modDatetime && dayjs(modDatetime).isAfter(dayjs(pubDatetime)));
+const latestDatetime = hasUpdated ? modDatetime : pubDatetime;
 const datetime = dayjs(latestDatetime).tz(postTimezone || SITE.timezone);
-
-const date = datetime.format("D MMM, YYYY"); // e.g., '22 Mar, 2025'
+const date = datetime.format("D MMM, YYYY");
 ---
 
 <div class:list={["flex items-center gap-2 opacity-80", className]}>
@@ -39,7 +39,7 @@ const date = datetime.format("D MMM, YYYY"); // e.g., '22 Mar, 2025'
     ]}
   />
   {
-    modDatetime && modDatetime > pubDatetime ? (
+    hasUpdated ? (
       <span class:list={["text-sm italic", { "sm:text-base": size === "lg" }]}>
         Updated:
       </span>

@@ -21,7 +21,7 @@ const featuredPosts = posts2025AndLater.filter(({ data }) => data.featured);
 const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
 ---
 
-<Layout description="Perimsx | 记录成长，分享价值">
+<Layout title="序栈 | Perimsx" description="记录成长，分享价值。信息安全专业学生，Web 开发爱好者。">
   <StructuredData type="WebSite" data={{}} />
   <StructuredData type="Person" data={{}} />
   <Header />
@@ -37,7 +37,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
         </a>
         <div class="flex-1 text-center sm:text-left">
           <div class="flex items-center gap-2 justify-center sm:justify-start">
-            <h1 class="my-1 inline-block text-[1.15rem] font-bold font-serif sm:my-2.5 sm:text-3xl">
+            <h1 class="font-logo my-1 inline-block text-[1.15rem] sm:my-2.5 sm:text-3xl">
               Hi, I'm Perimsx.
             </h1>
             <a
@@ -102,7 +102,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
     }
 
     <div class="mt-1 mb-4 text-center sm:mt-2 sm:mb-5">
-      <LinkButton href="/posts/">
+      <LinkButton href="/posts">
         所有文章
         <IconArrowRight class="inline-block" />
       </LinkButton>
