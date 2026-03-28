@@ -45,8 +45,6 @@ export const POST = async ({ request }: { request: Request }) => {
       });
     }
 
-
-
     await transporter.sendMail({
       from: `"博客联系人" <${MAIL_USER}>`,
       to: MAIL_USER,

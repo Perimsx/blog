@@ -1,3 +1,4 @@
+import type { APIRoute } from "astro";
 import {
   buildUpstreamImageHeaders,
   getHotlinkPlatform,
@@ -6,7 +7,7 @@ import {
   parseExternalImageUrl,
 } from "@/utils/imageProxy.mjs";
 
-export async function GET({ request }) {
+export const GET: APIRoute = async ({ request }) => {
   const requestUrl = new URL(request.url);
   const rawUrl = requestUrl.searchParams.get("url");
   const targetUrl = parseExternalImageUrl(rawUrl);
@@ -35,7 +36,10 @@ export async function GET({ request }) {
 
   const headers = new Headers();
   headers.set("Content-Type", contentType || guessImageContentType(targetUrl));
-  headers.set("Cache-Control", "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400");
+  headers.set(
+    "Cache-Control",
+    "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400"
+  );
 
   const etag = upstreamResponse.headers.get("etag");
   const lastModified = upstreamResponse.headers.get("last-modified");
@@ -49,5 +53,4 @@ export async function GET({ request }) {
     status: 200,
     headers,
   });
-}
-
+};

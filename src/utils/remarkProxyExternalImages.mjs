@@ -2,7 +2,9 @@ import { visit } from "unist-util-visit";
 import { shouldProxyExternalImage, toImageProxyUrl } from "./imageProxy.mjs";
 
 function findAttribute(node, name) {
-  return node.attributes?.find((attribute) => attribute.type === "mdxJsxAttribute" && attribute.name === name);
+  return node.attributes?.find(
+    (attribute) => attribute.type === "mdxJsxAttribute" && attribute.name === name
+  );
 }
 
 function upsertStringAttribute(node, name, value) {
@@ -30,20 +32,23 @@ export function remarkProxyExternalImages() {
       }
     });
 
-    visit(tree, (node) => node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement", (node) => {
-      if (!["img", "AdaptiveImage"].includes(node.name)) return;
+    visit(
+      tree,
+      (node) => node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement",
+      (node) => {
+        if (!["img", "AdaptiveImage"].includes(node.name)) return;
 
-      const srcAttribute = findAttribute(node, "src");
-      if (!srcAttribute || typeof srcAttribute.value !== "string") return;
+        const srcAttribute = findAttribute(node, "src");
+        if (!srcAttribute || typeof srcAttribute.value !== "string") return;
 
-      if (shouldProxyExternalImage(srcAttribute.value)) {
-        srcAttribute.value = toImageProxyUrl(srcAttribute.value);
+        if (shouldProxyExternalImage(srcAttribute.value)) {
+          srcAttribute.value = toImageProxyUrl(srcAttribute.value);
+        }
+
+        if (node.name === "img" && !findAttribute(node, "loading")) {
+          upsertStringAttribute(node, "loading", "lazy");
+        }
       }
-
-      if (node.name === "img" && !findAttribute(node, "loading")) {
-        upsertStringAttribute(node, "loading", "lazy");
-      }
-    });
+    );
   };
 }
-

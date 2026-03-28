@@ -15,6 +15,13 @@ html[data-theme="light"] {
   --accent: #006cac;
   --muted: #e6e6e6;
   --border: #ece9e9;
+  /* 统一正文宽度、页面留白和悬浮控件安全区，避免组件各自维护一套尺寸。 */
+  --layout-page-max-width: 48rem;
+  --layout-page-gutter: 1rem;
+  --layout-floating-mobile-right: max(0.75rem, calc(env(safe-area-inset-right, 0px) + 0.6rem));
+  --layout-floating-mobile-bottom: max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 0.75rem));
+  --layout-floating-right: clamp(3.5rem, 8vw, 6rem);
+  --layout-floating-bottom: max(1.75rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
 }
 
 html[data-theme="dark"] {
@@ -97,7 +104,29 @@ html[data-theme="dark"] {
   }
   section,
   footer {
-    @apply mx-auto max-w-3xl px-4;
+    margin-inline: auto;
+    max-width: min(100%, var(--layout-page-max-width));
+    padding-inline: var(--layout-page-gutter);
+  }
+}
+
+.layout-frame {
+  /* 给 header、main 等块级容器复用同一套内容宽度。 */
+  margin-inline: auto;
+  width: 100%;
+  max-width: min(100%, var(--layout-page-max-width));
+  padding-inline: var(--layout-page-gutter);
+}
+
+.layout-floating-anchor {
+  right: var(--layout-floating-mobile-right);
+  bottom: var(--layout-floating-mobile-bottom);
+}
+
+@media (min-width: 640px) {
+  .layout-floating-anchor {
+    right: var(--layout-floating-right);
+    bottom: var(--layout-floating-bottom);
   }
 }
 

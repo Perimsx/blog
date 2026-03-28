@@ -8,13 +8,12 @@ import Datetime from "@/components/Datetime.astro";
 import EditPost from "@/components/EditPost.astro";
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
-
+import Callout from "@/components/mdx/Callout.astro";
+import Card from "@/components/mdx/Card.astro";
+import Grid from "@/components/mdx/Grid.astro";
 import ShareLinks from "@/components/ShareLinks.astro";
 import StructuredData from "@/components/StructuredData.astro";
 import Tag from "@/components/Tag.astro";
-import Grid from "@/components/mdx/Grid.astro";
-import Card from "@/components/mdx/Card.astro";
-import Callout from "@/components/mdx/Callout.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import { getPath } from "@/utils/getPath";
@@ -97,7 +96,10 @@ const allPosts = posts.map((entry) => ({
 const currentPostIndex = allPosts.findIndex((entry) => entry.key === post.id);
 
 const prevPost = currentPostIndex > 0 ? allPosts[currentPostIndex - 1] : null;
-const nextPost = currentPostIndex >= 0 && currentPostIndex < allPosts.length - 1 ? allPosts[currentPostIndex + 1] : null;
+const nextPost =
+  currentPostIndex >= 0 && currentPostIndex < allPosts.length - 1
+    ? allPosts[currentPostIndex + 1]
+    : null;
 const wordCount = (post.body ?? "").split(/\s+/).length;
 
 const mdxComponents = {
@@ -129,7 +131,7 @@ const mdxComponents = {
   <main
     id="main-content"
     class:list={[
-      "mx-auto w-full max-w-3xl px-4 pb-12",
+      "layout-frame w-full pb-12",
       { "mt-8": !SITE.showBackButton },
     ]}
     data-pagefind-body
@@ -225,258 +227,11 @@ const mdxComponents = {
   <Footer />
 </Layout>
 
-<script is:inline data-astro-rerun>
-  /** Create a progress indicator
-   *  at the top */
-  function createProgressBar() {
-    // Create the main container div
-    const progressContainer = document.createElement("div");
-    progressContainer.className =
-      "progress-container fixed top-0 z-10 h-1 w-full bg-background";
+<script>
+  import { initPostDetailsPage } from "@/scripts/postDetails";
 
-    // Create the progress bar div
-    const progressBar = document.createElement("div");
-    progressBar.className = "progress-bar h-1 w-0 bg-accent";
-    progressBar.id = "myBar";
-
-    // Append the progress bar to the progress container
-    progressContainer.appendChild(progressBar);
-
-    // Append the progress container to the document body or any other desired parent element
-    document.body.appendChild(progressContainer);
-  }
-  createProgressBar();
-
-  /** Update the progress bar
-   *  when user scrolls */
-  function updateScrollProgress() {
-    document.addEventListener("scroll", () => {
-      const winScroll =
-        document.body.scrollTop || document.documentElement.scrollTop;
-      const height =
-        document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
-      if (document) {
-        const myBar = document.getElementById("myBar");
-        if (myBar) {
-          myBar.style.width = scrolled + "%";
-        }
-      }
-    });
-  }
-  updateScrollProgress();
-
-  /** Attaches links to headings in the document,
-   *  allowing sharing of sections easily */
-  function addHeadingLinks() {
-    const headings = Array.from(
-      document.querySelectorAll("h2, h3, h4, h5, h6"),
-    );
-    for (const heading of headings) {
-      heading.classList.add("group");
-      const link = document.createElement("a");
-      link.className =
-        "heading-link ml-2 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100";
-      link.href = "#" + heading.id;
-
-      const span = document.createElement("span");
-      span.ariaHidden = "true";
-      span.innerText = "#";
-      link.appendChild(span);
-      heading.appendChild(link);
-    }
-  }
-  addHeadingLinks();
-
-  /** Attaches copy buttons to code blocks in the document,
-   * allowing users to copy code easily. */
-  function attachCopyButtons() {
-    const copyButtonLabel = "Copy";
-    const codeBlocks = Array.from(document.querySelectorAll("pre"));
-
-    for (const codeBlock of codeBlocks) {
-      const wrapper = document.createElement("div");
-      wrapper.style.position = "relative";
-
-      const copyButton = document.createElement("button");
-      copyButton.className =
-        "copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs leading-4 text-foreground font-medium";
-      copyButton.innerHTML = copyButtonLabel;
-      codeBlock.setAttribute("tabindex", "0");
-      codeBlock.appendChild(copyButton);
-
-      // wrap codebock with relative parent element
-      codeBlock?.parentNode?.insertBefore(wrapper, codeBlock);
-      wrapper.appendChild(codeBlock);
-
-      copyButton.addEventListener("click", async () => {
-        await copyCode(codeBlock, copyButton);
-      });
-    }
-
-    async function copyCode(block, button) {
-      const code = block.querySelector("code");
-      const text = code?.innerText;
-
-      await navigator.clipboard.writeText(text ?? "");
-
-      // visual feedback that task is completed
-      button.innerText = "Copied";
-
-      setTimeout(() => {
-        button.innerText = copyButtonLabel;
-      }, 700);
-    }
-  }
-  attachCopyButtons();
-
-  /* Go to page start after page swap */
-  document.addEventListener("astro:after-swap", () =>
-    window.scrollTo({ left: 0, top: 0, behavior: "instant" }),
-  );
-
-  /** Add lazy loading to all images in the article */
-  function addLazyLoading() {
-    const article = document.querySelector("#article");
-    if (!article) return;
-    
-    const images = article.querySelectorAll("img:not([loading])");
-    images.forEach((img) => {
-      img.setAttribute("loading", "lazy");
-    });
-  }
-  addLazyLoading();
-
-  /** Keyboard navigation for posts */
-  function setupKeyboardNavigation() {
-    const navContainer = document.querySelector('[data-prev-url]');
-    if (!navContainer) return;
-    
-    const prevUrl = navContainer.getAttribute('data-prev-url');
-    const nextUrl = navContainer.getAttribute('data-next-url');
-    
-    document.addEventListener('keydown', (e) => {
-      // Ignore if user is typing in an input, textarea, or contenteditable
-      if (e.target.matches('input, textarea, [contenteditable="true"]')) return;
-      
-      // J key for next post
-      if (e.key === 'j' && nextUrl) {
-        window.location.href = nextUrl;
-      }
-      // K key for previous post
-      else if (e.key === 'k' && prevUrl) {
-        window.location.href = prevUrl;
-      }
-    });
-  }
-  setupKeyboardNavigation();
-
-  /** Process YouTube and Twitter embeds */
-  function processEmbeds() {
-    const article = document.querySelector("#article");
-    if (!article) return;
-
-    // Look for YouTube embeds
-    const youtubeEmbedRegex = /\{% youtube (https:\/\/[^\s]+|[a-zA-Z0-9_-]+) %\}/g;
-    
-    // Helper to extract a YouTube video ID from various URL formats
-    const extractYouTubeId = (input) => {
-      let videoId = input;
-      try {
-        if (videoId.includes("youtube.com/watch")) {
-          const url = new URL(videoId);
-          videoId = url.searchParams.get("v") || "";
-        } else if (videoId.includes("youtu.be/")) {
-          videoId = videoId.split("youtu.be/")[1]?.split("?")[0] || "";
-        } else if (videoId.includes("youtube.com/embed/")) {
-          videoId = videoId.split("youtube.com/embed/")[1]?.split("?")[0] || "";
-        }
-      } catch (_) {
-        // If URL parsing fails, fall back to the raw input
-      }
-      return videoId;
-    };
-
-    // 1) Pre-pass: replace whole-paragraph shortcodes (most common case)
-    const pNodes = article.querySelectorAll("p");
-    pNodes.forEach((p) => {
-      const text = (p.textContent || "").trim();
-      const ytMatch = text.match(/\{% youtube (https:\/\/[^\s]+|[a-zA-Z0-9_-]+) %\}/);
-
-      if (ytMatch && ytMatch[1]) {
-        const videoId = extractYouTubeId(ytMatch[1]);
-        const container = document.createElement("div");
-        container.className = "youtube-embed-container";
-        container.innerHTML = `
-          <iframe
-            width="560"
-            height="315"
-            src="https://www.youtube.com/embed/${videoId}"
-            title="YouTube video player"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
-        `;
-        p.replaceWith(container);
-      }
-    });
-
-    // 2) Fallback: process any remaining text nodes that still contain shortcodes
-    const walker = document.createTreeWalker(
-      article,
-      NodeFilter.SHOW_TEXT,
-      null,
-      false,
-    );
-
-    const textNodes = [];
-    let node;
-    while ((node = walker.nextNode())) {
-      textNodes.push(node);
-    }
-
-    textNodes.forEach((textNode) => {
-      let content = textNode.textContent;
-      let hasChanges = false;
-
-      // Process YouTube embeds
-      content = content.replace(youtubeEmbedRegex, (_match, videoId) => {
-        hasChanges = true;
-        videoId = extractYouTubeId(videoId);
-
-        return `<div class="youtube-embed-container">
-            <iframe
-              width="560"
-              height="315"
-              src="https://www.youtube.com/embed/${videoId}"
-              title="YouTube video player"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-            ></iframe>
-          </div>`;
-      });
-
-      if (hasChanges) {
-        // Replace the text node with HTML content
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = content;
-
-        // Replace the text node with the new HTML elements
-        const parent = textNode.parentNode;
-        while (tempDiv.firstChild) {
-          parent.insertBefore(tempDiv.firstChild, textNode);
-        }
-        parent.removeChild(textNode);
-      }
-    });
-  }
-
-  // Run the embed processing
-  processEmbeds();
-  
-  // Also run after astro navigation
-  document.addEventListener("astro:page-load", processEmbeds);
+  initPostDetailsPage();
+  document.addEventListener("astro:page-load", initPostDetailsPage);
 </script>
 
 <style>

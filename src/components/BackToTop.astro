@@ -2,7 +2,7 @@
 ---
 <button
   id="back-to-top"
-  class="fixed right-4 bottom-5 z-50 opacity-0 translate-y-4 pointer-events-none transition-all duration-500 group"
+  class="layout-floating-anchor fixed z-50 opacity-0 translate-y-4 pointer-events-none transition-all duration-500 group"
   aria-label="Back to Top"
 >
   <!-- Progress ring container -->
@@ -61,65 +61,22 @@
 </button>
 
 <script>
-  function initBackToTop() {
-    window.__backToTopCleanup?.();
-
-    const backToTopBtn = document.querySelector("#back-to-top") as HTMLButtonElement;
-    const progressRing = document.querySelector(
-      "#scroll-progress-ring",
-    ) as SVGCircleElement;
-
-    if (!backToTopBtn || !progressRing) return;
-
-    const circumference = 125.66; // 2 * PI * 20
-
-    const updateProgress = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? scrollTop / docHeight : 0;
-      const offset = circumference - progress * circumference;
-      progressRing.style.strokeDashoffset = String(offset);
-
-      // Show/hide button
-      if (scrollTop > 300) {
-        backToTopBtn.classList.remove("opacity-0", "translate-y-4", "pointer-events-none");
-        backToTopBtn.classList.add("opacity-100", "translate-y-0", "pointer-events-auto");
-      } else {
-        backToTopBtn.classList.add("opacity-0", "translate-y-4", "pointer-events-none");
-        backToTopBtn.classList.remove("opacity-100", "translate-y-0", "pointer-events-auto");
-      }
-    };
-
-    const handleClick = () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    };
-
-    window.addEventListener("scroll", updateProgress, { passive: true });
-    backToTopBtn.addEventListener("click", handleClick);
-
-    updateProgress();
-
-    window.__backToTopCleanup = () => {
-      window.removeEventListener("scroll", updateProgress);
-      backToTopBtn.removeEventListener("click", handleClick);
-    };
-  }
+  import { initBackToTop } from "@/scripts/backToTop";
 
   initBackToTop();
-  document.addEventListener("astro:after-swap", initBackToTop);
 </script>
 
 <style is:global>
   #back-to-top {
-    right: max(0.6rem, calc((100vw - 48rem) / 2 - 3.35rem));
-    bottom: 1.25rem;
+    right: var(--layout-floating-mobile-right);
+    bottom: var(--layout-floating-mobile-bottom);
   }
 
   @media (min-width: 640px) {
     #back-to-top {
-      top: 6.75rem;
-      right: max(1rem, calc((100vw - 48rem) / 2 - 3.1rem));
-      bottom: auto;
+      top: auto;
+      right: var(--layout-floating-right);
+      bottom: var(--layout-floating-bottom);
     }
   }
 </style>

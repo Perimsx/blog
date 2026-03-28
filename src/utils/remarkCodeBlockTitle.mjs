@@ -13,7 +13,7 @@ function extractCodeBlockTitle(meta) {
   const patterns = [
     /\b(?:title|filename|file)="([^"]+)"/,
     /\b(?:title|filename|file)='([^']+)'/,
-    /\b(?:title|filename|file)=([^\s]+)/
+    /\b(?:title|filename|file)=([^\s]+)/,
   ];
 
   for (const pattern of patterns) {
@@ -37,7 +37,7 @@ function visitChildren(node) {
       if (title) {
         node.children.splice(index, 0, {
           type: "html",
-          value: `<div class="code-block-title">${escapeHtml(title)}</div>`
+          value: `<div class="code-block-title">${escapeHtml(title)}</div>`,
         });
         index += 1;
       }
@@ -48,7 +48,7 @@ function visitChildren(node) {
 }
 
 export function remarkCodeBlockTitle() {
-  return tree => {
+  return (tree) => {
     visitChildren(tree);
   };
 }

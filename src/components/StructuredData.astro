@@ -14,9 +14,7 @@ const siteAuthor = SITE.author;
 const siteDesc = SITE.desc;
 const siteOgImage = `${siteUrl}og-image.jpg`;
 const readingMinutes =
-  typeof data.readingTime === "string"
-    ? Number.parseInt(data.readingTime, 10)
-    : undefined;
+  typeof data.readingTime === "string" ? Number.parseInt(data.readingTime, 10) : undefined;
 
 let structuredData = {};
 
@@ -65,10 +63,7 @@ if (type === "BlogPosting") {
     name: siteAuthor,
     url: siteUrl,
     image: siteOgImage,
-    sameAs: [
-      "https://github.com/Perimsx",
-      "https://space.bilibili.com/9655855",
-    ],
+    sameAs: ["https://github.com/Perimsx", "https://space.bilibili.com/9655855"],
     jobTitle: "信息安全学生 / Web 开发爱好者",
     description: siteDesc,
   };

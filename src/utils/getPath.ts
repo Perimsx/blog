@@ -7,7 +7,10 @@ function normalizeCustomPostPath(customPath?: string) {
   const trimmedPath = customPath.trim();
   if (!trimmedPath) return undefined;
 
-  return trimmedPath.replace(/^\/+/, "").replace(/^posts\/+/, "").replace(/\/+$/, "");
+  return trimmedPath
+    .replace(/^\/+/, "")
+    .replace(/^posts\/+/, "")
+    .replace(/\/+$/, "");
 }
 
 /**

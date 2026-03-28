@@ -19,7 +19,7 @@ const accentStyles = {
 };
 
 const currentAccent = accentStyles[accent] || accentStyles.default;
-const eyebrowColor = accent === 'default' ? 'text-foreground/45' : currentAccent.split(' ')[2];
+const eyebrowColor = accent === "default" ? "text-foreground/45" : currentAccent.split(" ")[2];
 ---
 
 <div class:list={["rounded-2xl border p-4 shadow-sm", currentAccent]}>

@@ -30,7 +30,7 @@ function validateUrlPath(url, fileName) {
   }
 
   const segments = url.split("/");
-  if (segments.some(segment => !segment || RESERVED_SEGMENTS.has(segment))) {
+  if (segments.some((segment) => !segment || RESERVED_SEGMENTS.has(segment))) {
     throw new Error(`[blog:url] ${fileName} 的 url "${url}" 包含非法路径段`);
   }
 }
@@ -69,9 +69,7 @@ export function validateBlogContent() {
     validateUrlPath(url, fileName);
 
     if (urlToFile.has(url)) {
-      throw new Error(
-        `[blog:url] ${fileName} 与 ${urlToFile.get(url)} 使用了重复 url "${url}"`
-      );
+      throw new Error(`[blog:url] ${fileName} 与 ${urlToFile.get(url)} 使用了重复 url "${url}"`);
     }
 
     urlToFile.set(url, fileName);

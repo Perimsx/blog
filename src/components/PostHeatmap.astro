@@ -3,14 +3,14 @@ import { getCollection } from "astro:content";
 
 // 获取所有已发布的博客文章
 const allPosts = await getCollection("blog");
-const postDates = allPosts.map(post => {
+const postDates = allPosts.map((post) => {
   const date = post.data.pubDatetime;
   return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
 });
 
 // 统计频率
 const dateCounts: Record<number, number> = {};
-postDates.forEach(date => {
+postDates.forEach((date) => {
   dateCounts[date] = (dateCounts[date] || 0) + 1;
 });
 
@@ -40,8 +40,8 @@ for (let i = 0; i < 53; i++) {
     const time = currentDay.getTime();
     const count = dateCounts[time] || 0;
     let level = 0; // 0-4
-    if (count > 0) level = Math.min(4, Math.floor(count / 1) + 1); 
-    
+    if (count > 0) level = Math.min(4, Math.floor(count / 1) + 1);
+
     week.push({
       date: new Date(currentDay),
       count,
@@ -54,7 +54,20 @@ for (let i = 0; i < 53; i++) {
 }
 
 // 月份标记
-const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const monthNames = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 const months: { name: string; index: number }[] = [];
 let lastMonth = -1;
 weeks.forEach((week, i) => {

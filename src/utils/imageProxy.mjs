@@ -67,7 +67,12 @@ function isPrivateIpv4(hostname) {
 
 function isPrivateIpv6(hostname) {
   const normalized = hostname.replace(/^\[|\]$/g, "").toLowerCase();
-  return normalized === "::1" || normalized.startsWith("fc") || normalized.startsWith("fd") || normalized.startsWith("fe80:");
+  return (
+    normalized === "::1" ||
+    normalized.startsWith("fc") ||
+    normalized.startsWith("fd") ||
+    normalized.startsWith("fe80:")
+  );
 }
 
 export function parseExternalImageUrl(value) {
@@ -98,7 +103,9 @@ export function getHotlinkPlatform(urlValue) {
   if (!url) return null;
 
   return (
-    HOTLINK_PLATFORM_RULES.find((rule) => rule.hosts.some((pattern) => pattern.test(url.hostname))) ?? null
+    HOTLINK_PLATFORM_RULES.find((rule) =>
+      rule.hosts.some((pattern) => pattern.test(url.hostname))
+    ) ?? null
   );
 }
 
@@ -148,4 +155,3 @@ export function guessImageContentType(targetUrl) {
 
   return "application/octet-stream";
 }
-
