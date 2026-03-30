@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
 import { SearchModal } from "@/components/SearchModal";
 import { ContactModal } from "@/components/ContactModal";
+import { SiteAnnouncement } from "@/components/SiteAnnouncement";
 
 export default function SiteLayout({
   children,
@@ -19,13 +20,12 @@ export default function SiteLayout({
         Skip to content
       </a>
       <Header />
-      <main id="main-content" className="min-h-screen">
-        {children}
-      </main>
+      {children}
       <Footer />
       <BackToTop />
       <SearchModal />
       <ContactModal />
+      <SiteAnnouncement />
     </>
   );
 }
