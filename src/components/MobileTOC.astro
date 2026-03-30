@@ -1,5 +1,5 @@
 ---
-import TableOfContents from "@/components/TableOfContents.astro";
+import TableOfContents from "@/components/TableOfContents";
 
 export interface Props {
   headings: { depth: number; slug: string; text: string }[];
@@ -55,7 +55,7 @@ const { headings } = Astro.props;
 
     <!-- Drawer Content -->
     <div class="px-4 py-4 overflow-y-auto w-full custom-scrollbar-mobile">
-      <TableOfContents headings={headings} hideTitle={true} />
+      <TableOfContents headings={headings} hideTitle={true} client:load />
     </div>
   </div>
 </div>

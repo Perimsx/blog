@@ -14,7 +14,7 @@ import Grid from "@/components/mdx/Grid.astro";
 import ShareLinks from "@/components/ShareLinks.astro";
 import StructuredData from "@/components/StructuredData.astro";
 import Tag from "@/components/Tag.astro";
-import TableOfContents from "@/components/TableOfContents.astro";
+import TableOfContents from "@/components/TableOfContents";
 import MobileTOC from "@/components/MobileTOC.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
@@ -180,7 +180,7 @@ const mdxComponents = {
       tocHeadings.length > 0 && (
         <>
           <aside class="hidden xl:block fixed top-24 right-6 2xl:right-24 w-64 z-40">
-            <TableOfContents headings={tocHeadings} />
+            <TableOfContents headings={tocHeadings} client:load />
           </aside>
           <MobileTOC headings={tocHeadings} />
         </>
