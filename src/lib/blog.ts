@@ -136,8 +136,12 @@ function remarkLazyLoadImages() {
 function remarkProxyExternalImages() {
   return (tree: any) => {
     visit(tree, "image", (node: any) => {
-      if (typeof node.url === "string" && shouldProxyExternalImage(node.url)) {
-        node.url = toImageProxyUrl(node.url);
+      if (typeof node.url === "string") {
+        if (shouldProxyExternalImage(node.url)) {
+          node.url = toImageProxyUrl(node.url);
+        } else if (node.url.startsWith("./")) {
+          node.url = "/" + node.url.replace(/^\.\//, "");
+        }
       }
     });
 
@@ -155,6 +159,8 @@ function remarkProxyExternalImages() {
 
         if (shouldProxyExternalImage(srcAttr.value)) {
           srcAttr.value = toImageProxyUrl(srcAttr.value);
+        } else if (srcAttr.value.startsWith("./")) {
+          srcAttr.value = "/" + srcAttr.value.replace(/^\.\//, "");
         }
 
         if (node.name === "img") {
@@ -181,7 +187,7 @@ function remarkProxyExternalImages() {
 
 let _highlighter: Awaited<ReturnType<typeof createHighlighter>> | null = null;
 
-async function getHighlighter() {
+export async function getHighlighter() {
   if (!_highlighter) {
     _highlighter = await createHighlighter({
       themes: ["min-light", "night-owl"],
@@ -263,6 +269,15 @@ export async function getAllPosts(): Promise<Post[]> {
       if (!frontmatter.tags) frontmatter.tags = ["others"];
       if (!frontmatter.author) frontmatter.author = SITE.author;
 
+      // Normalize relative image paths for Next.js public/ hosting
+      ["coverImage", "ogImage", "heroImage"].forEach((key) => {
+        const k = key as keyof PostFrontmatter;
+        if (typeof frontmatter[k] === "string" && (frontmatter[k] as string).startsWith("./")) {
+          // Removes leading ./ and turns it into an absolute public path
+          (frontmatter as any)[k] = "/" + (frontmatter[k] as string).replace(/^\.\//, "");
+        }
+      });
+
       // The slug/id is derived from the relative path without extension
       const relativePath = path.relative(blogPath, filePath);
       const slug = relativePath
@@ -343,6 +358,32 @@ export async function getAllSlugs(): Promise<string[]> {
   return posts.map((p) => p.url);
 }
 
+export const mdxRemarkPlugins = [
+  remarkGfm,
+  remarkToc,
+  remarkCodeBlockTitle,
+  remarkLazyLoadImages,
+  remarkProxyExternalImages,
+];
+
+export const mdxRehypePlugins = [
+  [rehypeRaw, { passThrough: ['mdxJsxFlowElement', 'mdxJsxTextElement', 'mdxjsEsm'] }],
+  rehypeSlug,
+  [rehypeAutolinkHeadings, {
+    behavior: "append",
+    properties: {
+      className: ["anchor-link"],
+      ariaLabel: "Permalink",
+    },
+    content: {
+      type: "element",
+      tagName: "span",
+      properties: {},
+      children: [{ type: "text", value: "#" }],
+    },
+  }],
+];
+
 /**
  * Compile markdown content to HTML string using a remark/rehype pipeline.
  * Includes shiki syntax highlighting with dual themes.
@@ -350,30 +391,27 @@ export async function getAllSlugs(): Promise<string[]> {
 export async function compileMDX(content: string): Promise<string> {
   const highlighter = await getHighlighter();
 
-  const file = await unified()
-    .use(remarkParse)
-    .use(remarkGfm)
-    .use(remarkToc)
-    // remark-collapse removed - incompatible types; collapsible TOC handled by client component
-    .use(remarkCodeBlockTitle)
-    .use(remarkLazyLoadImages)
-    .use(remarkProxyExternalImages)
-    .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeSlug)
-    .use(rehypeAutolinkHeadings, {
-      behavior: "append",
-      properties: {
-        className: ["anchor-link"],
-        ariaLabel: "Permalink",
-      },
-      content: {
-        type: "element",
-        tagName: "span",
-        properties: {},
-        children: [{ type: "text", value: "#" }],
-      },
-    })
-    .use(rehypeRaw)
+  let processor: any = unified().use(remarkParse);
+  
+  for (const plugin of mdxRemarkPlugins) {
+    if (Array.isArray(plugin)) {
+      processor = processor.use(plugin[0], plugin[1]);
+    } else {
+      processor = processor.use(plugin);
+    }
+  }
+
+  processor = processor.use(remarkRehype, { allowDangerousHtml: true });
+
+  for (const plugin of mdxRehypePlugins) {
+    if (Array.isArray(plugin)) {
+      processor = processor.use(plugin[0], plugin[1]);
+    } else {
+      processor = processor.use(plugin);
+    }
+  }
+
+  const file = await processor
     .use(rehypeStringify)
     .process(content);
 
