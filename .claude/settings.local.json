@@ -3,7 +3,17 @@
     "allow": [
       "Read(//c/Users/Chen/.claude/agents/**)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(find C:/Users/Chen/Desktop/blog/src -type f \\\\\\(-name *.astro -o -name *.tsx -o -name *.ts -o -name *.js -o -name *.mjs \\\\\\))",
+      "Bash(npm install:*)",
+      "Bash(grep -r \"from ''''@/site''''\" C:/Users/Chen/Desktop/blog/src/)",
+      "Bash(npm run:*)",
+      "Bash(mkdir -p src/astro-pages-backup)",
+      "Bash(mv src/pages/index.astro src/pages/about.mdx src/pages/contact.astro src/pages/404.astro src/pages/500.astro src/pages/posts src/pages/tags src/pages/api src/pages/rss.xml.ts src/pages/robots.txt.ts src/astro-pages-backup/)",
+      "Bash(npx next:*)",
+      "Bash(cd:*)",
+      "Bash(find C:/Users/Chen/Desktop/blog/src -name *.astro -o -name *.mjs -o -name *.mdx)",
+      "Bash(taskkill //F //IM node.exe)"
     ],
     "additionalDirectories": [
       "c:\\Users\\Chen\\.claude\\agents"

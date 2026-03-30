@@ -1,0 +1,31 @@
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { BackToTop } from "@/components/BackToTop";
+import { SearchModal } from "@/components/SearchModal";
+import { ContactModal } from "@/components/ContactModal";
+
+export default function SiteLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      <a
+        id="skip-to-content"
+        href="#main-content"
+        className="absolute -top-full left-16 z-50 bg-background px-3 py-2 text-accent backdrop-blur-lg transition-all focus:top-4"
+      >
+        Skip to content
+      </a>
+      <Header />
+      <main id="main-content" className="min-h-screen">
+        {children}
+      </main>
+      <Footer />
+      <BackToTop />
+      <SearchModal />
+      <ContactModal />
+    </>
+  );
+}

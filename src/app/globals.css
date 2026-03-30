@@ -1,0 +1,298 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/fira-code";
+@import "misans/lib/Normal/MiSans-Medium.min.css";
+@import "misans/lib/Normal/MiSans-Bold.min.css";
+@import "cn-fontsource-lxgw-wen-kai-gb-screen/font.css";
+@import "tailwindcss";
+@import "./typography.css";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+:root,
+html[data-theme="light"] {
+  --background: #fdfdfd;
+  --foreground: #282728;
+  --accent: #006cac;
+  --muted: #e6e6e6;
+  --border: #ece9e9;
+  /* 统一正文宽度、页面留白和悬浮控件安全区，避免组件各自维护一套尺寸。 */
+  --layout-page-max-width: 48rem;
+  --layout-page-gutter: 1rem;
+  --layout-floating-mobile-right: max(0.75rem, calc(env(safe-area-inset-right, 0px) + 0.6rem));
+  --layout-floating-mobile-bottom: max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 0.75rem));
+  --layout-floating-right: clamp(3.5rem, 8vw, 6rem);
+  --layout-floating-bottom: max(1.75rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
+}
+
+html[data-theme="dark"] {
+  --background: #212737;
+  --foreground: #eaedf3;
+  --accent: #73bdf2;
+  --muted: #343f60bf;
+  --border: #415572;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@theme {
+  --color-*: initial;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --font-sans: "Inter Variable", "Inter", "MiSans", "HarmonyOS Sans SC", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: "LXGW WenKai GB Screen", "LXGW WenKai", "Kaiti SC", "STKaiti", "Songti SC", "Noto Serif SC", Georgia, serif;
+  --font-mono: "Fira Code Variable", "Fira Code", "Cascadia Code", "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-bold tracking-tight text-balance;
+  }
+  .font-logo {
+    @apply font-sans;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  * {
+    @apply border-border outline-accent/75;
+    scrollbar-width: auto;
+    scrollbar-color: var(--color-muted) transparent;
+  }
+
+  /* View Transitions API for smooth theme switching (Safari 18+, Chrome 111+) */
+  :root {
+    view-transition-name: root;
+  }
+
+  /* Apply to html element as well for better compatibility */
+  html {
+    view-transition-name: root;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  html {
+    @apply overflow-y-scroll scroll-smooth;
+    line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    font-optical-sizing: auto;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply flex min-h-svh flex-col bg-background font-sans text-foreground selection:bg-accent/75 selection:text-background;
+    font-weight: 430;
+    letter-spacing: 0.01em;
+    font-feature-settings: "liga" 1, "calt" 1;
+  }
+  a,
+  button {
+    @apply outline-offset-1 outline-accent focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  section,
+  footer {
+    margin-inline: auto;
+    max-width: min(100%, var(--layout-page-max-width));
+    padding-inline: var(--layout-page-gutter);
+  }
+}
+
+.layout-frame {
+  /* 给 header、main 等块级容器复用同一套内容宽度。 */
+  margin-inline: auto;
+  width: 100%;
+  max-width: min(100%, var(--layout-page-max-width));
+  padding-inline: var(--layout-page-gutter);
+}
+
+.layout-floating-anchor {
+  right: var(--layout-floating-mobile-right);
+  bottom: var(--layout-floating-mobile-bottom);
+}
+
+@media (min-width: 640px) {
+  .layout-floating-anchor {
+    right: var(--layout-floating-right);
+    bottom: var(--layout-floating-bottom);
+  }
+}
+
+  .active-nav {
+  @apply underline decoration-wavy decoration-2 underline-offset-4;
+}
+
+.theme-animating,
+.theme-animating body,
+.theme-animating header,
+.theme-animating main,
+.theme-animating section,
+.theme-animating footer,
+.theme-animating div,
+.theme-animating a,
+.theme-animating button,
+.theme-animating input,
+.theme-animating textarea,
+.theme-animating svg {
+  transition:
+    background-color 0.32s ease,
+    color 0.32s ease,
+    border-color 0.32s ease,
+    fill 0.32s ease,
+    stroke 0.32s ease,
+    box-shadow 0.32s ease;
+}
+
+.theme-toggle-btn {
+  transition:
+    transform 0.35s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.theme-toggle-btn.is-animating {
+  transform: rotate(180deg) scale(1.06);
+}
+
+.status-panel {
+  width: min(100%, 42rem);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, var(--color-border));
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white 92%, var(--color-accent) 8%), white);
+  box-shadow:
+    0 22px 55px -34px rgba(15, 23, 42, 0.24),
+    0 0 0 1px rgba(255, 255, 255, 0.55) inset;
+  padding: 1.5rem;
+}
+
+.status-panel--compact {
+  width: 100%;
+  border-radius: 1.1rem;
+  padding: 1rem 1rem 0.95rem;
+  box-shadow: 0 14px 35px -28px rgba(15, 23, 42, 0.22);
+}
+
+.status-panel--warning {
+  border-color: color-mix(in srgb, #f59e0b 22%, var(--color-border));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, #fef3c7 38%, white), white);
+}
+
+.status-panel--info {
+  border-color: color-mix(in srgb, var(--color-accent) 16%, var(--color-border));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 7%, white), white);
+}
+
+.status-panel__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.9rem;
+}
+
+.status-panel__code,
+.status-panel__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 18%, var(--color-border));
+  background: color-mix(in srgb, var(--color-accent) 7%, white);
+  color: var(--color-accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  padding: 0.42rem 0.72rem;
+}
+
+.status-panel__title {
+  margin: 0;
+  font-size: clamp(1.25rem, 2.2vw, 2rem);
+  line-height: 1.2;
+}
+
+.status-panel--compact .status-panel__title {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.status-panel__desc {
+  margin: 0.75rem 0 0;
+  color: color-mix(in srgb, var(--color-foreground) 76%, transparent);
+  line-height: 1.85;
+}
+
+.status-panel--compact .status-panel__desc {
+  margin-top: 0.45rem;
+  font-size: 0.92rem;
+  line-height: 1.8;
+}
+
+.status-panel__actions {
+  margin-top: 1.1rem;
+}
+
+html[data-theme="dark"] .status-panel {
+  border-color: color-mix(in srgb, var(--color-accent) 18%, #334155);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, #0f172a 88%, var(--color-accent) 12%), #020617);
+  box-shadow:
+    0 24px 58px -36px rgba(2, 6, 23, 0.9),
+    0 0 0 1px rgba(148, 163, 184, 0.08) inset;
+}
+
+html[data-theme="dark"] .status-panel--warning {
+  border-color: color-mix(in srgb, #f59e0b 20%, #334155);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, #451a03 28%, #020617), #020617);
+}
+
+html[data-theme="dark"] .status-panel__code,
+html[data-theme="dark"] .status-panel__pill {
+  border-color: color-mix(in srgb, var(--color-accent) 16%, #334155);
+  background: color-mix(in srgb, var(--color-accent) 10%, #020617);
+}
+
+@media (max-width: 640px) {
+  .ui-page {
+    letter-spacing: 0.01em;
+  }
+
+  .ui-page h2 {
+    font-size: clamp(1.28rem, 5.4vw, 1.5rem);
+    line-height: 1.28;
+  }
+
+  .ui-page h3 {
+    font-size: clamp(1.02rem, 4.8vw, 1.16rem);
+    line-height: 1.35;
+  }
+
+  .ui-page p {
+    line-height: 1.75;
+  }
+
+  .status-panel {
+    border-radius: 1.2rem;
+    padding: 1.15rem;
+  }
+
+  .status-panel--compact {
+    padding: 0.95rem 0.9rem;
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "/api/contact/route": "/api/contact",
+  "/api/image/route": "/api/image",
+  "/robots.txt/route": "/robots.txt",
+  "/rss.xml/route": "/rss.xml",
+  "/sitemap.xml/route": "/sitemap.xml",
+  "/_not-found/page": "/_not-found",
+  "/(site)/contact/page": "/contact",
+  "/(site)/tags/[tag]/page": "/tags/[tag]",
+  "/(site)/tags/page": "/tags",
+  "/(site)/page": "/",
+  "/(site)/posts/[slug]/page": "/posts/[slug]",
+  "/(site)/posts/page": "/posts",
+  "/(site)/about/page": "/about"
+}
