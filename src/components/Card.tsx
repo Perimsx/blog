@@ -2,8 +2,6 @@ import React from "react";
 import Link from "next/link";
 import { Datetime } from "@/components/Datetime";
 import { AdaptiveImage } from "@/components/AdaptiveImage";
-import { Tag } from "@/components/Tag";
-import { slugifyAll } from "@/lib/slugify";
 import type { Post } from "@/lib/blog";
 
 interface CardProps {
@@ -17,14 +15,11 @@ export const Card: React.FC<CardProps> = ({
   variant = "h2",
   showImage = true,
 }) => {
-  const { title, description, pubDatetime, modDatetime, timezone: postTimezone, coverImage, heroImage, url, tags } = post.data;
+  const { title, description, pubDatetime, modDatetime, timezone: postTimezone, coverImage, heroImage, url } = post.data;
   const readingTimeStr = post.readingTime;
   const articleImage = coverImage ?? heroImage;
 
   const postPath = url ? `/posts/${url}` : `/posts/${post.slug}`;
-
-  const tagItems = tags ?? [];
-  const slugs = slugifyAll(tagItems);
 
   return (
     <li className="my-5 sm:my-6">
@@ -61,13 +56,6 @@ export const Card: React.FC<CardProps> = ({
           )}
           <p className="flex-1 text-[0.95rem] leading-7 opacity-80 sm:text-base sm:leading-8">{description}</p>
         </div>
-        {tagItems.length > 0 && (
-          <ul className="mt-2 flex flex-wrap gap-2">
-            {tagItems.map((tagName, i) => (
-              <Tag key={tagName} tag={slugs[i]} tagName={tagName} size="sm" />
-            ))}
-          </ul>
-        )}
       </div>
     </li>
   );

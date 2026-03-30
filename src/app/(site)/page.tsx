@@ -5,8 +5,9 @@ import { SITE } from "@/lib/config";
 import { SOCIALS } from "@/lib/config";
 import { Card } from "@/components/Card";
 import { Hr } from "@/components/Hr";
-import { IconRss } from "@/components/icons";
+import { IconRss, IconArrowRight } from "@/components/icons";
 import { Socials } from "@/components/Socials";
+import { LinkButton } from "@/components/LinkButton";
 
 export const metadata: Metadata = {
   title: "序栈 | Perimsx",
@@ -89,17 +90,10 @@ export default async function HomePage() {
       )}
 
       <div className="mt-1 mb-4 text-center sm:mt-2 sm:mb-5">
-        <Link
-          href="/posts"
-          className="inline-block text-base font-medium text-accent underline decoration-dashed underline-offset-4 hover:opacity-80 sm:text-lg"
-        >
+        <LinkButton href="/posts">
           所有文章
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block ml-1">
-            <path d="M5 12l14 0" />
-            <path d="M13 18l6 -6" />
-            <path d="M13 6l6 6" />
-          </svg>
-        </Link>
+          <IconArrowRight className="inline-block" />
+        </LinkButton>
       </div>
     </main>
   );
