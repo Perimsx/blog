@@ -94,5 +94,7 @@ const { headings, hideTitle = false } = Astro.props;
   .toc-scroll-area {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 0%, black 85%, transparent 100%);
   }
 </style>
