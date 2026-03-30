@@ -13,9 +13,16 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  output: "export",
   reactStrictMode: true,
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/pagefind/**/*',
+      'node_modules/@swc/core/**/*',
+      'node_modules/@resvg/resvg-js/**/*',
+      'node_modules/sharp/**/*',
+    ],
+  },
   images: {
     unoptimized: true,
     qualities: [80],
