@@ -162,13 +162,13 @@
     white-space: nowrap;
   }
 
-  .code-block-title + pre {
+  .code-block-title + .code-block-wrapper > pre {
     margin-top: 0 !important;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
 
-  .code-block-title + pre .copy-code {
+  .code-block-title + .code-block-wrapper .copy-code {
     top: 0.75rem;
   }
 

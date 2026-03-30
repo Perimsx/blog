@@ -44,6 +44,16 @@ const HOTLINK_PLATFORM_RULES = [
     referer: "https://www.bilibili.com/",
     hosts: [/\.hdslb\.com$/i],
   },
+  {
+    name: "taobao",
+    referer: "https://www.taobao.com/",
+    hosts: [/\.alicdn\.com$/i, /\.tbcache\.com$/i, /\.etao\.com$/i],
+  },
+  {
+    name: "sina",
+    referer: "https://weibo.com/",
+    hosts: [/\.sinaimg\.cn$/i],
+  },
 ];
 
 const USER_AGENT =

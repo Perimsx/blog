@@ -1,0 +1,8 @@
+{
+  "status": 404,
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(site)/layout,_N_T_/(site)/tags/layout,_N_T_/(site)/tags/[tag]/layout,_N_T_/(site)/tags/[tag]/page,_N_T_/tags/%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA"
+  }
+}

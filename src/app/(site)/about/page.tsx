@@ -15,7 +15,7 @@ export default async function AboutPage() {
     <main id="main-content" className="ui-page mx-auto w-full max-w-3xl px-4 pb-4 sm:pb-6">
       <section
         id="about"
-        className="prose mt-4 mb-6 w-full max-w-none sm:mt-6 sm:mb-8"
+        className="prose mt-4 mb-6 w-full max-w-none prose-img:border-0 sm:mt-6 sm:mb-8"
         style={{ width: "100%", maxWidth: "none", marginInline: 0, paddingInline: 0, overflowX: "clip" }}
       >
         {/* Hero section */}

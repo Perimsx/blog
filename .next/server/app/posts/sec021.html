@@ -1,0 +1,862 @@
+<!DOCTYPE html><!--DE_ngZBuzBwfJ1BL90bK9--><html lang="zh-CN"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="preload" as="image" href="https://img.alicdn.com/tfs/TB1..50QpXXXXX7XpXXXXXXXXXX-20-20.png"/><link rel="stylesheet" href="/_next/static/css/081a0afca5a9bd20.css" data-precedence="next"/><link rel="stylesheet" href="/_next/static/css/7d748c99a138f855.css" data-precedence="next"/><link rel="preload" as="script" fetchPriority="low" href="/_next/static/chunks/webpack-98014fb368f17bcf.js"/><script src="/_next/static/chunks/25153cfb-a373e5b74129b4bd.js" async=""></script><script src="/_next/static/chunks/403-3ab7c5509fd09f1a.js" async=""></script><script src="/_next/static/chunks/main-app-cb608b15343b0c71.js" async=""></script><script src="/_next/static/chunks/382-8cd0914aab3203e0.js" async=""></script><script src="/_next/static/chunks/app/error-c1615dcc59805ee0.js" async=""></script><script src="/_next/static/chunks/153-17fe24b6f7f024ce.js" async=""></script><script src="/_next/static/chunks/app/(site)/posts/%5Bslug%5D/page-88080a839ad6aac3.js" async=""></script><script src="/_next/static/chunks/app/(site)/layout-10c5ef08b272fdf9.js" async=""></script><link rel="icon" href="/favicon.ico"/><title>安全加固与基线核查 | Perimsx</title><meta name="description" content="CIS Benchmark安全基线详解，Linux/Windows双平台加固命令与Lynis/OpenSCAP自动核查"/><meta name="author" content="Perimsx"/><meta name="keywords" content="博客,技术,信息安全,Web开发,Perimsx"/><meta name="creator" content="Perimsx"/><meta name="robots" content="index, follow"/><meta name="googlebot" content="index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"/><link rel="canonical" href="https://chenguitao.com/posts/sec021"/><meta property="og:title" content="安全加固与基线核查"/><meta property="og:description" content="CIS Benchmark安全基线详解，Linux/Windows双平台加固命令与Lynis/OpenSCAP自动核查"/><meta property="og:url" content="https://chenguitao.com/posts/sec021"/><meta property="og:image" content="https://chenguitao.com/covers/sec021-cover.webp"/><meta property="og:type" content="article"/><meta property="article:published_time" content="2026-01-09T00:00:00.000Z"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="安全加固与基线核查"/><meta name="twitter:description" content="CIS Benchmark安全基线详解，Linux/Windows双平台加固命令与Lynis/OpenSCAP自动核查"/><meta name="twitter:image" content="https://chenguitao.com/covers/sec021-cover.webp"/><script>
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                  } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                  }
+                } catch (e) {}
+              })();
+            </script><script src="/_next/static/chunks/polyfills-42372ed130431b0a.js" noModule=""></script></head><body class="__className_f367f3"><div hidden=""><!--$--><!--/$--></div><a id="skip-to-content" href="#main-content" class="absolute -top-full left-16 z-50 bg-background px-3 py-2 text-accent backdrop-blur-lg transition-all focus:top-4">Skip to content</a><header><div id="nav-container" class="layout-frame flex flex-col items-center justify-between sm:flex-row"><div id="top-nav-wrap" class="relative flex w-full items-baseline justify-between bg-background py-3 sm:items-center sm:py-6"><a class="font-logo absolute py-1 text-2xl leading-7 whitespace-nowrap sm:static" href="/">Perimsx</a><nav id="nav-menu" class="flex w-full flex-col items-center sm:ml-2 sm:flex-row sm:justify-end sm:space-x-4 sm:py-0"><button id="menu-btn" class="focus-outline self-end p-2 sm:hidden" aria-label="Open Menu" aria-expanded="false" aria-controls="menu-items"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M4 6h16"></path><path d="M7 12h13"></path><path d="M10 18h10"></path></svg></button><ul id="menu-items" class="mt-2.5 grid w-40 grid-cols-2 place-content-center gap-1.5 [&amp;&gt;li&gt;a]:block [&amp;&gt;li&gt;a]:px-4 [&amp;&gt;li&gt;a]:py-2 [&amp;&gt;li&gt;a]:text-center [&amp;&gt;li&gt;a]:font-medium [&amp;&gt;li&gt;a]:hover:text-accent sm:[&amp;&gt;li&gt;a]:px-2 sm:[&amp;&gt;li&gt;a]:py-1 hidden sm:mt-0 sm:ml-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0"><li class="col-span-2"><a class="block px-4 py-2 text-center font-medium hover:text-accent sm:px-2 sm:py-1 active-nav" href="/posts">Posts</a></li><li class="col-span-2"><a class="block px-4 py-2 text-center font-medium hover:text-accent sm:px-2 sm:py-1 " href="/tags">Tags</a></li><li class="col-span-2"><a class="block px-4 py-2 text-center font-medium hover:text-accent sm:px-2 sm:py-1 " href="/about">About</a></li><li class="col-span-2 flex items-center justify-center gap-3 py-1.5 sm:gap-x-5 sm:py-0"><button id="contact-btn" class="flex size-10 cursor-pointer items-center justify-center p-2.5 transition-all hover:brightness-110 active:scale-95 sm:size-8 sm:p-1" title="联系站长" aria-label="联系站长"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" fill="#e4393c"></rect><path d="M22 4l-10 8L2 4" stroke="white" stroke-width="2"></path><path d="M2 20l8-8m4 0l8 8" stroke="white" stroke-width="1.5" opacity="0.4"></path></svg></button><button id="search-btn" class="focus-outline flex cursor-pointer p-2.5 sm:p-1" aria-label="搜索" title="搜索" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path><path d="M21 21l-6 -6"></path></svg></button><button id="theme-btn" class="theme-toggle-btn focus-outline relative size-10 p-3 sm:size-8 hover:[&amp;&gt;svg]:stroke-accent" title="Toggles light &amp; dark" aria-label="auto" aria-live="polite"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z"></path><path d="M6.343 17.657l-1.414 1.414"></path><path d="M6.343 6.343l-1.414 -1.414"></path><path d="M17.657 6.343l1.414 -1.414"></path><path d="M17.657 17.657l1.414 1.414"></path><path d="M4 12h-2"></path><path d="M12 4v-2"></path><path d="M20 12h2"></path><path d="M12 20v2"></path></svg></button></li></ul></nav></div></div><div class="max-w-3xl mx-auto px-4"><hr class="border-border" aria-hidden="true"/></div></header><div class="progress-container fixed top-0 z-10 h-1 w-full bg-background"><div class="progress-bar h-1 w-0 bg-accent transition-all duration-75" style="width:0%"></div></div><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"安全加固与基线核查","description":"CIS Benchmark安全基线详解，Linux/Windows双平台加固命令与Lynis/OpenSCAP自动核查","author":{"@type":"Person","name":"Perimsx","url":"https://chenguitao.com/about"},"datePublished":"2026-01-09T00:00:00.000Z","dateModified":"2026-01-09T00:00:00.000Z","publisher":{"@type":"Organization","name":"Perimsx","url":"https://chenguitao.com/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://chenguitao.com/posts/sec021"},"image":"/covers/sec021-cover.webp","articleSection":"安全加固","keywords":"安全加固, CIS Benchmark, 基线核查, Lynis","wordCount":2189,"timeRequired":"PT23M","inLanguage":"zh-CN"}</script><main id="main-content" class="layout-frame w-full pb-12 mt-8" data-pagefind-body="true"><h1 title="安全加固与基线核查" class="block w-full text-[1.78rem] leading-[1.16] font-semibold text-accent sm:text-[1.98rem] lg:text-[1.9rem] lg:truncate">安全加固与基线核查</h1><div class="mt-1.5 mb-5 flex items-center justify-between gap-4"><div class="flex items-center gap-3"><div class="flex items-center gap-2 opacity-80 "><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-5 min-w-[1.25rem] "><path d="M0 0h24v24H0z" stroke="none"></path><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"></path><path d="M16 3v4"></path><path d="M8 3v4"></path><path d="M4 11h16"></path><path d="M7 14h.013"></path><path d="M10.01 14h.005"></path><path d="M13.01 14h.005"></path><path d="M16.015 14h.005"></path><path d="M13.015 17h.005"></path><path d="M7.01 17h.005"></path><path d="M10.01 17h.005"></path></svg><span class="sr-only">Published:</span><span class="text-sm italic sm:text-base"><time dateTime="2026-01-09T00:00:00.000Z">9 Jan, 2026</time></span></div><span class="text-foreground/30">•</span><span class="text-[0.95rem] italic text-foreground/60">23 min read</span></div></div><article id="article" class="article-detail prose mx-auto mt-8 max-w-3xl"><img src="/covers/sec021-cover.webp" alt="安全加固与基线核查" class="mb-6 aspect-video w-full rounded-md object-cover" loading="lazy"/><blockquote>
+<p>阅读提示
+适合对象：负责主机加固、基线核查和合规整改的安全或运维同学。
+阅读前提：具备 Linux / Windows 基础管理经验。
+核心收获：把基线要求拆成可执行的检查项、整改项和自动化核查思路。
+说明：不同发行版与系统版本的命令行为可能不同，落地前请先在测试环境验证。</p>
+</blockquote>
+<p>安全加固是将系统从默认的&quot;开箱即用&quot;状态调整为符合安全最佳实践的状态。许多安全事件的根本原因并非零日漏洞，而是系统配置不当——默认密码未修改、不必要的服务暴露、过于宽松的权限设置。CIS Benchmark（互联网安全中心基准）提供了一套业界公认的安全配置标准，本文将以此为核心，结合 Linux 和 Windows 的具体加固操作，以及 Lynis 和 OpenSCAP 等自动化工具，构建一份系统化的安全加固清单。</p>
+<h2 id="安全基线概念">安全基线概念<a class="anchor-link" aria-label="Permalink" href="#安全基线概念"><span>#</span></a></h2>
+<p>安全基线（Security Baseline）是指一组经过验证的最低安全配置要求，用于确保系统在部署和运行过程中达到可接受的安全水平。</p>
+<p><strong>安全基线的核心价值：</strong></p>
+<ul>
+<li><strong>标准化</strong>：为不同系统建立统一的安全配置标准，避免&quot;千人千面&quot;的配置差异</li>
+<li><strong>可度量</strong>：提供明确的检查项和预期值，使安全状态可以量化评估</li>
+<li><strong>可重复</strong>：基于脚本和工具实现自动化核查和配置，确保一致性</li>
+<li><strong>合规性</strong>：满足等保、ISO 27001、PCI DSS 等合规框架对安全配置的要求</li>
+</ul>
+<p>安全基线的制定通常参考行业标准（如 CIS Benchmark）并结合组织自身的业务场景和风险偏好进行裁剪。</p>
+<h2 id="cis-benchmark-详解">CIS Benchmark 详解<a class="anchor-link" aria-label="Permalink" href="#cis-benchmark-详解"><span>#</span></a></h2>
+<p>CIS（Center for Internet Security）是一个全球性的非营利组织，其发布的 CIS Benchmark 覆盖了操作系统、数据库、云平台、网络设备、中间件等 100 多类 IT 产品的安全配置建议。</p>
+<h3 id="评分机制">评分机制<a class="anchor-link" aria-label="Permalink" href="#评分机制"><span>#</span></a></h3>
+<p>CIS Benchmark 中的每一条配置建议都标注了评分状态（Scored/Not Scored）：</p>
+<ul>
+<li><strong>Scored（计分项）</strong>：不符合该项配置将导致基线评分下降，属于必须满足的安全要求</li>
+<li><strong>Not Scored（非计分项）</strong>：属于建议性配置，不影响评分但有助于提升安全性</li>
+</ul>
+<h3 id="level-1-与-level-2">Level 1 与 Level 2<a class="anchor-link" aria-label="Permalink" href="#level-1-与-level-2"><span>#</span></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>级别</th><th>描述</th><th>适用场景</th></tr></thead><tbody><tr><td>Level 1</td><td>基础安全加固。实施后对系统功能和性能影响极小，适用于所有系统</td><td>所有生产环境必须满足</td></tr><tr><td>Level 2</td><td>深度安全加固。可能影响系统便利性或性能，适用于高安全要求环境</td><td>金融、政务、涉密系统</td></tr></tbody></table>
+<h3 id="cis-benchmark-文档获取">CIS Benchmark 文档获取<a class="anchor-link" aria-label="Permalink" href="#cis-benchmark-文档获取"><span>#</span></a></h3>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-bash"># CIS Benchmark PDF 文档可从官方网站免费下载（需注册）
+# https://www.cisecurity.org/cis-benchmarks
+
+# 常用的 Benchmark 包括：
+# - CIS Red Hat Enterprise Linux 8/9 Benchmark
+# - CIS Ubuntu Linux 22.04/24.04 LTS Benchmark
+# - CIS Microsoft Windows Server 2019/2022 Benchmark
+# - CIS Microsoft Windows 11 Enterprise Benchmark
+# - CIS Docker Benchmark
+# - CIS Kubernetes Benchmark
+</code></pre></div>
+<h2 id="linux-安全加固">Linux 安全加固<a class="anchor-link" aria-label="Permalink" href="#linux-安全加固"><span>#</span></a></h2>
+<h3 id="ssh-加固">SSH 加固<a class="anchor-link" aria-label="Permalink" href="#ssh-加固"><span>#</span></a></h3>
+<p>SSH 是 Linux 服务器最常用的远程管理入口，也是暴力破解攻击的首要目标。</p>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-bash"># === SSH 安全加固配置 ===
+# 编辑 /etc/ssh/sshd_config
+
+# 1. 禁止 root 直接 SSH 登录
+PermitRootLogin no
+
+# 2. 使用密钥认证，禁用密码认证
+PubkeyAuthentication yes
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+
+# 3. 修改默认端口（降低自动化扫描命中率）
+Port 22222
+
+# 4. 限制 SSH 协议版本
+Protocol 2
+
+# 5. 设置登录超时和最大尝试次数
+LoginGraceTime 60
+MaxAuthTries 3
+MaxSessions 5
+
+# 6. 禁止空密码登录
+PermitEmptyPasswords no
+
+# 7. 限制允许 SSH 登录的用户
+AllowUsers admin deployer
+# 或限制允许的用户组
+AllowGroups ssh-users
+
+# 8. 禁用不安全的认证方式
+HostbasedAuthentication no
+IgnoreRhosts yes
+
+# 9. 配置 SSH 空闲超时断开
+ClientAliveInterval 300
+ClientAliveCountMax 2
+
+# 10. 禁用 X11 转发和 Agent 转发
+X11Forwarding no
+AllowAgentForwarding no
+
+# 11. 配置加密算法（禁用弱算法）
+Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com
+KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512
+
+# 12. 启用日志记录
+LogLevel VERBOSE
+
+# 应用配置
+sudo systemctl restart sshd
+</code></pre></div>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-bash"># === 配置 Fail2Ban 防暴力破解 ===
+sudo apt install fail2ban   # Debian/Ubuntu
+sudo yum install fail2ban   # RHEL/CentOS
+
+# 创建自定义配置
+sudo tee /etc/fail2ban/jail.local &lt;&lt; &#x27;EOF&#x27;
+[DEFAULT]
+bantime = 3600
+findtime = 600
+maxretry = 3
+banaction = iptables-multiport
+
+[sshd]
+enabled = true
+port = 22222
+logpath = /var/log/auth.log
+maxretry = 3
+bantime = 86400
+EOF
+
+sudo systemctl enable fail2ban
+sudo systemctl restart fail2ban
+
+# 查看封禁状态
+sudo fail2ban-client status sshd
+</code></pre></div>
+<h3 id="内核参数调优">内核参数调优<a class="anchor-link" aria-label="Permalink" href="#内核参数调优"><span>#</span></a></h3>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-bash"># === 安全相关的内核参数优化 ===
+# 编辑 /etc/sysctl.conf 或创建 /etc/sysctl.d/99-security.conf
+
+sudo tee /etc/sysctl.d/99-security.conf &lt;&lt; &#x27;EOF&#x27;
+# 禁用 IP 转发（非路由器/网关设备）
+net.ipv4.ip_forward = 0
+net.ipv6.conf.all.forwarding = 0
+
+# 禁用 ICMP 重定向接受（防止路由劫持）
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+
+# 禁止发送 ICMP 重定向
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+
+# 启用源路由验证（防 IP 欺骗）
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.default.rp_filter = 1
+
+# 忽略 ICMP 广播请求（防 Smurf 攻击）
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+
+# 记录可疑的 Martian 数据包
+net.ipv4.conf.all.log_martians = 1
+net.ipv4.conf.default.log_martians = 1
+
+# 启用 SYN Cookie（防 SYN Flood）
+net.ipv4.tcp_syncookies = 1
+
+# 禁用源路由
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv6.conf.all.accept_source_route = 0
+
+# 限制核心转储（防止敏感数据泄露）
+fs.suid_dumpable = 0
+
+# 启用 ASLR（地址空间布局随机化）
+kernel.randomize_va_space = 2
+
+# 限制对 dmesg 的访问
+kernel.dmesg_restrict = 1
+
+# 限制对内核指针的暴露
+kernel.kptr_restrict = 2
+EOF
+
+# 应用配置
+sudo sysctl -p /etc/sysctl.d/99-security.conf
+</code></pre></div>
+<h3 id="文件权限加固">文件权限加固<a class="anchor-link" aria-label="Permalink" href="#文件权限加固"><span>#</span></a></h3>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-bash"># === 关键文件权限加固 ===
+
+# 确保 /etc/passwd 权限正确
+chmod 644 /etc/passwd
+chown root:root /etc/passwd
+
+# 确保 /etc/shadow 只有 root 可读
+chmod 600 /etc/shadow
+chown root:root /etc/shadow
+
+# 确保 /etc/group 权限正确
+chmod 644 /etc/group
+chown root:root /etc/group
+
+# 确保 /etc/gshadow 权限正确
+chmod 600 /etc/gshadow
+chown root:root /etc/gshadow
+
+# 确保 cron 配置文件权限
+chmod 600 /etc/crontab
+chown root:root /etc/crontab
+chmod 700 /etc/cron.d
+chmod 700 /etc/cron.daily
+chmod 700 /etc/cron.hourly
+chmod 700 /etc/cron.weekly
+chmod 700 /etc/cron.monthly
+
+# 确保 SSH 配置文件权限
+chmod 600 /etc/ssh/sshd_config
+chown root:root /etc/ssh/sshd_config
+
+# 查找并修复全局可写文件（不包含临时目录）
+find / -xdev -type f -perm -0002 -not -path &quot;/proc/*&quot; -not -path &quot;/sys/*&quot; -ls 2&gt;/dev/null
+
+# 查找无属主或无属组的文件
+find / -xdev \( -nouser -o -nogroup \) -not -path &quot;/proc/*&quot; -ls 2&gt;/dev/null
+
+# 禁止非授权用户查看其他用户的 home 目录
+chmod 750 /home/*
+
+# 设置 umask 为 027（限制新建文件的默认权限）
+echo &quot;umask 027&quot; &gt;&gt; /etc/profile
+echo &quot;umask 027&quot; &gt;&gt; /etc/bashrc
+</code></pre></div>
+<h3 id="账户与密码策略">账户与密码策略<a class="anchor-link" aria-label="Permalink" href="#账户与密码策略"><span>#</span></a></h3>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-bash"># === 密码策略加固 ===
+
+# 设置密码最大有效期（90天）
+sudo sed -i &#x27;s/^PASS_MAX_DAYS.*/PASS_MAX_DAYS   90/&#x27; /etc/login.defs
+
+# 设置密码最小有效期（1天，防止快速循环修改）
+sudo sed -i &#x27;s/^PASS_MIN_DAYS.*/PASS_MIN_DAYS   1/&#x27; /etc/login.defs
+
+# 设置密码最小长度（12位）
+sudo sed -i &#x27;s/^PASS_MIN_LEN.*/PASS_MIN_LEN    12/&#x27; /etc/login.defs
+
+# 设置密码过期前警告天数
+sudo sed -i &#x27;s/^PASS_WARN_AGE.*/PASS_WARN_AGE   14/&#x27; /etc/login.defs
+
+# 安装密码复杂度检查模块
+sudo apt install libpam-pwquality   # Debian/Ubuntu
+sudo yum install pam_pwquality      # RHEL/CentOS
+
+# 配置密码复杂度（/etc/security/pwquality.conf）
+sudo tee /etc/security/pwquality.conf &lt;&lt; &#x27;EOF&#x27;
+minlen = 12
+dcredit = -1
+ucredit = -1
+lcredit = -1
+ocredit = -1
+minclass = 3
+maxrepeat = 3
+maxclassrepeat = 4
+EOF
+
+# 锁定长期不活动的账户（超过30天未登录自动锁定）
+sudo useradd -D -f 30
+
+# 禁用不需要的系统账户
+for user in games ftp news; do
+    sudo usermod -L -s /sbin/nologin &quot;${user}&quot; 2&gt;/dev/null
+done
+</code></pre></div>
+<h2 id="windows-安全加固">Windows 安全加固<a class="anchor-link" aria-label="Permalink" href="#windows-安全加固"><span>#</span></a></h2>
+<h3 id="组策略配置">组策略配置<a class="anchor-link" aria-label="Permalink" href="#组策略配置"><span>#</span></a></h3>
+<p>Windows 系统加固主要通过组策略（Group Policy）和本地安全策略实现。</p>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-powershell"># === 通过 PowerShell 配置安全策略 ===
+
+# 1. 配置账户锁定策略
+# 账户锁定阈值：5次失败后锁定
+net accounts /lockoutthreshold:5
+# 账户锁定持续时间：30分钟
+net accounts /lockoutduration:30
+# 锁定计数器重置时间：30分钟
+net accounts /lockoutwindow:30
+
+# 2. 配置密码策略
+# 密码最小长度：12字符
+net accounts /minpwlen:12
+# 密码最大有效期：90天
+net accounts /maxpwage:90
+# 密码最小有效期：1天
+net accounts /minpwage:1
+# 密码历史记录：24个（防止重复使用旧密码）
+net accounts /uniquepw:24
+
+# 3. 查看当前账户策略
+net accounts
+</code></pre></div>
+<h3 id="审计策略配置">审计策略配置<a class="anchor-link" aria-label="Permalink" href="#审计策略配置"><span>#</span></a></h3>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-powershell"># === 配置高级审计策略 ===
+
+# 启用登录事件审计（成功和失败）
+auditpol /set /subcategory:&quot;Logon&quot; /success:enable /failure:enable
+
+# 启用登录失败审计
+auditpol /set /subcategory:&quot;Account Lockout&quot; /failure:enable
+
+# 启用特权使用审计
+auditpol /set /subcategory:&quot;Sensitive Privilege Use&quot; /success:enable /failure:enable
+
+# 启用进程创建审计
+auditpol /set /subcategory:&quot;Process Creation&quot; /success:enable
+
+# 启用对象访问审计
+auditpol /set /subcategory:&quot;File System&quot; /success:enable /failure:enable
+
+# 启用策略更改审计
+auditpol /set /subcategory:&quot;Audit Policy Change&quot; /success:enable /failure:enable
+
+# 启用账户管理审计
+auditpol /set /subcategory:&quot;User Account Management&quot; /success:enable /failure:enable
+auditpol /set /subcategory:&quot;Security Group Management&quot; /success:enable /failure:enable
+
+# 启用 PowerShell 脚本块日志
+New-ItemProperty -Path &quot;HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging&quot; `
+    -Name &quot;EnableScriptBlockLogging&quot; -Value 1 -PropertyType DWORD -Force
+
+# 启用进程命令行记录
+New-ItemProperty -Path &quot;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit&quot; `
+    -Name &quot;ProcessCreationIncludeCmdLine_Enabled&quot; -Value 1 -PropertyType DWORD -Force
+
+# 查看当前审计策略
+auditpol /get /category:*
+</code></pre></div>
+<h3 id="服务与功能加固">服务与功能加固<a class="anchor-link" aria-label="Permalink" href="#服务与功能加固"><span>#</span></a></h3>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-powershell"># === 禁用不必要的服务 ===
+
+# 禁用远程注册表服务
+Set-Service -Name RemoteRegistry -StartupType Disabled
+Stop-Service -Name RemoteRegistry -Force -ErrorAction SilentlyContinue
+
+# 禁用 Telnet 服务（如已安装）
+Set-Service -Name TlntSvr -StartupType Disabled -ErrorAction SilentlyContinue
+
+# 禁用 Windows Remote Management（如不需要）
+# Set-Service -Name WinRM -StartupType Disabled
+
+# 禁用 NetBIOS over TCP/IP（减少攻击面）
+$adapters = Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object {$_.IPEnabled}
+foreach ($adapter in $adapters) {
+    $adapter.SetTcpipNetbios(2)  # 2 = 禁用
+}
+
+# 禁用 SMBv1（安全风险极高）
+Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol -NoRestart
+Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force
+
+# 配置 Windows 防火墙默认策略
+Set-NetFirewallProfile -Profile Domain,Public,Private -DefaultInboundAction Block
+Set-NetFirewallProfile -Profile Domain,Public,Private -DefaultOutboundAction Allow
+
+# 启用 Windows Defender 实时保护
+Set-MpPreference -DisableRealtimeMonitoring $false
+Set-MpPreference -DisableBehaviorMonitoring $false
+Set-MpPreference -DisableIOAVProtection $false
+
+# 配置 Windows Defender 扫描策略
+Set-MpPreference -ScanScheduleDay Everyday
+Set-MpPreference -SignatureUpdateInterval 4
+</code></pre></div>
+<h3 id="用户权限加固">用户权限加固<a class="anchor-link" aria-label="Permalink" href="#用户权限加固"><span>#</span></a></h3>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-powershell"># === 用户权限加固 ===
+
+# 重命名 Administrator 账户（增加攻击难度）
+Rename-LocalUser -Name &quot;Administrator&quot; -NewName &quot;LocalSysAdmin&quot;
+
+# 禁用 Guest 账户
+Disable-LocalUser -Name &quot;Guest&quot;
+
+# 查看本地管理员组成员（应最小化）
+Get-LocalGroupMember -Group &quot;Administrators&quot;
+
+# 移除不必要的管理员组成员
+# Remove-LocalGroupMember -Group &quot;Administrators&quot; -Member &quot;UserToRemove&quot;
+
+# 配置 UAC 级别为最高
+Set-ItemProperty -Path &quot;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System&quot; `
+    -Name &quot;ConsentPromptBehaviorAdmin&quot; -Value 2
+Set-ItemProperty -Path &quot;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System&quot; `
+    -Name &quot;EnableLUA&quot; -Value 1
+
+# 禁止在锁屏界面显示上次登录用户名
+Set-ItemProperty -Path &quot;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System&quot; `
+    -Name &quot;DontDisplayLastUserName&quot; -Value 1
+</code></pre></div>
+<h2 id="自动化基线核查工具">自动化基线核查工具<a class="anchor-link" aria-label="Permalink" href="#自动化基线核查工具"><span>#</span></a></h2>
+<h3 id="lynis--linux-安全审计利器">Lynis — Linux 安全审计利器<a class="anchor-link" aria-label="Permalink" href="#lynis--linux-安全审计利器"><span>#</span></a></h3>
+<p>Lynis 是一款轻量级、功能强大的 Linux/Unix 安全审计工具，可以检查系统配置、软件补丁、文件权限等数百项安全指标。</p>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-bash"># === Lynis 安装与使用 ===
+
+# 方式一：通过包管理器安装
+sudo apt install lynis              # Debian/Ubuntu
+sudo yum install lynis              # RHEL/CentOS（需 EPEL 源）
+
+# 方式二：从 Git 仓库获取最新版
+cd /opt
+sudo git clone https://github.com/CISOfy/lynis.git
+cd lynis
+
+# 执行系统审计
+sudo lynis audit system
+
+# 执行快速扫描（跳过等待输入）
+sudo lynis audit system --quick
+
+# 只检查特定类别
+sudo lynis audit system --tests-from-group &quot;firewalls&quot;
+sudo lynis audit system --tests-from-group &quot;authentication&quot;
+sudo lynis audit system --tests-from-group &quot;networking&quot;
+
+# 查看可用的测试组
+sudo lynis show groups
+
+# 生成详细报告
+sudo lynis audit system --quick --auditor &quot;Security Team&quot; 2&gt;&amp;1 | tee /tmp/lynis_report.txt
+
+# 查看上次扫描报告
+sudo cat /var/log/lynis-report.dat
+
+# 查看建议列表
+sudo grep &quot;suggestion\[\]&quot; /var/log/lynis-report.dat
+</code></pre></div>
+<p><strong>Lynis 报告分析要点：</strong></p>
+<ul>
+<li><strong>Hardening Index</strong>：系统加固指数，满分 100，越高越好。新装系统通常在 50-65 之间</li>
+<li><strong>Warnings</strong>：红色警告项，应优先处理</li>
+<li><strong>Suggestions</strong>：黄色建议项，逐项评估并实施</li>
+<li><strong>Tests Performed</strong>：显示执行了多少项检测和跳过了多少项</li>
+</ul>
+<h3 id="openscap--合规性自动化评估">OpenSCAP — 合规性自动化评估<a class="anchor-link" aria-label="Permalink" href="#openscap--合规性自动化评估"><span>#</span></a></h3>
+<p>OpenSCAP 是 NIST 认证的安全合规自动化评估工具，支持 SCAP（Security Content Automation Protocol）标准。</p>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-bash"># === OpenSCAP 安装与使用 ===
+
+# 安装 OpenSCAP 及 SCAP 安全指南
+sudo apt install openscap-scanner scap-security-guide    # Debian/Ubuntu
+sudo yum install openscap-scanner scap-security-guide     # RHEL/CentOS
+
+# 查看可用的 SCAP 内容
+ls /usr/share/xml/scap/ssg/content/
+
+# 查看可用的安全配置文件（Profile）
+oscap info /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml
+
+# 执行 CIS Level 1 基线核查（以 Ubuntu 22.04 为例）
+sudo oscap xccdf eval \
+    --profile xccdf_org.ssgproject.content_profile_cis_level1_server \
+    --results /tmp/oscap_results.xml \
+    --report /tmp/oscap_report.html \
+    /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml
+
+# 执行 CIS Level 2 基线核查
+sudo oscap xccdf eval \
+    --profile xccdf_org.ssgproject.content_profile_cis_level2_server \
+    --results /tmp/oscap_results_l2.xml \
+    --report /tmp/oscap_report_l2.html \
+    /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml
+
+# RHEL/CentOS 核查
+sudo oscap xccdf eval \
+    --profile xccdf_org.ssgproject.content_profile_cis \
+    --results /tmp/oscap_results.xml \
+    --report /tmp/oscap_report.html \
+    /usr/share/xml/scap/ssg/content/ssg-rhel8-ds.xml
+
+# 生成修复脚本（基于检查结果自动生成 Bash 修复脚本）
+sudo oscap xccdf generate fix \
+    --fix-type bash \
+    --result-id &quot;&quot; \
+    /tmp/oscap_results.xml &gt; /tmp/remediation.sh
+
+# 生成 Ansible Playbook 修复方案
+sudo oscap xccdf generate fix \
+    --fix-type ansible \
+    --result-id &quot;&quot; \
+    /tmp/oscap_results.xml &gt; /tmp/remediation.yml
+</code></pre></div>
+<h2 id="加固检查清单汇总">加固检查清单汇总<a class="anchor-link" aria-label="Permalink" href="#加固检查清单汇总"><span>#</span></a></h2>
+<p>以下是一份综合性的安全加固检查清单，涵盖 Linux 和 Windows 核心加固项：</p>
+<h3 id="linux-加固检查清单">Linux 加固检查清单<a class="anchor-link" aria-label="Permalink" href="#linux-加固检查清单"><span>#</span></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>序号</th><th>检查项</th><th>CIS级别</th><th>状态</th></tr></thead><tbody><tr><td>1</td><td>确保 SSH root 登录已禁用</td><td>L1</td><td>[ ]</td></tr><tr><td>2</td><td>确保 SSH 使用密钥认证</td><td>L1</td><td>[ ]</td></tr><tr><td>3</td><td>确保密码最小长度 ≥ 12</td><td>L1</td><td>[ ]</td></tr><tr><td>4</td><td>确保密码复杂度策略已配置</td><td>L1</td><td>[ ]</td></tr><tr><td>5</td><td>确保 Fail2Ban 或类似方案已部署</td><td>L1</td><td>[ ]</td></tr><tr><td>6</td><td>确保系统时间同步（NTP）已配置</td><td>L1</td><td>[ ]</td></tr><tr><td>7</td><td>确保 iptables/nftables 防火墙已启用</td><td>L1</td><td>[ ]</td></tr><tr><td>8</td><td>确保不必要的服务已禁用</td><td>L1</td><td>[ ]</td></tr><tr><td>9</td><td>确保内核安全参数已优化</td><td>L1</td><td>[ ]</td></tr><tr><td>10</td><td>确保文件权限符合最小权限原则</td><td>L1</td><td>[ ]</td></tr><tr><td>11</td><td>确保日志审计已启用（auditd）</td><td>L2</td><td>[ ]</td></tr><tr><td>12</td><td>确保 SELinux/AppArmor 已启用</td><td>L2</td><td>[ ]</td></tr><tr><td>13</td><td>确保无空密码账户</td><td>L1</td><td>[ ]</td></tr><tr><td>14</td><td>确保 SUID/SGID 文件已审查</td><td>L1</td><td>[ ]</td></tr><tr><td>15</td><td>确保自动安全更新已配置</td><td>L1</td><td>[ ]</td></tr></tbody></table>
+<h3 id="windows-加固检查清单">Windows 加固检查清单<a class="anchor-link" aria-label="Permalink" href="#windows-加固检查清单"><span>#</span></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>序号</th><th>检查项</th><th>CIS级别</th><th>状态</th></tr></thead><tbody><tr><td>1</td><td>确保账户锁定策略已配置</td><td>L1</td><td>[ ]</td></tr><tr><td>2</td><td>确保密码策略符合要求</td><td>L1</td><td>[ ]</td></tr><tr><td>3</td><td>确保 SMBv1 已禁用</td><td>L1</td><td>[ ]</td></tr><tr><td>4</td><td>确保 Windows 防火墙已启用</td><td>L1</td><td>[ ]</td></tr><tr><td>5</td><td>确保审计策略已全面配置</td><td>L1</td><td>[ ]</td></tr><tr><td>6</td><td>确保 UAC 已启用且级别适当</td><td>L1</td><td>[ ]</td></tr><tr><td>7</td><td>确保 Guest 账户已禁用</td><td>L1</td><td>[ ]</td></tr><tr><td>8</td><td>确保 Administrator 已重命名</td><td>L1</td><td>[ ]</td></tr><tr><td>9</td><td>确保 PowerShell 日志已启用</td><td>L1</td><td>[ ]</td></tr><tr><td>10</td><td>确保 Windows Defender 已启用</td><td>L1</td><td>[ ]</td></tr><tr><td>11</td><td>确保远程注册表服务已禁用</td><td>L1</td><td>[ ]</td></tr><tr><td>12</td><td>确保 Windows Update 已配置</td><td>L1</td><td>[ ]</td></tr><tr><td>13</td><td>确保 BitLocker 磁盘加密已启用</td><td>L2</td><td>[ ]</td></tr><tr><td>14</td><td>确保 Credential Guard 已启用</td><td>L2</td><td>[ ]</td></tr><tr><td>15</td><td>确保 AppLocker/WDAC 已配置</td><td>L2</td><td>[ ]</td></tr></tbody></table>
+<h3 id="快速核查脚本">快速核查脚本<a class="anchor-link" aria-label="Permalink" href="#快速核查脚本"><span>#</span></a></h3>
+<div class="code-block-wrapper relative group my-6"><button class="copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs font-medium leading-4 text-foreground z-10 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none focus-visible:ring-2 focus-visible:ring-accent shadow-sm border border-border">Copy</button><pre class="!m-0"><code class="language-bash">#!/bin/bash
+# Linux 安全基线快速核查脚本
+
+echo &quot;=========================================&quot;
+echo &quot;  Linux Security Baseline Quick Check&quot;
+echo &quot;  $(date &#x27;+%Y-%m-%d %H:%M:%S&#x27;)&quot;
+echo &quot;=========================================&quot;
+
+PASS=0
+FAIL=0
+WARN=0
+
+check() {
+    local description=&quot;$1&quot;
+    local result=&quot;$2&quot;
+    if [ &quot;$result&quot; = &quot;PASS&quot; ]; then
+        echo -e &quot;[\033[32mPASS\033[0m] $description&quot;
+        ((PASS++))
+    elif [ &quot;$result&quot; = &quot;FAIL&quot; ]; then
+        echo -e &quot;[\033[31mFAIL\033[0m] $description&quot;
+        ((FAIL++))
+    else
+        echo -e &quot;[\033[33mWARN\033[0m] $description&quot;
+        ((WARN++))
+    fi
+}
+
+# 1. SSH root 登录检查
+if grep -qE &quot;^PermitRootLogin\s+no&quot; /etc/ssh/sshd_config 2&gt;/dev/null; then
+    check &quot;SSH root login disabled&quot; &quot;PASS&quot;
+else
+    check &quot;SSH root login disabled&quot; &quot;FAIL&quot;
+fi
+
+# 2. 密码认证检查
+if grep -qE &quot;^PasswordAuthentication\s+no&quot; /etc/ssh/sshd_config 2&gt;/dev/null; then
+    check &quot;SSH password authentication disabled&quot; &quot;PASS&quot;
+else
+    check &quot;SSH password authentication disabled&quot; &quot;WARN&quot;
+fi
+
+# 3. 空密码账户检查
+EMPTY_PW=$(sudo awk -F: &#x27;$2==&quot;&quot; {print $1}&#x27; /etc/shadow 2&gt;/dev/null)
+if [ -z &quot;$EMPTY_PW&quot; ]; then
+    check &quot;No empty password accounts&quot; &quot;PASS&quot;
+else
+    check &quot;No empty password accounts (found: $EMPTY_PW)&quot; &quot;FAIL&quot;
+fi
+
+# 4. UID 0 账户检查
+ROOT_ACCOUNTS=$(awk -F: &#x27;$3==0 {print $1}&#x27; /etc/passwd | grep -v &quot;^root$&quot;)
+if [ -z &quot;$ROOT_ACCOUNTS&quot; ]; then
+    check &quot;No non-root UID 0 accounts&quot; &quot;PASS&quot;
+else
+    check &quot;No non-root UID 0 accounts (found: $ROOT_ACCOUNTS)&quot; &quot;FAIL&quot;
+fi
+
+# 5. 防火墙检查
+if systemctl is-active --quiet firewalld 2&gt;/dev/null || \
+   systemctl is-active --quiet ufw 2&gt;/dev/null || \
+   iptables -L -n 2&gt;/dev/null | grep -q &quot;Chain INPUT&quot;; then
+    check &quot;Firewall is active&quot; &quot;PASS&quot;
+else
+    check &quot;Firewall is active&quot; &quot;FAIL&quot;
+fi
+
+# 6. SELinux/AppArmor 检查
+if getenforce 2&gt;/dev/null | grep -qE &quot;Enforcing|Permissive&quot;; then
+    check &quot;SELinux is enabled&quot; &quot;PASS&quot;
+elif aa-status 2&gt;/dev/null | grep -q &quot;profiles are loaded&quot;; then
+    check &quot;AppArmor is enabled&quot; &quot;PASS&quot;
+else
+    check &quot;SELinux/AppArmor is enabled&quot; &quot;WARN&quot;
+fi
+
+# 7. IP 转发检查
+if [ &quot;$(sysctl -n net.ipv4.ip_forward 2&gt;/dev/null)&quot; = &quot;0&quot; ]; then
+    check &quot;IP forwarding disabled&quot; &quot;PASS&quot;
+else
+    check &quot;IP forwarding disabled&quot; &quot;FAIL&quot;
+fi
+
+# 8. /etc/shadow 权限检查
+SHADOW_PERM=$(stat -c &quot;%a&quot; /etc/shadow 2&gt;/dev/null)
+if [ &quot;$SHADOW_PERM&quot; = &quot;600&quot; ] || [ &quot;$SHADOW_PERM&quot; = &quot;640&quot; ] || [ &quot;$SHADOW_PERM&quot; = &quot;0&quot; ]; then
+    check &quot;/etc/shadow permissions ($SHADOW_PERM)&quot; &quot;PASS&quot;
+else
+    check &quot;/etc/shadow permissions ($SHADOW_PERM)&quot; &quot;FAIL&quot;
+fi
+
+# 9. 自动更新检查
+if systemctl is-enabled --quiet unattended-upgrades 2&gt;/dev/null || \
+   systemctl is-enabled --quiet dnf-automatic 2&gt;/dev/null; then
+    check &quot;Automatic security updates enabled&quot; &quot;PASS&quot;
+else
+    check &quot;Automatic security updates enabled&quot; &quot;WARN&quot;
+fi
+
+# 10. NTP 时间同步检查
+if systemctl is-active --quiet chronyd 2&gt;/dev/null || \
+   systemctl is-active --quiet systemd-timesyncd 2&gt;/dev/null || \
+   systemctl is-active --quiet ntpd 2&gt;/dev/null; then
+    check &quot;NTP time sync is active&quot; &quot;PASS&quot;
+else
+    check &quot;NTP time sync is active&quot; &quot;FAIL&quot;
+fi
+
+echo &quot;&quot;
+echo &quot;=========================================&quot;
+echo &quot;  Results: PASS=$PASS  FAIL=$FAIL  WARN=$WARN&quot;
+echo &quot;  Total checks: $((PASS + FAIL + WARN))&quot;
+echo &quot;=========================================&quot;
+</code></pre></div>
+<h2 id="安全建议与防御措施">安全建议与防御措施<a class="anchor-link" aria-label="Permalink" href="#安全建议与防御措施"><span>#</span></a></h2>
+<ol>
+<li><strong>基线先行</strong>：在系统上线前完成安全基线配置，将加固嵌入部署流程而非事后补救</li>
+<li><strong>自动化核查</strong>：使用 Lynis、OpenSCAP 等工具定期自动化检查基线合规状态</li>
+<li><strong>配置即代码</strong>：将安全配置纳入 Ansible、Puppet 或 Chef 等配置管理工具，确保一致性和可追溯性</li>
+<li><strong>持续监控</strong>：部署文件完整性监控（FIM）工具，检测未授权的配置变更</li>
+<li><strong>定期审查</strong>：每季度审查安全基线标准，根据新的威胁和漏洞及时更新</li>
+<li><strong>分层加固</strong>：从网络边界、操作系统、中间件到应用程序，逐层实施安全加固</li>
+</ol>
+<h2 id="总结">总结<a class="anchor-link" aria-label="Permalink" href="#总结"><span>#</span></a></h2>
+<p>安全加固是纵深防御体系中最基础也是最重要的一环。CIS Benchmark 为我们提供了全面、专业的安全配置基准，结合 Lynis 和 OpenSCAP 等自动化工具，可以高效地完成基线核查和持续合规监控。安全加固不是一次性的项目，而是需要持续迭代的过程——随着业务变化、新漏洞发现和合规要求更新，安全基线也需要不断演进。将安全加固融入 DevSecOps 流程，在系统构建阶段就植入安全基因，才是实现长效安全运营的正确路径。</p></article><aside class="hidden xl:block fixed top-24 right-6 2xl:right-24 w-64 z-40"><nav class="toc-container"><h2 class="text-[0.9rem] font-semibold mb-2 text-foreground/90">目录</h2><div class="toc-scroll-area overflow-y-auto [&amp;::-webkit-scrollbar]:hidden max-h-[40vh]" style="-ms-overflow-style:none;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom, black 0%, black 85%, transparent 100%);mask-image:linear-gradient(to bottom, black 0%, black 85%, transparent 100%)"><ul class="relative border-l border-foreground/10 flex flex-col gap-1 text-[0.8rem] pb-24"><li class="toc-item  "><a href="#安全基线概念" data-slug="安全基线概念" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">安全基线概念#</a></li><li class="toc-item  "><a href="#cis-benchmark-详解" data-slug="cis-benchmark-详解" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">CIS Benchmark 详解#</a></li><li class="toc-item ml-3 "><a href="#评分机制" data-slug="评分机制" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">评分机制#</a></li><li class="toc-item ml-3 "><a href="#level-1-与-level-2" data-slug="level-1-与-level-2" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">Level 1 与 Level 2#</a></li><li class="toc-item ml-3 "><a href="#cis-benchmark-文档获取" data-slug="cis-benchmark-文档获取" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">CIS Benchmark 文档获取#</a></li><li class="toc-item  "><a href="#linux-安全加固" data-slug="linux-安全加固" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">Linux 安全加固#</a></li><li class="toc-item ml-3 "><a href="#ssh-加固" data-slug="ssh-加固" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">SSH 加固#</a></li><li class="toc-item ml-3 "><a href="#内核参数调优" data-slug="内核参数调优" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">内核参数调优#</a></li><li class="toc-item ml-3 "><a href="#文件权限加固" data-slug="文件权限加固" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">文件权限加固#</a></li><li class="toc-item ml-3 "><a href="#账户与密码策略" data-slug="账户与密码策略" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">账户与密码策略#</a></li><li class="toc-item  "><a href="#windows-安全加固" data-slug="windows-安全加固" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">Windows 安全加固#</a></li><li class="toc-item ml-3 "><a href="#组策略配置" data-slug="组策略配置" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">组策略配置#</a></li><li class="toc-item ml-3 "><a href="#审计策略配置" data-slug="审计策略配置" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">审计策略配置#</a></li><li class="toc-item ml-3 "><a href="#服务与功能加固" data-slug="服务与功能加固" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">服务与功能加固#</a></li><li class="toc-item ml-3 "><a href="#用户权限加固" data-slug="用户权限加固" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">用户权限加固#</a></li><li class="toc-item  "><a href="#自动化基线核查工具" data-slug="自动化基线核查工具" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">自动化基线核查工具#</a></li><li class="toc-item ml-3 "><a href="#lynis--linux-安全审计利器" data-slug="lynis--linux-安全审计利器" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">Lynis — Linux 安全审计利器#</a></li><li class="toc-item ml-3 "><a href="#openscap--合规性自动化评估" data-slug="openscap--合规性自动化评估" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">OpenSCAP — 合规性自动化评估#</a></li><li class="toc-item  "><a href="#加固检查清单汇总" data-slug="加固检查清单汇总" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">加固检查清单汇总#</a></li><li class="toc-item ml-3 "><a href="#linux-加固检查清单" data-slug="linux-加固检查清单" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">Linux 加固检查清单#</a></li><li class="toc-item ml-3 "><a href="#windows-加固检查清单" data-slug="windows-加固检查清单" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">Windows 加固检查清单#</a></li><li class="toc-item ml-3 "><a href="#快速核查脚本" data-slug="快速核查脚本" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">快速核查脚本#</a></li><li class="toc-item  "><a href="#安全建议与防御措施" data-slug="安全建议与防御措施" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">安全建议与防御措施#</a></li><li class="toc-item  "><a href="#总结" data-slug="总结" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">总结#</a></li></ul></div></nav></aside><style>
+        .custom-scrollbar-mobile::-webkit-scrollbar {
+          display: none;
+        }
+        .custom-scrollbar-mobile {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      </style><div class="xl:hidden"><button id="mobile-toc-fab" class="fixed layout-floating-anchor z-40 p-3.5 bg-background shadow-xl border border-border rounded-full text-foreground hover:text-accent focus:ring-4 ring-accent/20 transition-all hover:scale-[1.03] active:scale-95 flex items-center justify-center cursor-pointer" aria-label="打开目录"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"></line><line x1="8" x2="21" y1="12" y2="12"></line><line x1="8" x2="21" y1="18" y2="18"></line><line x1="3" x2="3.01" y1="6" y2="6"></line><line x1="3" x2="3.01" y1="12" y2="12"></line><line x1="3" x2="3.01" y1="18" y2="18"></line></svg></button><div id="mobile-toc-overlay" class="fixed inset-0 z-[60] bg-background/50 backdrop-blur-sm transition-opacity duration-400 ease-out opacity-0 pointer-events-none"></div><div id="mobile-toc-drawer" class="fixed bottom-0 left-0 right-0 z-[70] bg-background border-t border-border/60 rounded-t-3xl shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.1)] transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] max-h-[85vh] flex flex-col translate-y-full pointer-events-none"><div class="absolute left-1/2 -translate-x-1/2 top-3.5 w-12 h-1.5 bg-muted rounded-full"></div><div class="flex items-center justify-between px-6 pt-9 pb-4 border-b border-border/40"><h2 class="text-lg font-bold text-foreground">文章目录</h2><button id="mobile-toc-close" class="p-1.5 -mr-1.5 bg-muted/40 rounded-full text-foreground/70 hover:text-accent hover:bg-accent/10 transition-colors" aria-label="关闭"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div><div class="px-4 py-4 overflow-y-auto w-full custom-scrollbar-mobile"><nav class="toc-container"><div class="toc-scroll-area overflow-y-auto [&amp;::-webkit-scrollbar]:hidden max-h-[72vh] pr-4" style="-ms-overflow-style:none;scrollbar-width:none;-webkit-mask-image:linear-gradient(to bottom, black 0%, black 85%, transparent 100%);mask-image:linear-gradient(to bottom, black 0%, black 85%, transparent 100%)"><ul class="relative border-l border-foreground/10 flex flex-col gap-1 text-[0.8rem] pb-24"><li class="toc-item  "><a href="#安全基线概念" data-slug="安全基线概念" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">安全基线概念#</a></li><li class="toc-item  "><a href="#cis-benchmark-详解" data-slug="cis-benchmark-详解" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">CIS Benchmark 详解#</a></li><li class="toc-item ml-3 "><a href="#评分机制" data-slug="评分机制" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">评分机制#</a></li><li class="toc-item ml-3 "><a href="#level-1-与-level-2" data-slug="level-1-与-level-2" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">Level 1 与 Level 2#</a></li><li class="toc-item ml-3 "><a href="#cis-benchmark-文档获取" data-slug="cis-benchmark-文档获取" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">CIS Benchmark 文档获取#</a></li><li class="toc-item  "><a href="#linux-安全加固" data-slug="linux-安全加固" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">Linux 安全加固#</a></li><li class="toc-item ml-3 "><a href="#ssh-加固" data-slug="ssh-加固" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">SSH 加固#</a></li><li class="toc-item ml-3 "><a href="#内核参数调优" data-slug="内核参数调优" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">内核参数调优#</a></li><li class="toc-item ml-3 "><a href="#文件权限加固" data-slug="文件权限加固" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">文件权限加固#</a></li><li class="toc-item ml-3 "><a href="#账户与密码策略" data-slug="账户与密码策略" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">账户与密码策略#</a></li><li class="toc-item  "><a href="#windows-安全加固" data-slug="windows-安全加固" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">Windows 安全加固#</a></li><li class="toc-item ml-3 "><a href="#组策略配置" data-slug="组策略配置" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">组策略配置#</a></li><li class="toc-item ml-3 "><a href="#审计策略配置" data-slug="审计策略配置" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">审计策略配置#</a></li><li class="toc-item ml-3 "><a href="#服务与功能加固" data-slug="服务与功能加固" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">服务与功能加固#</a></li><li class="toc-item ml-3 "><a href="#用户权限加固" data-slug="用户权限加固" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">用户权限加固#</a></li><li class="toc-item  "><a href="#自动化基线核查工具" data-slug="自动化基线核查工具" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">自动化基线核查工具#</a></li><li class="toc-item ml-3 "><a href="#lynis--linux-安全审计利器" data-slug="lynis--linux-安全审计利器" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">Lynis — Linux 安全审计利器#</a></li><li class="toc-item ml-3 "><a href="#openscap--合规性自动化评估" data-slug="openscap--合规性自动化评估" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">OpenSCAP — 合规性自动化评估#</a></li><li class="toc-item  "><a href="#加固检查清单汇总" data-slug="加固检查清单汇总" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">加固检查清单汇总#</a></li><li class="toc-item ml-3 "><a href="#linux-加固检查清单" data-slug="linux-加固检查清单" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">Linux 加固检查清单#</a></li><li class="toc-item ml-3 "><a href="#windows-加固检查清单" data-slug="windows-加固检查清单" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">Windows 加固检查清单#</a></li><li class="toc-item ml-3 "><a href="#快速核查脚本" data-slug="快速核查脚本" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">快速核查脚本#</a></li><li class="toc-item  "><a href="#安全建议与防御措施" data-slug="安全建议与防御措施" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">安全建议与防御措施#</a></li><li class="toc-item  "><a href="#总结" data-slug="总结" class="block pl-3 py-[2px] hover:text-accent transition-all duration-300 toc-link transform origin-left text-foreground/60 truncate text-[0.8rem]">总结#</a></li></ul></div></nav></div></div></div><div class="flex flex-wrap items-center justify-between gap-4 mt-4 mb-4 sm:my-6"><ul class="flex flex-wrap gap-x-4 gap-y-2"><li class="group inline-block max-w-full group-hover:cursor-pointer underline-offset-4"><a class="relative inline-flex max-w-full items-center whitespace-nowrap underline decoration-dashed transition-colors group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 text-sm underline-offset-4" href="/tags/安全加固"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 inline-block shrink-0 opacity-80 sm:mr-1.5 size-3.5"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M5 9l14 0"></path><path d="M5 15l14 0"></path><path d="M11 4l-4 16"></path><path d="M17 4l-4 16"></path></svg><span>安全加固</span></a></li><li class="group inline-block max-w-full group-hover:cursor-pointer underline-offset-4"><a class="relative inline-flex max-w-full items-center whitespace-nowrap underline decoration-dashed transition-colors group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 text-sm underline-offset-4" href="/tags/cis-benchmark"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 inline-block shrink-0 opacity-80 sm:mr-1.5 size-3.5"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M5 9l14 0"></path><path d="M5 15l14 0"></path><path d="M11 4l-4 16"></path><path d="M17 4l-4 16"></path></svg><span>CIS Benchmark</span></a></li><li class="group inline-block max-w-full group-hover:cursor-pointer underline-offset-4"><a class="relative inline-flex max-w-full items-center whitespace-nowrap underline decoration-dashed transition-colors group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 text-sm underline-offset-4" href="/tags/基线核查"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 inline-block shrink-0 opacity-80 sm:mr-1.5 size-3.5"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M5 9l14 0"></path><path d="M5 15l14 0"></path><path d="M11 4l-4 16"></path><path d="M17 4l-4 16"></path></svg><span>基线核查</span></a></li><li class="group inline-block max-w-full group-hover:cursor-pointer underline-offset-4"><a class="relative inline-flex max-w-full items-center whitespace-nowrap underline decoration-dashed transition-colors group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 text-sm underline-offset-4" href="/tags/lynis"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 inline-block shrink-0 opacity-80 sm:mr-1.5 size-3.5"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M5 9l14 0"></path><path d="M5 15l14 0"></path><path d="M11 4l-4 16"></path><path d="M17 4l-4 16"></path></svg><span>Lynis</span></a></li></ul><div class="flex items-center gap-1"><span class="text-sm text-foreground/60 mr-1">分享到</span><div class="flex gap-1"><button class="group inline-block p-2 hover:rotate-6 transition-transform" title="分享到微信"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-5 fill-transparent stroke-current stroke-2 opacity-80 group-hover:fill-transparent"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M16.5 10c3.038 0 5.5 2.015 5.5 4.5c0 1.397 -.778 2.645 -2 3.47l0 2.03l-1.964 -1.178a6.649 6.649 0 0 1 -1.536 .178c-3.038 0 -5.5 -2.015 -5.5 -4.5s2.462 -4.5 5.5 -4.5z"></path><path d="M11.197 15.698c-.69 .196 -1.43 .302 -2.197 .302a8.008 8.008 0 0 1 -2.612 -.432l-2.388 1.432v-2.801c-1.237 -1.082 -2 -2.564 -2 -4.199c0 -3.314 3.134 -6 7 -6c3.527 0 6.45 2.283 6.934 5.271"></path></svg><span class="sr-only">分享到微信</span></button><a href="https://connect.qq.com/widget/shareqq/index.html?url=https%3A%2F%2Fchenguitao.com%2Fposts%2Fsec021" class="inline-block p-2 hover:rotate-6 hover:text-accent" title="分享到QQ" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-5 fill-transparent stroke-current stroke-2 opacity-80 group-hover:fill-transparent"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M12 3c-3.866 0 -7 3.134 -7 7v1c-1 2 -1.5 3.5 -.5 5c.203 .304 .5 .5 .5 .5c-.5 1.5 -.5 2.5 .5 3.5c.667 .333 1.333 .333 2 0c0 0 1.5 1 4.5 1s4.5 -1 4.5 -1c.667 .333 1.333 .333 2 0c1 -1 1 -2 .5 -3.5c0 0 .297 -.196 .5 -.5c1 -1.5 .5 -3 -.5 -5v-1c0 -3.866 -3.134 -7 -7 -7z"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path></svg><span class="sr-only">分享到QQ</span></a><a href="https://x.com/intent/post?url=https%3A%2F%2Fchenguitao.com%2Fposts%2Fsec021" class="inline-block p-2 hover:rotate-6 hover:text-accent" title="分享到 X" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-5 fill-transparent stroke-current stroke-2 opacity-80 group-hover:fill-transparent"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M4 4l11.733 16h4.267l-11.733 -16z"></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"></path></svg><span class="sr-only">分享到 X</span></a><a href="https://t.me/share/url?url=https%3A%2F%2Fchenguitao.com%2Fposts%2Fsec021" class="inline-block p-2 hover:rotate-6 hover:text-accent" title="分享到 Telegram" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-5 fill-transparent stroke-current stroke-2 opacity-80 group-hover:fill-transparent"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4"></path></svg><span class="sr-only">分享到 Telegram</span></a><a href="https://www.facebook.com/sharer.php?u=https%3A%2F%2Fchenguitao.com%2Fposts%2Fsec021" class="inline-block p-2 hover:rotate-6 hover:text-accent" title="分享到 Facebook" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-5 fill-transparent stroke-current stroke-2 opacity-80 group-hover:fill-transparent"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M7 10v4h3v7h4v-7h3l1 -4h-4v-2a1 1 0 0 1 1 -1h3v-4h-3a5 5 0 0 0 -5 5v2h-3"></path></svg><span class="sr-only">分享到 Facebook</span></a></div></div></div><hr class="my-6 border-dashed"/><div class="flex flex-col sm:flex-row justify-between gap-6"><a class="flex gap-2 hover:opacity-75 items-start" href="/posts/sec022"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block flex-shrink-0 mt-0.5"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M15 6l-6 6l6 6"></path></svg><div class="min-w-0"><span class="block text-sm text-foreground/70">上一篇</span><div class="text-accent/85">Kali环境搭建指南</div></div></a><a class="flex gap-2 hover:opacity-75 items-start justify-end text-right ml-auto" href="/posts/sec020"><div class="min-w-0"><span class="block text-sm text-foreground/70">下一篇</span><div class="text-accent/85">漏洞扫描与风险评估</div></div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block flex-shrink-0 mt-0.5"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M9 6l6 6l-6 6"></path></svg></a></div></main><!--$--><!--/$--><footer class="w-full mt-auto"><div class="max-w-3xl mx-auto px-0"><hr class="border-border" aria-hidden="true"/></div><div class="flex flex-col items-center justify-between py-3 sm:flex-row-reverse sm:py-4"><div class="flex flex-wrap gap-0.5 sm:gap-1 justify-center"><a class="group inline-block hover:text-accent hover:rotate-6 p-1.5 sm:p-1" title=" Perimsx on Github" href="https://github.com/Perimsx"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent size-5 scale-105 sm:size-6 sm:scale-110"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5"></path></svg><span class="sr-only"> Perimsx on Github</span></a><a class="group inline-block hover:text-accent hover:rotate-6 p-1.5 sm:p-1" title="Perimsx on X" href="https://x.com/Perimsx"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent size-5 scale-105 sm:size-6 sm:scale-110"><path d="M0 0h24v24H0z" stroke="none"></path><path d="M4 4l11.733 16h4.267l-11.733 -16z"></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"></path></svg><span class="sr-only">Perimsx on X</span></a><a class="group inline-block hover:text-accent hover:rotate-6 p-1.5 sm:p-1" title="Perimsx on Bilibili" href="https://space.bilibili.com/9655855"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="inline-block fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent size-5 scale-105 sm:size-6 sm:scale-110"><path fill="currentColor" stroke="none" d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373Z"></path></svg><span class="sr-only">Perimsx on Bilibili</span></a><a class="group inline-block hover:text-accent hover:rotate-6 p-1.5 sm:p-1" title="Perimsx on Douyin" href="https://v.douyin.com/HWMgjLaTtFk"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="inline-block fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent size-5 scale-105 sm:size-6 sm:scale-110"><path fill="currentColor" stroke="none" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"></path></svg><span class="sr-only">Perimsx on Douyin</span></a></div><div class="my-2 flex flex-col items-center whitespace-nowrap text-[0.82rem] sm:items-start sm:text-sm"><a href="https://github.com/Perimsx/blog" target="_blank" rel="noopener noreferrer" class="hover:text-accent">CC BY 4.0 · Code MIT</a><div class="mt-1.5 flex flex-col items-center gap-1 text-[0.72rem] opacity-70 sm:mt-1 sm:flex-row sm:gap-3 sm:text-xs"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="hover:text-accent">鄂ICP备2025157857号</a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=42018502008592" target="_blank" rel="noopener noreferrer" class="hover:text-accent flex items-center gap-1 sm:mt-0"><img src="https://img.alicdn.com/tfs/TB1..50QpXXXXX7XpXXXXXXXXXX-20-20.png" alt="公安备案图标" class="w-3.5 h-3.5"/>鄂公网安备42018502008592号</a></div></div></div></footer><button id="back-to-top" class="layout-floating-anchor fixed z-50 transition-all duration-500 group opacity-0 translate-y-4 pointer-events-none" style="right:var(--layout-floating-mobile-right);bottom:var(--layout-floating-mobile-bottom)" aria-label="Back to Top"><div class="relative flex size-12 items-center justify-center"><svg class="absolute inset-0 size-12 -rotate-90" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="3" class="text-foreground/10"></circle><circle id="scroll-progress-ring" cx="24" cy="24" r="20" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="125.66" stroke-dashoffset="125.66" class="text-accent transition-[stroke-dashoffset] duration-100"></circle></svg><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-foreground/60 group-hover:text-accent transition-all duration-300 group-hover:-translate-y-0.5"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></div><span class="absolute -top-7 left-1/2 -translate-x-1/2 text-xs font-medium text-foreground/40 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Top</span></button><style>
+        @media (min-width: 640px) {
+          #back-to-top {
+            top: auto !important;
+            right: var(--layout-floating-right) !important;
+            bottom: var(--layout-floating-bottom) !important;
+          }
+        }
+      </style><div id="bulletin-container" class="fixed inset-0 z-[9999] flex flex-col justify-center overflow-y-auto bg-background p-4 text-foreground transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] sm:p-8" role="dialog" aria-modal="true"><style>
+        @keyframes printInFast {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .anim-print {
+          animation: printInFast 0.6s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+          opacity: 0;
+        }
+      </style><div class="mx-auto w-full max-w-[42rem]"><header class="anim-print mb-6 border-b-2 border-foreground pb-4" style="animation-delay:0s"><h1 class="text-center font-sans text-xl font-black tracking-widest sm:text-3xl">系统重构升级公告</h1><div class="mt-4 flex flex-row items-center justify-between font-sans text-[0.65rem] font-semibold tracking-wider opacity-60 sm:text-xs"><span>文献编号：PRMSX-2026-UPGRADE</span><span>执行状态：发布实施</span></div></header><main class="space-y-5 font-serif text-[0.85rem] leading-relaxed tracking-wide text-foreground/90 sm:text-[0.95rem] sm:leading-[1.8]"><p class="anim-print text-justify" style="animation-delay:0.1s"><strong>致各位访客与同行：</strong><br/>鉴于深层性能诉求，本站已启动彻底的底层重构。工程栈由 Astro 全域变轨至 <strong>Next.js (App Router)</strong>。核心调整明细如下：</p><section class="anim-print space-y-2" style="animation-delay:0.2s"><h2 class="flex items-center gap-2 font-sans text-[0.95rem] font-bold text-foreground"><span class="flex h-4 w-4 shrink-0 items-center justify-center bg-foreground text-[0.6rem] text-background">一</span>全模态静态跃迁 (SSG Export)</h2><div class="border-l-2 border-foreground/20 pl-4 opacity-90 text-[0.9em]">彻底废除 Node.js 运行时及动态中间件，Data-Fetching 100% 转移至 Build 侧，消除 SSR 承载损耗，极致压降 TTFB（首字节延迟）。</div></section><section class="anim-print space-y-2" style="animation-delay:0.3s"><h2 class="flex items-center gap-2 font-sans text-[0.95rem] font-bold text-foreground"><span class="flex h-4 w-4 shrink-0 items-center justify-center bg-foreground text-[0.6rem] text-background">二</span>视图解耦与微观交互革新</h2><div class="border-l-2 border-foreground/20 pl-4 opacity-90 text-[0.9em]">基于 RSC 组件重置基准网格布局，废弃生硬交互，上线响应式 Drawer 层级栈 (TOC)，并接管 View Transitions 实现主体无极切换平滑度。</div></section><section class="anim-print space-y-2" style="animation-delay:0.4s"><h2 class="flex items-center gap-2 font-sans text-[0.95rem] font-bold text-foreground"><span class="flex h-4 w-4 shrink-0 items-center justify-center bg-accent text-[0.6rem] text-background">三</span>系统免责声明 (WIP)</h2><div class="border-l-2 border-accent pl-4 opacity-90 text-[0.9em]">为实现像素级跨栈映射，正强制介入 MDX 解析链。当前生产系统处 <span class="text-accent font-bold">高敏调优期</span>，引发的局部样式异化及 404 断层属预期现象，敬请无视与包容。</div></section></main><footer class="anim-print mt-8 flex flex-row items-end justify-between border-t border-foreground/20 pt-6" style="animation-delay:0.5s"><div class="flex flex-col text-left font-sans"><span class="mb-1 text-[0.8rem] font-bold tracking-[0.1em] text-foreground sm:text-[0.9rem]">Perimsx (1722288011)</span><span class="text-[0.65rem] tracking-wider text-foreground/60 sm:text-xs">2026 · 03 · 30</span></div><button class="group relative inline-flex h-9 shrink-0 items-center justify-center border-2 border-foreground bg-transparent px-5 font-sans text-[0.7rem] font-bold tracking-widest text-foreground transition-all duration-300 hover:bg-foreground hover:text-background focus:outline-none sm:h-10 sm:px-8 sm:text-[0.75rem]">知悉并进入<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="ml-2 transition-transform duration-300 group-hover:translate-x-1"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button></footer></div></div><script src="/_next/static/chunks/webpack-98014fb368f17bcf.js" id="_R_" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,"1:\"$Sreact.fragment\"\n2:I[1031,[],\"\"]\n3:I[8954,[\"382\",\"static/chunks/382-8cd0914aab3203e0.js\",\"39\",\"static/chunks/app/error-c1615dcc59805ee0.js\"],\"default\"]\n4:I[1643,[],\"\"]\n5:I[4382,[\"382\",\"static/chunks/382-8cd0914aab3203e0.js\",\"153\",\"static/chunks/153-17fe24b6f7f024ce.js\",\"479\",\"static/chunks/app/(site)/posts/%5Bslug%5D/page-88080a839ad6aac3.js\"],\"\"]\n6:I[2236,[\"382\",\"static/chunks/382-8cd0914aab3203e0.js\",\"153\",\"static/chunks/153-17fe24b6f7f024ce.js\",\"750\",\"static/chunks/app/(site)/layout-10c5ef08b272fdf9.js\"],\"Header\"]\n14:I[1997,[],\"\"]\n:HL[\"/_next/static/css/081a0afca5a9bd20.css\",\"style\"]\n:HL[\"/_next/static/css/7d748c99a138f855.css\",\"style\"]\n"])</script><script>self.__next_f.push([1,"0:{\"P\":null,\"b\":\"DE-ngZBuzBwfJ1BL90bK9\",\"p\":\"\",\"c\":[\"\",\"posts\",\"sec021\"],\"i\":false,\"f\":[[[\"\",{\"children\":[\"(site)\",{\"children\":[\"posts\",{\"children\":[[\"slug\",\"sec021\",\"d\"],{\"children\":[\"__PAGE__\",{}]}]}]}]},\"$undefined\",\"$undefined\",true],[\"\",[\"$\",\"$1\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/081a0afca5a9bd20.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}],[\"$\",\"link\",\"1\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/7d748c99a138f855.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}]],[\"$\",\"html\",null,{\"lang\":\"zh-CN\",\"suppressHydrationWarning\":true,\"children\":[[\"$\",\"head\",null,{\"children\":[[\"$\",\"link\",null,{\"rel\":\"icon\",\"href\":\"/favicon.ico\"}],[\"$\",\"script\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"\\n              (function() {\\n                try {\\n                  var theme = localStorage.getItem('theme');\\n                  if (theme === 'dark' || (!theme \u0026\u0026 window.matchMedia('(prefers-color-scheme: dark)').matches)) {\\n                    document.documentElement.setAttribute('data-theme', 'dark');\\n                  } else {\\n                    document.documentElement.setAttribute('data-theme', 'light');\\n                  }\\n                } catch (e) {}\\n              })();\\n            \"}}]]}],[\"$\",\"body\",null,{\"className\":\"__className_f367f3\",\"children\":[\"$\",\"$L2\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$3\",\"errorStyles\":[],\"errorScripts\":[],\"template\":[\"$\",\"$L4\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[\"$\",\"main\",null,{\"id\":\"main-content\",\"className\":\"ui-page mx-auto flex max-w-3xl flex-1 items-center justify-center px-4\",\"children\":[\"$\",\"div\",null,{\"className\":\"status-panel status-panel--error \",\"children\":[[\"$\",\"div\",null,{\"className\":\"status-panel__eyebrow\",\"children\":[[\"$\",\"span\",null,{\"className\":\"status-panel__code\",\"children\":\"404\"}],[\"$\",\"span\",null,{\"className\":\"status-panel__pill\",\"children\":\"异常状态\"}]]}],[\"$\",\"h1\",null,{\"className\":\"status-panel__title\",\"children\":\"页面未找到\"}],[\"$\",\"p\",null,{\"className\":\"status-panel__desc\",\"children\":\"你访问的链接可能已经失效，或者地址里多带了前缀与尾斜杠。\"}],[\"$\",\"div\",null,{\"className\":\"status-panel__actions\",\"children\":[\"$\",\"$L5\",null,{\"href\":\"/\",\"className\":\"text-base underline decoration-dashed underline-offset-8 sm:text-lg hover:opacity-80\",\"children\":\"返回首页\"}]}]]}]}],[]],\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]}]]}]]}],{\"children\":[\"(site)\",[\"$\",\"$1\",\"c\",{\"children\":[null,[[\"$\",\"a\",null,{\"id\":\"skip-to-content\",\"href\":\"#main-content\",\"className\":\"absolute -top-full left-16 z-50 bg-background px-3 py-2 text-accent backdrop-blur-lg transition-all focus:top-4\",\"children\":\"Skip to content\"}],[\"$\",\"$L6\",null,{}],[\"$\",\"$L2\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L4\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}],[\"$\",\"footer\",null,{\"className\":\"w-full mt-auto\",\"children\":[[\"$\",\"div\",null,{\"className\":\"max-w-3xl mx-auto px-0\",\"children\":[\"$\",\"hr\",null,{\"className\":\"border-border\",\"aria-hidden\":true}]}],[\"$\",\"div\",null,{\"className\":\"flex flex-col items-center justify-between py-3 sm:flex-row-reverse sm:py-4\",\"children\":[[\"$\",\"div\",null,{\"className\":\"flex flex-wrap gap-0.5 sm:gap-1 justify-center\",\"children\":[[\"$\",\"$L5\",\"Github\",{\"href\":\"https://github.com/Perimsx\",\"className\":\"group inline-block hover:text-accent hover:rotate-6 p-1.5 sm:p-1\",\"title\":\" Perimsx on Github\",\"children\":[[\"$\",\"svg\",null,{\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":\"2\",\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"inline-block fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent size-5 scale-105 sm:size-6 sm:scale-110\",\"children\":[[\"$\",\"path\",null,{\"d\":\"M0 0h24v24H0z\",\"stroke\":\"none\"}],[\"$\",\"path\",null,{\"d\":\"M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5\"}]]}],[\"$\",\"span\",null,{\"className\":\"sr-only\",\"children\":\" Perimsx on Github\"}]]}],[\"$\",\"$L5\",\"X\",{\"href\":\"https://x.com/Perimsx\",\"className\":\"group inline-block hover:text-accent hover:rotate-6 p-1.5 sm:p-1\",\"title\":\"Perimsx on X\",\"children\":[\"$L7\",\"$L8\"]}],\"$L9\",\"$La\"]}],\"$Lb\"]}]]}],\"$Lc\",\"$Ld\",\"$Le\",\"$Lf\"]]}],{\"children\":[\"posts\",\"$L10\",{\"children\":[[\"slug\",\"sec021\",\"d\"],\"$L11\",{\"children\":[\"__PAGE__\",\"$L12\",{},null,false]},null,false]},null,false]},null,false]},null,false],\"$L13\",false]],\"m\":\"$undefined\",\"G\":[\"$14\",[]],\"s\":false,\"S\":true}\n"])</script><script>self.__next_f.push([1,"16:I[9406,[\"382\",\"static/chunks/382-8cd0914aab3203e0.js\",\"153\",\"static/chunks/153-17fe24b6f7f024ce.js\",\"750\",\"static/chunks/app/(site)/layout-10c5ef08b272fdf9.js\"],\"BackToTop\"]\n17:I[5709,[\"382\",\"static/chunks/382-8cd0914aab3203e0.js\",\"153\",\"static/chunks/153-17fe24b6f7f024ce.js\",\"750\",\"static/chunks/app/(site)/layout-10c5ef08b272fdf9.js\"],\"SearchModal\"]\n18:I[1456,[\"382\",\"static/chunks/382-8cd0914aab3203e0.js\",\"153\",\"static/chunks/153-17fe24b6f7f024ce.js\",\"750\",\"static/chunks/app/(site)/layout-10c5ef08b272fdf9.js\"],\"ContactModal\"]\n19:I[4639,[\"382\",\"static/chunks/382-8cd0914aab3203e0.js\",\"153\",\"static/chunks/153-17fe24b6f7f024ce.js\",\"750\",\"static/chunks/app/(site)/layout-10c5ef08b272fdf9.js\"],\"SiteAnnouncement\"]\n1b:I[8542,[],\"OutletBoundary\"]\n1d:I[4515,[],\"AsyncMetadataOutlet\"]\n1f:I[8542,[],\"ViewportBoundary\"]\n21:I[8542,[],\"MetadataBoundary\"]\n22:\"$Sreact.suspense\"\n7:[\"$\",\"svg\",null,{\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":\"2\",\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"inline-block fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent size-5 scale-105 sm:size-6 sm:scale-110\",\"children\":[[\"$\",\"path\",null,{\"d\":\"M0 0h24v24H0z\",\"stroke\":\"none\"}],[\"$\",\"path\",null,{\"d\":\"M4 4l11.733 16h4.267l-11.733 -16z\"}],[\"$\",\"path\",null,{\"d\":\"M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772\"}]]}]\n8:[\"$\",\"span\",null,{\"className\":\"sr-only\",\"children\":\"Perimsx on X\"}]\n15:T4f5,"])</script><script>self.__next_f.push([1,"M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373Z"])</script><script>self.__next_f.push([1,"9:[\"$\",\"$L5\",\"Bilibili\",{\"href\":\"https://space.bilibili.com/9655855\",\"className\":\"group inline-block hover:text-accent hover:rotate-6 p-1.5 sm:p-1\",\"title\":\"Perimsx on Bilibili\",\"children\":[[\"$\",\"svg\",null,{\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"className\":\"inline-block fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent size-5 scale-105 sm:size-6 sm:scale-110\",\"children\":[\"$\",\"path\",null,{\"fill\":\"currentColor\",\"stroke\":\"none\",\"d\":\"$15\"}]}],[\"$\",\"span\",null,{\"className\":\"sr-only\",\"children\":\"Perimsx on Bilibili\"}]]}]\n"])</script><script>self.__next_f.push([1,"a:[\"$\",\"$L5\",\"Douyin\",{\"href\":\"https://v.douyin.com/HWMgjLaTtFk\",\"className\":\"group inline-block hover:text-accent hover:rotate-6 p-1.5 sm:p-1\",\"title\":\"Perimsx on Douyin\",\"children\":[[\"$\",\"svg\",null,{\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"className\":\"inline-block fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent size-5 scale-105 sm:size-6 sm:scale-110\",\"children\":[\"$\",\"path\",null,{\"fill\":\"currentColor\",\"stroke\":\"none\",\"d\":\"M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z\"}]}],[\"$\",\"span\",null,{\"className\":\"sr-only\",\"children\":\"Perimsx on Douyin\"}]]}]\n"])</script><script>self.__next_f.push([1,"b:[\"$\",\"div\",null,{\"className\":\"my-2 flex flex-col items-center whitespace-nowrap text-[0.82rem] sm:items-start sm:text-sm\",\"children\":[[\"$\",\"a\",null,{\"href\":\"https://github.com/Perimsx/blog\",\"target\":\"_blank\",\"rel\":\"noopener noreferrer\",\"className\":\"hover:text-accent\",\"children\":\"CC BY 4.0 · Code MIT\"}],[\"$\",\"div\",null,{\"className\":\"mt-1.5 flex flex-col items-center gap-1 text-[0.72rem] opacity-70 sm:mt-1 sm:flex-row sm:gap-3 sm:text-xs\",\"children\":[[\"$\",\"a\",null,{\"href\":\"https://beian.miit.gov.cn/\",\"target\":\"_blank\",\"rel\":\"noopener noreferrer\",\"className\":\"hover:text-accent\",\"children\":\"鄂ICP备2025157857号\"}],[\"$\",\"a\",null,{\"href\":\"http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=42018502008592\",\"target\":\"_blank\",\"rel\":\"noopener noreferrer\",\"className\":\"hover:text-accent flex items-center gap-1 sm:mt-0\",\"children\":[[\"$\",\"img\",null,{\"src\":\"https://img.alicdn.com/tfs/TB1..50QpXXXXX7XpXXXXXXXXXX-20-20.png\",\"alt\":\"公安备案图标\",\"className\":\"w-3.5 h-3.5\"}],\"鄂公网安备42018502008592号\"]}]]}]]}]\n"])</script><script>self.__next_f.push([1,"c:[\"$\",\"$L16\",null,{}]\nd:[\"$\",\"$L17\",null,{}]\ne:[\"$\",\"$L18\",null,{}]\nf:[\"$\",\"$L19\",null,{}]\n10:[\"$\",\"$1\",\"c\",{\"children\":[null,[\"$\",\"$L2\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L4\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]]}]\n11:[\"$\",\"$1\",\"c\",{\"children\":[null,[\"$\",\"$L2\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L4\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]]}]\n12:[\"$\",\"$1\",\"c\",{\"children\":[\"$L1a\",null,[\"$\",\"$L1b\",null,{\"children\":[\"$L1c\",[\"$\",\"$L1d\",null,{\"promise\":\"$@1e\"}]]}]]}]\n13:[\"$\",\"$1\",\"h\",{\"children\":[null,[[\"$\",\"$L1f\",null,{\"children\":\"$L20\"}],null],[\"$\",\"$L21\",null,{\"children\":[\"$\",\"div\",null,{\"hidden\":true,\"children\":[\"$\",\"$22\",null,{\"fallback\":null,\"children\":\"$L23\"}]}]}]]}]\n"])</script><script>self.__next_f.push([1,"20:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"}],[\"$\",\"meta\",\"1\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"}]]\n1c:null\n"])</script><script>self.__next_f.push([1,"1e:{\"metadata\":[[\"$\",\"title\",\"0\",{\"children\":\"安全加固与基线核查 | Perimsx\"}],[\"$\",\"meta\",\"1\",{\"name\":\"description\",\"content\":\"CIS Benchmark安全基线详解，Linux/Windows双平台加固命令与Lynis/OpenSCAP自动核查\"}],[\"$\",\"meta\",\"2\",{\"name\":\"author\",\"content\":\"Perimsx\"}],[\"$\",\"meta\",\"3\",{\"name\":\"keywords\",\"content\":\"博客,技术,信息安全,Web开发,Perimsx\"}],[\"$\",\"meta\",\"4\",{\"name\":\"creator\",\"content\":\"Perimsx\"}],[\"$\",\"meta\",\"5\",{\"name\":\"robots\",\"content\":\"index, follow\"}],[\"$\",\"meta\",\"6\",{\"name\":\"googlebot\",\"content\":\"index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1\"}],[\"$\",\"link\",\"7\",{\"rel\":\"canonical\",\"href\":\"https://chenguitao.com/posts/sec021\"}],[\"$\",\"meta\",\"8\",{\"property\":\"og:title\",\"content\":\"安全加固与基线核查\"}],[\"$\",\"meta\",\"9\",{\"property\":\"og:description\",\"content\":\"CIS Benchmark安全基线详解，Linux/Windows双平台加固命令与Lynis/OpenSCAP自动核查\"}],[\"$\",\"meta\",\"10\",{\"property\":\"og:url\",\"content\":\"https://chenguitao.com/posts/sec021\"}],[\"$\",\"meta\",\"11\",{\"property\":\"og:image\",\"content\":\"https://chenguitao.com/covers/sec021-cover.webp\"}],[\"$\",\"meta\",\"12\",{\"property\":\"og:type\",\"content\":\"article\"}],[\"$\",\"meta\",\"13\",{\"property\":\"article:published_time\",\"content\":\"2026-01-09T00:00:00.000Z\"}],[\"$\",\"meta\",\"14\",{\"name\":\"twitter:card\",\"content\":\"summary_large_image\"}],[\"$\",\"meta\",\"15\",{\"name\":\"twitter:title\",\"content\":\"安全加固与基线核查\"}],[\"$\",\"meta\",\"16\",{\"name\":\"twitter:description\",\"content\":\"CIS Benchmark安全基线详解，Linux/Windows双平台加固命令与Lynis/OpenSCAP自动核查\"}],[\"$\",\"meta\",\"17\",{\"name\":\"twitter:image\",\"content\":\"https://chenguitao.com/covers/sec021-cover.webp\"}]],\"error\":null,\"digest\":\"$undefined\"}\n"])</script><script>self.__next_f.push([1,"23:\"$1e:metadata\"\n"])</script><script>self.__next_f.push([1,"24:I[7908,[\"382\",\"static/chunks/382-8cd0914aab3203e0.js\",\"153\",\"static/chunks/153-17fe24b6f7f024ce.js\",\"479\",\"static/chunks/app/(site)/posts/%5Bslug%5D/page-88080a839ad6aac3.js\"],\"ReadingProgress\"]\n26:I[7076,[\"382\",\"static/chunks/382-8cd0914aab3203e0.js\",\"153\",\"static/chunks/153-17fe24b6f7f024ce.js\",\"479\",\"static/chunks/app/(site)/posts/%5Bslug%5D/page-88080a839ad6aac3.js\"],\"default\"]\n27:I[7185,[\"382\",\"static/chunks/382-8cd0914aab3203e0.js\",\"153\",\"static/chunks/153-17fe24b6f7f024ce.js\",\"479\",\"static/chunks/app/(site)/posts/%5Bslug%5D/page-88080a839ad6aac3.js\"],\"MobileTOC\"]\n"])</script><script>self.__next_f.push([1,"1a:[[\"$\",\"$L24\",null,{}],[\"$\",\"script\",null,{\"type\":\"application/ld+json\",\"dangerouslySetInnerHTML\":{\"__html\":\"{\\\"@context\\\":\\\"https://schema.org\\\",\\\"@type\\\":\\\"BlogPosting\\\",\\\"headline\\\":\\\"安全加固与基线核查\\\",\\\"description\\\":\\\"CIS Benchmark安全基线详解，Linux/Windows双平台加固命令与Lynis/OpenSCAP自动核查\\\",\\\"author\\\":{\\\"@type\\\":\\\"Person\\\",\\\"name\\\":\\\"Perimsx\\\",\\\"url\\\":\\\"https://chenguitao.com/about\\\"},\\\"datePublished\\\":\\\"2026-01-09T00:00:00.000Z\\\",\\\"dateModified\\\":\\\"2026-01-09T00:00:00.000Z\\\",\\\"publisher\\\":{\\\"@type\\\":\\\"Organization\\\",\\\"name\\\":\\\"Perimsx\\\",\\\"url\\\":\\\"https://chenguitao.com/\\\"},\\\"mainEntityOfPage\\\":{\\\"@type\\\":\\\"WebPage\\\",\\\"@id\\\":\\\"https://chenguitao.com/posts/sec021\\\"},\\\"image\\\":\\\"/covers/sec021-cover.webp\\\",\\\"articleSection\\\":\\\"安全加固\\\",\\\"keywords\\\":\\\"安全加固, CIS Benchmark, 基线核查, Lynis\\\",\\\"wordCount\\\":2189,\\\"timeRequired\\\":\\\"PT23M\\\",\\\"inLanguage\\\":\\\"zh-CN\\\"}\"}}],null,[\"$\",\"main\",null,{\"id\":\"main-content\",\"className\":\"layout-frame w-full pb-12 mt-8\",\"data-pagefind-body\":true,\"children\":[[\"$\",\"h1\",null,{\"title\":\"安全加固与基线核查\",\"className\":\"block w-full text-[1.78rem] leading-[1.16] font-semibold text-accent sm:text-[1.98rem] lg:text-[1.9rem] lg:truncate\",\"children\":\"安全加固与基线核查\"}],[\"$\",\"div\",null,{\"className\":\"mt-1.5 mb-5 flex items-center justify-between gap-4\",\"children\":[[\"$\",\"div\",null,{\"className\":\"flex items-center gap-3\",\"children\":[[\"$\",\"div\",null,{\"className\":\"flex items-center gap-2 opacity-80 \",\"children\":[[\"$\",\"svg\",null,{\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":\"2\",\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"inline-block size-5 min-w-[1.25rem] \",\"children\":[[\"$\",\"path\",null,{\"d\":\"M0 0h24v24H0z\",\"stroke\":\"none\"}],[\"$\",\"path\",null,{\"d\":\"M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z\"}],[\"$\",\"path\",null,{\"d\":\"M16 3v4\"}],[\"$\",\"path\",null,{\"d\":\"M8 3v4\"}],[\"$\",\"path\",null,{\"d\":\"M4 11h16\"}],[\"$\",\"path\",null,{\"d\":\"M7 14h.013\"}],[\"$\",\"path\",null,{\"d\":\"M10.01 14h.005\"}],[\"$\",\"path\",null,{\"d\":\"M13.01 14h.005\"}],[\"$\",\"path\",null,{\"d\":\"M16.015 14h.005\"}],[\"$\",\"path\",null,{\"d\":\"M13.015 17h.005\"}],[\"$\",\"path\",null,{\"d\":\"M7.01 17h.005\"}],[\"$\",\"path\",null,{\"d\":\"M10.01 17h.005\"}]]}],[\"$\",\"span\",null,{\"className\":\"sr-only\",\"children\":\"Published:\"}],[\"$\",\"span\",null,{\"className\":\"text-sm italic sm:text-base\",\"children\":[\"$\",\"time\",null,{\"dateTime\":\"2026-01-09T00:00:00.000Z\",\"children\":\"9 Jan, 2026\"}]}]]}],[[\"$\",\"span\",null,{\"className\":\"text-foreground/30\",\"children\":\"•\"}],[\"$\",\"span\",null,{\"className\":\"text-[0.95rem] italic text-foreground/60\",\"children\":\"23 min read\"}]]]}],false]}],[\"$\",\"article\",null,{\"id\":\"article\",\"className\":\"article-detail prose mx-auto mt-8 max-w-3xl\",\"children\":[[\"$\",\"img\",null,{\"src\":\"/covers/sec021-cover.webp\",\"alt\":\"安全加固与基线核查\",\"className\":\"mb-6 aspect-video w-full rounded-md object-cover\",\"loading\":\"lazy\"}],\"$L25\"]}],[[\"$\",\"aside\",null,{\"className\":\"hidden xl:block fixed top-24 right-6 2xl:right-24 w-64 z-40\",\"children\":[\"$\",\"$L26\",null,{\"headings\":[{\"depth\":2,\"slug\":\"安全基线概念\",\"text\":\"安全基线概念#\"},{\"depth\":2,\"slug\":\"cis-benchmark-详解\",\"text\":\"CIS Benchmark 详解#\"},{\"depth\":3,\"slug\":\"评分机制\",\"text\":\"评分机制#\"},{\"depth\":3,\"slug\":\"level-1-与-level-2\",\"text\":\"Level 1 与 Level 2#\"},{\"depth\":3,\"slug\":\"cis-benchmark-文档获取\",\"text\":\"CIS Benchmark 文档获取#\"},{\"depth\":2,\"slug\":\"linux-安全加固\",\"text\":\"Linux 安全加固#\"},{\"depth\":3,\"slug\":\"ssh-加固\",\"text\":\"SSH 加固#\"},{\"depth\":3,\"slug\":\"内核参数调优\",\"text\":\"内核参数调优#\"},{\"depth\":3,\"slug\":\"文件权限加固\",\"text\":\"文件权限加固#\"},{\"depth\":3,\"slug\":\"账户与密码策略\",\"text\":\"账户与密码策略#\"},{\"depth\":2,\"slug\":\"windows-安全加固\",\"text\":\"Windows 安全加固#\"},{\"depth\":3,\"slug\":\"组策略配置\",\"text\":\"组策略配置#\"},{\"depth\":3,\"slug\":\"审计策略配置\",\"text\":\"审计策略配置#\"},{\"depth\":3,\"slug\":\"服务与功能加固\",\"text\":\"服务与功能加固#\"},{\"depth\":3,\"slug\":\"用户权限加固\",\"text\":\"用户权限加固#\"},{\"depth\":2,\"slug\":\"自动化基线核查工具\",\"text\":\"自动化基线核查工具#\"},{\"depth\":3,\"slug\":\"lynis--linux-安全审计利器\",\"text\":\"Lynis — Linux 安全审计利器#\"},{\"depth\":3,\"slug\":\"openscap--合规性自动化评估\",\"text\":\"OpenSCAP — 合规性自动化评估#\"},{\"depth\":2,\"slug\":\"加固检查清单汇总\",\"text\":\"加固检查清单汇总#\"},{\"depth\":3,\"slug\":\"linux-加固检查清单\",\"text\":\"Linux 加固检查清单#\"},{\"depth\":3,\"slug\":\"windows-加固检查清单\",\"text\":\"Windows 加固检查清单#\"},{\"depth\":3,\"slug\":\"快速核查脚本\",\"text\":\"快速核查脚本#\"},{\"depth\":2,\"slug\":\"安全建议与防御措施\",\"text\":\"安全建议与防御措施#\"},{\"depth\":2,\"slug\":\"总结\",\"text\":\"总结#\"}]}]}],[\"$\",\"$L27\",null,{\"headings\":\"$1a:3:props:children:3:0:props:children:props:headings\"}]],[\"$\",\"div\",null,{\"className\":\"flex flex-wrap items-center justify-between gap-4 mt-4 mb-4 sm:my-6\",\"children\":[\"$L28\",\"$L29\"]}],false,\"$L2a\",\"$L2b\"]}]]\n"])</script><script>self.__next_f.push([1,"2c:I[6859,[\"382\",\"static/chunks/382-8cd0914aab3203e0.js\",\"153\",\"static/chunks/153-17fe24b6f7f024ce.js\",\"479\",\"static/chunks/app/(site)/posts/%5Bslug%5D/page-88080a839ad6aac3.js\"],\"ShareLinks\"]\n"])</script><script>self.__next_f.push([1,"28:[\"$\",\"ul\",null,{\"className\":\"flex flex-wrap gap-x-4 gap-y-2\",\"children\":[[\"$\",\"li\",\"安全加固\",{\"className\":\"group inline-block max-w-full group-hover:cursor-pointer underline-offset-4\",\"children\":[\"$\",\"$L5\",null,{\"href\":\"/tags/安全加固\",\"className\":\"relative inline-flex max-w-full items-center whitespace-nowrap underline decoration-dashed transition-colors group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 text-sm underline-offset-4\",\"children\":[[\"$\",\"svg\",null,{\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":\"2\",\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"mr-1 inline-block shrink-0 opacity-80 sm:mr-1.5 size-3.5\",\"children\":[[\"$\",\"path\",null,{\"d\":\"M0 0h24v24H0z\",\"stroke\":\"none\"}],[\"$\",\"path\",null,{\"d\":\"M5 9l14 0\"}],[\"$\",\"path\",null,{\"d\":\"M5 15l14 0\"}],[\"$\",\"path\",null,{\"d\":\"M11 4l-4 16\"}],[\"$\",\"path\",null,{\"d\":\"M17 4l-4 16\"}]]}],[\"$\",\"span\",null,{\"children\":\"安全加固\"}]]}]}],[\"$\",\"li\",\"CIS Benchmark\",{\"className\":\"group inline-block max-w-full group-hover:cursor-pointer underline-offset-4\",\"children\":[\"$\",\"$L5\",null,{\"href\":\"/tags/cis-benchmark\",\"className\":\"relative inline-flex max-w-full items-center whitespace-nowrap underline decoration-dashed transition-colors group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 text-sm underline-offset-4\",\"children\":[[\"$\",\"svg\",null,{\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":\"2\",\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"mr-1 inline-block shrink-0 opacity-80 sm:mr-1.5 size-3.5\",\"children\":[[\"$\",\"path\",null,{\"d\":\"M0 0h24v24H0z\",\"stroke\":\"none\"}],[\"$\",\"path\",null,{\"d\":\"M5 9l14 0\"}],[\"$\",\"path\",null,{\"d\":\"M5 15l14 0\"}],[\"$\",\"path\",null,{\"d\":\"M11 4l-4 16\"}],[\"$\",\"path\",null,{\"d\":\"M17 4l-4 16\"}]]}],[\"$\",\"span\",null,{\"children\":\"CIS Benchmark\"}]]}]}],[\"$\",\"li\",\"基线核查\",{\"className\":\"group inline-block max-w-full group-hover:cursor-pointer underline-offset-4\",\"children\":[\"$\",\"$L5\",null,{\"href\":\"/tags/基线核查\",\"className\":\"relative inline-flex max-w-full items-center whitespace-nowrap underline decoration-dashed transition-colors group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 text-sm underline-offset-4\",\"children\":[[\"$\",\"svg\",null,{\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":\"2\",\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"mr-1 inline-block shrink-0 opacity-80 sm:mr-1.5 size-3.5\",\"children\":[[\"$\",\"path\",null,{\"d\":\"M0 0h24v24H0z\",\"stroke\":\"none\"}],[\"$\",\"path\",null,{\"d\":\"M5 9l14 0\"}],[\"$\",\"path\",null,{\"d\":\"M5 15l14 0\"}],[\"$\",\"path\",null,{\"d\":\"M11 4l-4 16\"}],[\"$\",\"path\",null,{\"d\":\"M17 4l-4 16\"}]]}],[\"$\",\"span\",null,{\"children\":\"基线核查\"}]]}]}],[\"$\",\"li\",\"Lynis\",{\"className\":\"group inline-block max-w-full group-hover:cursor-pointer underline-offset-4\",\"children\":[\"$\",\"$L5\",null,{\"href\":\"/tags/lynis\",\"className\":\"relative inline-flex max-w-full items-center whitespace-nowrap underline decoration-dashed transition-colors group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1 text-sm underline-offset-4\",\"children\":[[\"$\",\"svg\",null,{\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":\"2\",\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"mr-1 inline-block shrink-0 opacity-80 sm:mr-1.5 size-3.5\",\"children\":[[\"$\",\"path\",null,{\"d\":\"M0 0h24v24H0z\",\"stroke\":\"none\"}],[\"$\",\"path\",null,{\"d\":\"M5 9l14 0\"}],[\"$\",\"path\",null,{\"d\":\"M5 15l14 0\"}],[\"$\",\"path\",null,{\"d\":\"M11 4l-4 16\"}],[\"$\",\"path\",null,{\"d\":\"M17 4l-4 16\"}]]}],[\"$\",\"span\",null,{\"children\":\"Lynis\"}]]}]}]]}]\n"])</script><script>self.__next_f.push([1,"29:[\"$\",\"$L2c\",null,{\"url\":\"https://chenguitao.com/posts/sec021\",\"title\":\"安全加固与基线核查\"}]\n2a:[\"$\",\"hr\",null,{\"className\":\"my-6 border-dashed\"}]\n"])</script><script>self.__next_f.push([1,"2b:[\"$\",\"div\",null,{\"className\":\"flex flex-col sm:flex-row justify-between gap-6\",\"children\":[[\"$\",\"$L5\",null,{\"href\":\"/posts/sec022\",\"className\":\"flex gap-2 hover:opacity-75 items-start\",\"children\":[[\"$\",\"svg\",null,{\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":\"2\",\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"inline-block flex-shrink-0 mt-0.5\",\"children\":[[\"$\",\"path\",null,{\"d\":\"M0 0h24v24H0z\",\"stroke\":\"none\"}],[\"$\",\"path\",null,{\"d\":\"M15 6l-6 6l6 6\"}]]}],[\"$\",\"div\",null,{\"className\":\"min-w-0\",\"children\":[[\"$\",\"span\",null,{\"className\":\"block text-sm text-foreground/70\",\"children\":\"上一篇\"}],[\"$\",\"div\",null,{\"className\":\"text-accent/85\",\"children\":\"Kali环境搭建指南\"}]]}]]}],[\"$\",\"$L5\",null,{\"href\":\"/posts/sec020\",\"className\":\"flex gap-2 hover:opacity-75 items-start justify-end text-right ml-auto\",\"children\":[[\"$\",\"div\",null,{\"className\":\"min-w-0\",\"children\":[[\"$\",\"span\",null,{\"className\":\"block text-sm text-foreground/70\",\"children\":\"下一篇\"}],[\"$\",\"div\",null,{\"className\":\"text-accent/85\",\"children\":\"漏洞扫描与风险评估\"}]]}],[\"$\",\"svg\",null,{\"xmlns\":\"http://www.w3.org/2000/svg\",\"width\":24,\"height\":24,\"viewBox\":\"0 0 24 24\",\"fill\":\"none\",\"stroke\":\"currentColor\",\"strokeWidth\":\"2\",\"strokeLinecap\":\"round\",\"strokeLinejoin\":\"round\",\"className\":\"inline-block flex-shrink-0 mt-0.5\",\"children\":[[\"$\",\"path\",null,{\"d\":\"M0 0h24v24H0z\",\"stroke\":\"none\"}],[\"$\",\"path\",null,{\"d\":\"M9 6l6 6l-6 6\"}]]}]]}]]}]\n"])</script><script>self.__next_f.push([1,"25:[[\"$\",\"blockquote\",null,{\"children\":[\"\\n\",[\"$\",\"p\",null,{\"children\":\"阅读提示\\n适合对象：负责主机加固、基线核查和合规整改的安全或运维同学。\\n阅读前提：具备 Linux / Windows 基础管理经验。\\n核心收获：把基线要求拆成可执行的检查项、整改项和自动化核查思路。\\n说明：不同发行版与系统版本的命令行为可能不同，落地前请先在测试环境验证。\"}],\"\\n\"]}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"安全加固是将系统从默认的\\\"开箱即用\\\"状态调整为符合安全最佳实践的状态。许多安全事件的根本原因并非零日漏洞，而是系统配置不当——默认密码未修改、不必要的服务暴露、过于宽松的权限设置。CIS Benchmark（互联网安全中心基准）提供了一套业界公认的安全配置标准，本文将以此为核心，结合 Linux 和 Windows 的具体加固操作，以及 Lynis 和 OpenSCAP 等自动化工具，构建一份系统化的安全加固清单。\"}],\"\\n\",[\"$\",\"h2\",null,{\"id\":\"安全基线概念\",\"children\":[\"安全基线概念\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#安全基线概念\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"安全基线（Security Baseline）是指一组经过验证的最低安全配置要求，用于确保系统在部署和运行过程中达到可接受的安全水平。\"}],\"\\n\",[\"$\",\"p\",null,{\"children\":[\"$\",\"strong\",null,{\"children\":\"安全基线的核心价值：\"}]}],\"\\n\",[\"$\",\"ul\",null,{\"children\":[\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"标准化\"}],\"：为不同系统建立统一的安全配置标准，避免\\\"千人千面\\\"的配置差异\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"可度量\"}],\"：提供明确的检查项和预期值，使安全状态可以量化评估\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"可重复\"}],\"：基于脚本和工具实现自动化核查和配置，确保一致性\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"合规性\"}],\"：满足等保、ISO 27001、PCI DSS 等合规框架对安全配置的要求\"]}],\"\\n\"]}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"安全基线的制定通常参考行业标准（如 CIS Benchmark）并结合组织自身的业务场景和风险偏好进行裁剪。\"}],\"\\n\",[\"$\",\"h2\",null,{\"id\":\"cis-benchmark-详解\",\"children\":[\"CIS Benchmark 详解\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#cis-benchmark-详解\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"CIS（Center for Internet Security）是一个全球性的非营利组织，其发布的 CIS Benchmark 覆盖了操作系统、数据库、云平台、网络设备、中间件等 100 多类 IT 产品的安全配置建议。\"}],\"\\n\",[\"$\",\"h3\",null,{\"id\":\"评分机制\",\"children\":[\"评分机制\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#评分机制\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"CIS Benchmark 中的每一条配置建议都标注了评分状态（Scored/Not Scored）：\"}],\"\\n\",[\"$\",\"ul\",null,{\"children\":[\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"Scored（计分项）\"}],\"：不符合该项配置将导致基线评分下降，属于必须满足的安全要求\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"Not Scored（非计分项）\"}],\"：属于建议性配置，不影响评分但有助于提升安全性\"]}],\"\\n\"]}],\"\\n\",[\"$\",\"h3\",null,{\"id\":\"level-1-与-level-2\",\"children\":[\"Level 1 与 Level 2\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#level-1-与-level-2\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}],\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\",[\"$\",\"table\",null,{\"children\":[[\"$\",\"thead\",null,{\"children\":[\"$\",\"tr\",null,{\"children\":[[\"$\",\"th\",null,{\"children\":\"级别\"}],[\"$\",\"th\",null,{\"children\":\"描述\"}],[\"$\",\"th\",null,{\"children\":\"适用场景\"}]]}]}],[\"$\",\"tbody\",null,{\"children\":[[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"Level 1\"}],[\"$\",\"td\",null,{\"children\":\"基础安全加固。实施后对系统功能和性能影响极小，适用于所有系统\"}],[\"$\",\"td\",null,{\"children\":\"所有生产环境必须满足\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"Level 2\"}],[\"$\",\"td\",null,{\"children\":\"深度安全加固。可能影响系统便利性或性能，适用于高安全要求环境\"}],[\"$\",\"td\",null,{\"children\":\"金融、政务、涉密系统\"}]]}]]}]]}],\"\\n\",[\"$\",\"h3\",null,{\"id\":\"cis-benchmark-文档获取\",\"children\":[\"CIS Benchmark 文档获取\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#cis-benchmark-文档获取\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}],\"\\n\",\"$L2d\",\"\\n\",[\"$\",\"h2\",null,{\"id\":\"linux-安全加固\",\"children\":[\"Linux 安全加固\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#linux-安全加固\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}],\"\\n\",[\"$\",\"h3\",null,{\"id\":\"ssh-加固\",\"children\":[\"SSH 加固\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#ssh-加固\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}],\"\\n\",[\"$\",\"p\",null,{\"children\":\"SSH 是 Linux 服务器最常用的远程管理入口，也是暴力破解攻击的首要目标。\"}],\"\\n\",\"$L2e\",\"\\n\",\"$L2f\",\"\\n\",[\"$\",\"h3\",null,{\"id\":\"内核参数调优\",\"children\":[\"内核参数调优\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#内核参数调优\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}],\"\\n\",\"$L30\",\"\\n\",[\"$\",\"h3\",null,{\"id\":\"文件权限加固\",\"children\":[\"文件权限加固\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#文件权限加固\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}],\"\\n\",\"$L31\",\"\\n\",[\"$\",\"h3\",null,{\"id\":\"账户与密码策略\",\"children\":[\"账户与密码策略\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#账户与密码策略\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}],\"\\n\",\"$L32\",\"\\n\",[\"$\",\"h2\",null,{\"id\":\"windows-安全加固\",\"children\":[\"Windows 安全加固\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#windows-安全加固\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}],\"\\n\",[\"$\",\"h3\",null,{\"id\":\"组策略配置\",\"children\":[\"组策略配置\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#组策略配置\",\"children\":\"$L33\"}]]}],\"\\n\",\"$L34\",\"\\n\",\"$L35\",\"\\n\",\"$L36\",\"\\n\",\"$L37\",\"\\n\",\"$L38\",\"\\n\",\"$L39\",\"\\n\",\"$L3a\",\"\\n\",\"$L3b\",\"\\n\",\"$L3c\",\"\\n\",\"$L3d\",\"\\n\",\"$L3e\",\"\\n\",\"$L3f\",\"\\n\",\"$L40\",\"\\n\",\"$L41\",\"\\n\",\"$L42\",\"\\n\",\"$L43\",\"\\n\",\"$L44\",\"\\n\",\"$L45\",\"\\n\",\"$L46\",\"\\n\",\"$L47\",\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\",\"$L48\",\"\\n\",\"$L49\",\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\",\"$L4a\",\"\\n\",\"$L4b\",\"\\n\",\"$L4c\",\"\\n\",\"$L4d\",\"\\n\",\"$L4e\",\"\\n\",\"$L4f\",\"\\n\",\"$L50\"]\n"])</script><script>self.__next_f.push([1,"33:[\"$\",\"span\",null,{\"children\":\"#\"}]\n34:[\"$\",\"p\",null,{\"children\":\"Windows 系统加固主要通过组策略（Group Policy）和本地安全策略实现。\"}]\n36:[\"$\",\"h3\",null,{\"id\":\"审计策略配置\",\"children\":[\"审计策略配置\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#审计策略配置\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}]\n38:[\"$\",\"h3\",null,{\"id\":\"服务与功能加固\",\"children\":[\"服务与功能加固\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#服务与功能加固\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}]\n3a:[\"$\",\"h3\",null,{\"id\":\"用户权限加固\",\"children\":[\"用户权限加固\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#用户权限加固\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}]\n3c:[\"$\",\"h2\",null,{\"id\":\"自动化基线核查工具\",\"children\":[\"自动化基线核查工具\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#自动化基线核查工具\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}]\n3d:[\"$\",\"h3\",null,{\"id\":\"lynis--linux-安全审计利器\",\"children\":[\"Lynis — Linux 安全审计利器\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#lynis--linux-安全审计利器\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}]\n3e:[\"$\",\"p\",null,{\"children\":\"Lynis 是一款轻量级、功能强大的 Linux/Unix 安全审计工具，可以检查系统配置、软件补丁、文件权限等数百项安全指标。\"}]\n40:[\"$\",\"p\",null,{\"children\":[\"$\",\"strong\",null,{\"children\":\"Lynis 报告分析要点：\"}]}]\n41:[\"$\",\"ul\",null,{\"children\":[\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"Hardening Index\"}],\"：系统加固指数，满分 100，越高越好。新装系统通常在 50-65 之间\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"Warnings\"}],\"：红色警告项，应优先处理\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"Suggestions\"}]"])</script><script>self.__next_f.push([1,",\"：黄色建议项，逐项评估并实施\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"Tests Performed\"}],\"：显示执行了多少项检测和跳过了多少项\"]}],\"\\n\"]}]\n42:[\"$\",\"h3\",null,{\"id\":\"openscap--合规性自动化评估\",\"children\":[\"OpenSCAP — 合规性自动化评估\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#openscap--合规性自动化评估\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}]\n43:[\"$\",\"p\",null,{\"children\":\"OpenSCAP 是 NIST 认证的安全合规自动化评估工具，支持 SCAP（Security Content Automation Protocol）标准。\"}]\n45:[\"$\",\"h2\",null,{\"id\":\"加固检查清单汇总\",\"children\":[\"加固检查清单汇总\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#加固检查清单汇总\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}]\n46:[\"$\",\"p\",null,{\"children\":\"以下是一份综合性的安全加固检查清单，涵盖 Linux 和 Windows 核心加固项：\"}]\n47:[\"$\",\"h3\",null,{\"id\":\"linux-加固检查清单\",\"children\":[\"Linux 加固检查清单\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#linux-加固检查清单\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"48:[\"$\",\"table\",null,{\"children\":[[\"$\",\"thead\",null,{\"children\":[\"$\",\"tr\",null,{\"children\":[[\"$\",\"th\",null,{\"children\":\"序号\"}],[\"$\",\"th\",null,{\"children\":\"检查项\"}],[\"$\",\"th\",null,{\"children\":\"CIS级别\"}],[\"$\",\"th\",null,{\"children\":\"状态\"}]]}]}],[\"$\",\"tbody\",null,{\"children\":[[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"1\"}],[\"$\",\"td\",null,{\"children\":\"确保 SSH root 登录已禁用\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"2\"}],[\"$\",\"td\",null,{\"children\":\"确保 SSH 使用密钥认证\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"3\"}],[\"$\",\"td\",null,{\"children\":\"确保密码最小长度 ≥ 12\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"4\"}],[\"$\",\"td\",null,{\"children\":\"确保密码复杂度策略已配置\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"5\"}],[\"$\",\"td\",null,{\"children\":\"确保 Fail2Ban 或类似方案已部署\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"6\"}],[\"$\",\"td\",null,{\"children\":\"确保系统时间同步（NTP）已配置\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"7\"}],[\"$\",\"td\",null,{\"children\":\"确保 iptables/nftables 防火墙已启用\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"8\"}],[\"$\",\"td\",null,{\"children\":\"确保不必要的服务已禁用\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"9\"}],[\"$\",\"td\",null,{\"children\":\"确保内核安全参数已优化\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"10\"}],[\"$\",\"td\",null,{\"children\":\"确保文件权限符合最小权限原则\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"11\"}],[\"$\",\"td\",null,{\"children\":\"确保日志审计已启用（auditd）\"}],[\"$\",\"td\",null,{\"children\":\"L2\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"12\"}],[\"$\",\"td\",null,{\"children\":\"确保 SELinux/AppArmor 已启用\"}],[\"$\",\"td\",null,{\"children\":\"L2\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"13\"}],[\"$\",\"td\",null,{\"children\":\"确保无空密码账户\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"14\"}],[\"$\",\"td\",null,{\"children\":\"确保 SUID/SGID 文件已审查\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"15\"}],[\"$\",\"td\",null,{\"children\":\"确保自动安全更新已配置\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}]]}]]}]\n"])</script><script>self.__next_f.push([1,"49:[\"$\",\"h3\",null,{\"id\":\"windows-加固检查清单\",\"children\":[\"Windows 加固检查清单\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#windows-加固检查清单\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"4a:[\"$\",\"table\",null,{\"children\":[[\"$\",\"thead\",null,{\"children\":[\"$\",\"tr\",null,{\"children\":[[\"$\",\"th\",null,{\"children\":\"序号\"}],[\"$\",\"th\",null,{\"children\":\"检查项\"}],[\"$\",\"th\",null,{\"children\":\"CIS级别\"}],[\"$\",\"th\",null,{\"children\":\"状态\"}]]}]}],[\"$\",\"tbody\",null,{\"children\":[[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"1\"}],[\"$\",\"td\",null,{\"children\":\"确保账户锁定策略已配置\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"2\"}],[\"$\",\"td\",null,{\"children\":\"确保密码策略符合要求\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"3\"}],[\"$\",\"td\",null,{\"children\":\"确保 SMBv1 已禁用\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"4\"}],[\"$\",\"td\",null,{\"children\":\"确保 Windows 防火墙已启用\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"5\"}],[\"$\",\"td\",null,{\"children\":\"确保审计策略已全面配置\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"6\"}],[\"$\",\"td\",null,{\"children\":\"确保 UAC 已启用且级别适当\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"7\"}],[\"$\",\"td\",null,{\"children\":\"确保 Guest 账户已禁用\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"8\"}],[\"$\",\"td\",null,{\"children\":\"确保 Administrator 已重命名\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"9\"}],[\"$\",\"td\",null,{\"children\":\"确保 PowerShell 日志已启用\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"10\"}],[\"$\",\"td\",null,{\"children\":\"确保 Windows Defender 已启用\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"11\"}],[\"$\",\"td\",null,{\"children\":\"确保远程注册表服务已禁用\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"12\"}],[\"$\",\"td\",null,{\"children\":\"确保 Windows Update 已配置\"}],[\"$\",\"td\",null,{\"children\":\"L1\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"13\"}],[\"$\",\"td\",null,{\"children\":\"确保 BitLocker 磁盘加密已启用\"}],[\"$\",\"td\",null,{\"children\":\"L2\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"14\"}],[\"$\",\"td\",null,{\"children\":\"确保 Credential Guard 已启用\"}],[\"$\",\"td\",null,{\"children\":\"L2\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}],[\"$\",\"tr\",null,{\"children\":[[\"$\",\"td\",null,{\"children\":\"15\"}],[\"$\",\"td\",null,{\"children\":\"确保 AppLocker/WDAC 已配置\"}],[\"$\",\"td\",null,{\"children\":\"L2\"}],[\"$\",\"td\",null,{\"children\":\"[ ]\"}]]}]]}]]}]\n"])</script><script>self.__next_f.push([1,"4b:[\"$\",\"h3\",null,{\"id\":\"快速核查脚本\",\"children\":[\"快速核查脚本\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#快速核查脚本\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}]\n4d:[\"$\",\"h2\",null,{\"id\":\"安全建议与防御措施\",\"children\":[\"安全建议与防御措施\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#安全建议与防御措施\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"4e:[\"$\",\"ol\",null,{\"children\":[\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"基线先行\"}],\"：在系统上线前完成安全基线配置，将加固嵌入部署流程而非事后补救\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"自动化核查\"}],\"：使用 Lynis、OpenSCAP 等工具定期自动化检查基线合规状态\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"配置即代码\"}],\"：将安全配置纳入 Ansible、Puppet 或 Chef 等配置管理工具，确保一致性和可追溯性\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"持续监控\"}],\"：部署文件完整性监控（FIM）工具，检测未授权的配置变更\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"定期审查\"}],\"：每季度审查安全基线标准，根据新的威胁和漏洞及时更新\"]}],\"\\n\",[\"$\",\"li\",null,{\"children\":[[\"$\",\"strong\",null,{\"children\":\"分层加固\"}],\"：从网络边界、操作系统、中间件到应用程序，逐层实施安全加固\"]}],\"\\n\"]}]\n"])</script><script>self.__next_f.push([1,"4f:[\"$\",\"h2\",null,{\"id\":\"总结\",\"children\":[\"总结\",[\"$\",\"a\",null,{\"className\":\"anchor-link\",\"aria-label\":\"Permalink\",\"href\":\"#总结\",\"children\":[\"$\",\"span\",null,{\"children\":\"#\"}]}]]}]\n50:[\"$\",\"p\",null,{\"children\":\"安全加固是纵深防御体系中最基础也是最重要的一环。CIS Benchmark 为我们提供了全面、专业的安全配置基准，结合 Lynis 和 OpenSCAP 等自动化工具，可以高效地完成基线核查和持续合规监控。安全加固不是一次性的项目，而是需要持续迭代的过程——随着业务变化、新漏洞发现和合规要求更新，安全基线也需要不断演进。将安全加固融入 DevSecOps 流程，在系统构建阶段就植入安全基因，才是实现长效安全运营的正确路径。\"}]\n"])</script><script>self.__next_f.push([1,"51:I[980,[\"382\",\"static/chunks/382-8cd0914aab3203e0.js\",\"153\",\"static/chunks/153-17fe24b6f7f024ce.js\",\"479\",\"static/chunks/app/(site)/posts/%5Bslug%5D/page-88080a839ad6aac3.js\"],\"CopyButton\"]\n"])</script><script>self.__next_f.push([1,"2d:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"# CIS Benchmark PDF 文档可从官方网站免费下载（需注册）\\n# https://www.cisecurity.org/cis-benchmarks\\n\\n# 常用的 Benchmark 包括：\\n# - CIS Red Hat Enterprise Linux 8/9 Benchmark\\n# - CIS Ubuntu Linux 22.04/24.04 LTS Benchmark\\n# - CIS Microsoft Windows Server 2019/2022 Benchmark\\n# - CIS Microsoft Windows 11 Enterprise Benchmark\\n# - CIS Docker Benchmark\\n# - CIS Kubernetes Benchmark\\n\"}],[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-bash\",\"children\":\"# CIS Benchmark PDF 文档可从官方网站免费下载（需注册）\\n# https://www.cisecurity.org/cis-benchmarks\\n\\n# 常用的 Benchmark 包括：\\n# - CIS Red Hat Enterprise Linux 8/9 Benchmark\\n# - CIS Ubuntu Linux 22.04/24.04 LTS Benchmark\\n# - CIS Microsoft Windows Server 2019/2022 Benchmark\\n# - CIS Microsoft Windows 11 Enterprise Benchmark\\n# - CIS Docker Benchmark\\n# - CIS Kubernetes Benchmark\\n\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"2e:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"# === SSH 安全加固配置 ===\\n# 编辑 /etc/ssh/sshd_config\\n\\n# 1. 禁止 root 直接 SSH 登录\\nPermitRootLogin no\\n\\n# 2. 使用密钥认证，禁用密码认证\\nPubkeyAuthentication yes\\nPasswordAuthentication no\\nChallengeResponseAuthentication no\\n\\n# 3. 修改默认端口（降低自动化扫描命中率）\\nPort 22222\\n\\n# 4. 限制 SSH 协议版本\\nProtocol 2\\n\\n# 5. 设置登录超时和最大尝试次数\\nLoginGraceTime 60\\nMaxAuthTries 3\\nMaxSessions 5\\n\\n# 6. 禁止空密码登录\\nPermitEmptyPasswords no\\n\\n# 7. 限制允许 SSH 登录的用户\\nAllowUsers admin deployer\\n# 或限制允许的用户组\\nAllowGroups ssh-users\\n\\n# 8. 禁用不安全的认证方式\\nHostbasedAuthentication no\\nIgnoreRhosts yes\\n\\n# 9. 配置 SSH 空闲超时断开\\nClientAliveInterval 300\\nClientAliveCountMax 2\\n\\n# 10. 禁用 X11 转发和 Agent 转发\\nX11Forwarding no\\nAllowAgentForwarding no\\n\\n# 11. 配置加密算法（禁用弱算法）\\nCiphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr\\nMACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com\\nKexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512\\n\\n# 12. 启用日志记录\\nLogLevel VERBOSE\\n\\n# 应用配置\\nsudo systemctl restart sshd\\n\"}],[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-bash\",\"children\":\"# === SSH 安全加固配置 ===\\n# 编辑 /etc/ssh/sshd_config\\n\\n# 1. 禁止 root 直接 SSH 登录\\nPermitRootLogin no\\n\\n# 2. 使用密钥认证，禁用密码认证\\nPubkeyAuthentication yes\\nPasswordAuthentication no\\nChallengeResponseAuthentication no\\n\\n# 3. 修改默认端口（降低自动化扫描命中率）\\nPort 22222\\n\\n# 4. 限制 SSH 协议版本\\nProtocol 2\\n\\n# 5. 设置登录超时和最大尝试次数\\nLoginGraceTime 60\\nMaxAuthTries 3\\nMaxSessions 5\\n\\n# 6. 禁止空密码登录\\nPermitEmptyPasswords no\\n\\n# 7. 限制允许 SSH 登录的用户\\nAllowUsers admin deployer\\n# 或限制允许的用户组\\nAllowGroups ssh-users\\n\\n# 8. 禁用不安全的认证方式\\nHostbasedAuthentication no\\nIgnoreRhosts yes\\n\\n# 9. 配置 SSH 空闲超时断开\\nClientAliveInterval 300\\nClientAliveCountMax 2\\n\\n# 10. 禁用 X11 转发和 Agent 转发\\nX11Forwarding no\\nAllowAgentForwarding no\\n\\n# 11. 配置加密算法（禁用弱算法）\\nCiphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr\\nMACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com\\nKexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512\\n\\n# 12. 启用日志记录\\nLogLevel VERBOSE\\n\\n# 应用配置\\nsudo systemctl restart sshd\\n\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"2f:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"# === 配置 Fail2Ban 防暴力破解 ===\\nsudo apt install fail2ban   # Debian/Ubuntu\\nsudo yum install fail2ban   # RHEL/CentOS\\n\\n# 创建自定义配置\\nsudo tee /etc/fail2ban/jail.local \u003c\u003c 'EOF'\\n[DEFAULT]\\nbantime = 3600\\nfindtime = 600\\nmaxretry = 3\\nbanaction = iptables-multiport\\n\\n[sshd]\\nenabled = true\\nport = 22222\\nlogpath = /var/log/auth.log\\nmaxretry = 3\\nbantime = 86400\\nEOF\\n\\nsudo systemctl enable fail2ban\\nsudo systemctl restart fail2ban\\n\\n# 查看封禁状态\\nsudo fail2ban-client status sshd\\n\"}],[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-bash\",\"children\":\"# === 配置 Fail2Ban 防暴力破解 ===\\nsudo apt install fail2ban   # Debian/Ubuntu\\nsudo yum install fail2ban   # RHEL/CentOS\\n\\n# 创建自定义配置\\nsudo tee /etc/fail2ban/jail.local \u003c\u003c 'EOF'\\n[DEFAULT]\\nbantime = 3600\\nfindtime = 600\\nmaxretry = 3\\nbanaction = iptables-multiport\\n\\n[sshd]\\nenabled = true\\nport = 22222\\nlogpath = /var/log/auth.log\\nmaxretry = 3\\nbantime = 86400\\nEOF\\n\\nsudo systemctl enable fail2ban\\nsudo systemctl restart fail2ban\\n\\n# 查看封禁状态\\nsudo fail2ban-client status sshd\\n\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"52:T587,"])</script><script>self.__next_f.push([1,"# === 安全相关的内核参数优化 ===\n# 编辑 /etc/sysctl.conf 或创建 /etc/sysctl.d/99-security.conf\n\nsudo tee /etc/sysctl.d/99-security.conf \u003c\u003c 'EOF'\n# 禁用 IP 转发（非路由器/网关设备）\nnet.ipv4.ip_forward = 0\nnet.ipv6.conf.all.forwarding = 0\n\n# 禁用 ICMP 重定向接受（防止路由劫持）\nnet.ipv4.conf.all.accept_redirects = 0\nnet.ipv4.conf.default.accept_redirects = 0\nnet.ipv6.conf.all.accept_redirects = 0\n\n# 禁止发送 ICMP 重定向\nnet.ipv4.conf.all.send_redirects = 0\nnet.ipv4.conf.default.send_redirects = 0\n\n# 启用源路由验证（防 IP 欺骗）\nnet.ipv4.conf.all.rp_filter = 1\nnet.ipv4.conf.default.rp_filter = 1\n\n# 忽略 ICMP 广播请求（防 Smurf 攻击）\nnet.ipv4.icmp_echo_ignore_broadcasts = 1\n\n# 记录可疑的 Martian 数据包\nnet.ipv4.conf.all.log_martians = 1\nnet.ipv4.conf.default.log_martians = 1\n\n# 启用 SYN Cookie（防 SYN Flood）\nnet.ipv4.tcp_syncookies = 1\n\n# 禁用源路由\nnet.ipv4.conf.all.accept_source_route = 0\nnet.ipv4.conf.default.accept_source_route = 0\nnet.ipv6.conf.all.accept_source_route = 0\n\n# 限制核心转储（防止敏感数据泄露）\nfs.suid_dumpable = 0\n\n# 启用 ASLR（地址空间布局随机化）\nkernel.randomize_va_space = 2\n\n# 限制对 dmesg 的访问\nkernel.dmesg_restrict = 1\n\n# 限制对内核指针的暴露\nkernel.kptr_restrict = 2\nEOF\n\n# 应用配置\nsudo sysctl -p /etc/sysctl.d/99-security.conf\n"])</script><script>self.__next_f.push([1,"53:T587,"])</script><script>self.__next_f.push([1,"# === 安全相关的内核参数优化 ===\n# 编辑 /etc/sysctl.conf 或创建 /etc/sysctl.d/99-security.conf\n\nsudo tee /etc/sysctl.d/99-security.conf \u003c\u003c 'EOF'\n# 禁用 IP 转发（非路由器/网关设备）\nnet.ipv4.ip_forward = 0\nnet.ipv6.conf.all.forwarding = 0\n\n# 禁用 ICMP 重定向接受（防止路由劫持）\nnet.ipv4.conf.all.accept_redirects = 0\nnet.ipv4.conf.default.accept_redirects = 0\nnet.ipv6.conf.all.accept_redirects = 0\n\n# 禁止发送 ICMP 重定向\nnet.ipv4.conf.all.send_redirects = 0\nnet.ipv4.conf.default.send_redirects = 0\n\n# 启用源路由验证（防 IP 欺骗）\nnet.ipv4.conf.all.rp_filter = 1\nnet.ipv4.conf.default.rp_filter = 1\n\n# 忽略 ICMP 广播请求（防 Smurf 攻击）\nnet.ipv4.icmp_echo_ignore_broadcasts = 1\n\n# 记录可疑的 Martian 数据包\nnet.ipv4.conf.all.log_martians = 1\nnet.ipv4.conf.default.log_martians = 1\n\n# 启用 SYN Cookie（防 SYN Flood）\nnet.ipv4.tcp_syncookies = 1\n\n# 禁用源路由\nnet.ipv4.conf.all.accept_source_route = 0\nnet.ipv4.conf.default.accept_source_route = 0\nnet.ipv6.conf.all.accept_source_route = 0\n\n# 限制核心转储（防止敏感数据泄露）\nfs.suid_dumpable = 0\n\n# 启用 ASLR（地址空间布局随机化）\nkernel.randomize_va_space = 2\n\n# 限制对 dmesg 的访问\nkernel.dmesg_restrict = 1\n\n# 限制对内核指针的暴露\nkernel.kptr_restrict = 2\nEOF\n\n# 应用配置\nsudo sysctl -p /etc/sysctl.d/99-security.conf\n"])</script><script>self.__next_f.push([1,"30:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"$52\"}],[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-bash\",\"children\":\"$53\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"31:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"# === 关键文件权限加固 ===\\n\\n# 确保 /etc/passwd 权限正确\\nchmod 644 /etc/passwd\\nchown root:root /etc/passwd\\n\\n# 确保 /etc/shadow 只有 root 可读\\nchmod 600 /etc/shadow\\nchown root:root /etc/shadow\\n\\n# 确保 /etc/group 权限正确\\nchmod 644 /etc/group\\nchown root:root /etc/group\\n\\n# 确保 /etc/gshadow 权限正确\\nchmod 600 /etc/gshadow\\nchown root:root /etc/gshadow\\n\\n# 确保 cron 配置文件权限\\nchmod 600 /etc/crontab\\nchown root:root /etc/crontab\\nchmod 700 /etc/cron.d\\nchmod 700 /etc/cron.daily\\nchmod 700 /etc/cron.hourly\\nchmod 700 /etc/cron.weekly\\nchmod 700 /etc/cron.monthly\\n\\n# 确保 SSH 配置文件权限\\nchmod 600 /etc/ssh/sshd_config\\nchown root:root /etc/ssh/sshd_config\\n\\n# 查找并修复全局可写文件（不包含临时目录）\\nfind / -xdev -type f -perm -0002 -not -path \\\"/proc/*\\\" -not -path \\\"/sys/*\\\" -ls 2\u003e/dev/null\\n\\n# 查找无属主或无属组的文件\\nfind / -xdev \\\\( -nouser -o -nogroup \\\\) -not -path \\\"/proc/*\\\" -ls 2\u003e/dev/null\\n\\n# 禁止非授权用户查看其他用户的 home 目录\\nchmod 750 /home/*\\n\\n# 设置 umask 为 027（限制新建文件的默认权限）\\necho \\\"umask 027\\\" \u003e\u003e /etc/profile\\necho \\\"umask 027\\\" \u003e\u003e /etc/bashrc\\n\"}],[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-bash\",\"children\":\"# === 关键文件权限加固 ===\\n\\n# 确保 /etc/passwd 权限正确\\nchmod 644 /etc/passwd\\nchown root:root /etc/passwd\\n\\n# 确保 /etc/shadow 只有 root 可读\\nchmod 600 /etc/shadow\\nchown root:root /etc/shadow\\n\\n# 确保 /etc/group 权限正确\\nchmod 644 /etc/group\\nchown root:root /etc/group\\n\\n# 确保 /etc/gshadow 权限正确\\nchmod 600 /etc/gshadow\\nchown root:root /etc/gshadow\\n\\n# 确保 cron 配置文件权限\\nchmod 600 /etc/crontab\\nchown root:root /etc/crontab\\nchmod 700 /etc/cron.d\\nchmod 700 /etc/cron.daily\\nchmod 700 /etc/cron.hourly\\nchmod 700 /etc/cron.weekly\\nchmod 700 /etc/cron.monthly\\n\\n# 确保 SSH 配置文件权限\\nchmod 600 /etc/ssh/sshd_config\\nchown root:root /etc/ssh/sshd_config\\n\\n# 查找并修复全局可写文件（不包含临时目录）\\nfind / -xdev -type f -perm -0002 -not -path \\\"/proc/*\\\" -not -path \\\"/sys/*\\\" -ls 2\u003e/dev/null\\n\\n# 查找无属主或无属组的文件\\nfind / -xdev \\\\( -nouser -o -nogroup \\\\) -not -path \\\"/proc/*\\\" -ls 2\u003e/dev/null\\n\\n# 禁止非授权用户查看其他用户的 home 目录\\nchmod 750 /home/*\\n\\n# 设置 umask 为 027（限制新建文件的默认权限）\\necho \\\"umask 027\\\" \u003e\u003e /etc/profile\\necho \\\"umask 027\\\" \u003e\u003e /etc/bashrc\\n\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"32:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"# === 密码策略加固 ===\\n\\n# 设置密码最大有效期（90天）\\nsudo sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS   90/' /etc/login.defs\\n\\n# 设置密码最小有效期（1天，防止快速循环修改）\\nsudo sed -i 's/^PASS_MIN_DAYS.*/PASS_MIN_DAYS   1/' /etc/login.defs\\n\\n# 设置密码最小长度（12位）\\nsudo sed -i 's/^PASS_MIN_LEN.*/PASS_MIN_LEN    12/' /etc/login.defs\\n\\n# 设置密码过期前警告天数\\nsudo sed -i 's/^PASS_WARN_AGE.*/PASS_WARN_AGE   14/' /etc/login.defs\\n\\n# 安装密码复杂度检查模块\\nsudo apt install libpam-pwquality   # Debian/Ubuntu\\nsudo yum install pam_pwquality      # RHEL/CentOS\\n\\n# 配置密码复杂度（/etc/security/pwquality.conf）\\nsudo tee /etc/security/pwquality.conf \u003c\u003c 'EOF'\\nminlen = 12\\ndcredit = -1\\nucredit = -1\\nlcredit = -1\\nocredit = -1\\nminclass = 3\\nmaxrepeat = 3\\nmaxclassrepeat = 4\\nEOF\\n\\n# 锁定长期不活动的账户（超过30天未登录自动锁定）\\nsudo useradd -D -f 30\\n\\n# 禁用不需要的系统账户\\nfor user in games ftp news; do\\n    sudo usermod -L -s /sbin/nologin \\\"${user}\\\" 2\u003e/dev/null\\ndone\\n\"}],[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-bash\",\"children\":\"# === 密码策略加固 ===\\n\\n# 设置密码最大有效期（90天）\\nsudo sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS   90/' /etc/login.defs\\n\\n# 设置密码最小有效期（1天，防止快速循环修改）\\nsudo sed -i 's/^PASS_MIN_DAYS.*/PASS_MIN_DAYS   1/' /etc/login.defs\\n\\n# 设置密码最小长度（12位）\\nsudo sed -i 's/^PASS_MIN_LEN.*/PASS_MIN_LEN    12/' /etc/login.defs\\n\\n# 设置密码过期前警告天数\\nsudo sed -i 's/^PASS_WARN_AGE.*/PASS_WARN_AGE   14/' /etc/login.defs\\n\\n# 安装密码复杂度检查模块\\nsudo apt install libpam-pwquality   # Debian/Ubuntu\\nsudo yum install pam_pwquality      # RHEL/CentOS\\n\\n# 配置密码复杂度（/etc/security/pwquality.conf）\\nsudo tee /etc/security/pwquality.conf \u003c\u003c 'EOF'\\nminlen = 12\\ndcredit = -1\\nucredit = -1\\nlcredit = -1\\nocredit = -1\\nminclass = 3\\nmaxrepeat = 3\\nmaxclassrepeat = 4\\nEOF\\n\\n# 锁定长期不活动的账户（超过30天未登录自动锁定）\\nsudo useradd -D -f 30\\n\\n# 禁用不需要的系统账户\\nfor user in games ftp news; do\\n    sudo usermod -L -s /sbin/nologin \\\"${user}\\\" 2\u003e/dev/null\\ndone\\n\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"35:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"# === 通过 PowerShell 配置安全策略 ===\\n\\n# 1. 配置账户锁定策略\\n# 账户锁定阈值：5次失败后锁定\\nnet accounts /lockoutthreshold:5\\n# 账户锁定持续时间：30分钟\\nnet accounts /lockoutduration:30\\n# 锁定计数器重置时间：30分钟\\nnet accounts /lockoutwindow:30\\n\\n# 2. 配置密码策略\\n# 密码最小长度：12字符\\nnet accounts /minpwlen:12\\n# 密码最大有效期：90天\\nnet accounts /maxpwage:90\\n# 密码最小有效期：1天\\nnet accounts /minpwage:1\\n# 密码历史记录：24个（防止重复使用旧密码）\\nnet accounts /uniquepw:24\\n\\n# 3. 查看当前账户策略\\nnet accounts\\n\"}],[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-powershell\",\"children\":\"# === 通过 PowerShell 配置安全策略 ===\\n\\n# 1. 配置账户锁定策略\\n# 账户锁定阈值：5次失败后锁定\\nnet accounts /lockoutthreshold:5\\n# 账户锁定持续时间：30分钟\\nnet accounts /lockoutduration:30\\n# 锁定计数器重置时间：30分钟\\nnet accounts /lockoutwindow:30\\n\\n# 2. 配置密码策略\\n# 密码最小长度：12字符\\nnet accounts /minpwlen:12\\n# 密码最大有效期：90天\\nnet accounts /maxpwage:90\\n# 密码最小有效期：1天\\nnet accounts /minpwage:1\\n# 密码历史记录：24个（防止重复使用旧密码）\\nnet accounts /uniquepw:24\\n\\n# 3. 查看当前账户策略\\nnet accounts\\n\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"54:T532,"])</script><script>self.__next_f.push([1,"# === 配置高级审计策略 ===\n\n# 启用登录事件审计（成功和失败）\nauditpol /set /subcategory:\"Logon\" /success:enable /failure:enable\n\n# 启用登录失败审计\nauditpol /set /subcategory:\"Account Lockout\" /failure:enable\n\n# 启用特权使用审计\nauditpol /set /subcategory:\"Sensitive Privilege Use\" /success:enable /failure:enable\n\n# 启用进程创建审计\nauditpol /set /subcategory:\"Process Creation\" /success:enable\n\n# 启用对象访问审计\nauditpol /set /subcategory:\"File System\" /success:enable /failure:enable\n\n# 启用策略更改审计\nauditpol /set /subcategory:\"Audit Policy Change\" /success:enable /failure:enable\n\n# 启用账户管理审计\nauditpol /set /subcategory:\"User Account Management\" /success:enable /failure:enable\nauditpol /set /subcategory:\"Security Group Management\" /success:enable /failure:enable\n\n# 启用 PowerShell 脚本块日志\nNew-ItemProperty -Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging\" `\n    -Name \"EnableScriptBlockLogging\" -Value 1 -PropertyType DWORD -Force\n\n# 启用进程命令行记录\nNew-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\Audit\" `\n    -Name \"ProcessCreationIncludeCmdLine_Enabled\" -Value 1 -PropertyType DWORD -Force\n\n# 查看当前审计策略\nauditpol /get /category:*\n"])</script><script>self.__next_f.push([1,"55:T532,"])</script><script>self.__next_f.push([1,"# === 配置高级审计策略 ===\n\n# 启用登录事件审计（成功和失败）\nauditpol /set /subcategory:\"Logon\" /success:enable /failure:enable\n\n# 启用登录失败审计\nauditpol /set /subcategory:\"Account Lockout\" /failure:enable\n\n# 启用特权使用审计\nauditpol /set /subcategory:\"Sensitive Privilege Use\" /success:enable /failure:enable\n\n# 启用进程创建审计\nauditpol /set /subcategory:\"Process Creation\" /success:enable\n\n# 启用对象访问审计\nauditpol /set /subcategory:\"File System\" /success:enable /failure:enable\n\n# 启用策略更改审计\nauditpol /set /subcategory:\"Audit Policy Change\" /success:enable /failure:enable\n\n# 启用账户管理审计\nauditpol /set /subcategory:\"User Account Management\" /success:enable /failure:enable\nauditpol /set /subcategory:\"Security Group Management\" /success:enable /failure:enable\n\n# 启用 PowerShell 脚本块日志\nNew-ItemProperty -Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging\" `\n    -Name \"EnableScriptBlockLogging\" -Value 1 -PropertyType DWORD -Force\n\n# 启用进程命令行记录\nNew-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\Audit\" `\n    -Name \"ProcessCreationIncludeCmdLine_Enabled\" -Value 1 -PropertyType DWORD -Force\n\n# 查看当前审计策略\nauditpol /get /category:*\n"])</script><script>self.__next_f.push([1,"37:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"$54\"}],[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-powershell\",\"children\":\"$55\"}]}]]}]\n56:T537,"])</script><script>self.__next_f.push([1,"# === 禁用不必要的服务 ===\n\n# 禁用远程注册表服务\nSet-Service -Name RemoteRegistry -StartupType Disabled\nStop-Service -Name RemoteRegistry -Force -ErrorAction SilentlyContinue\n\n# 禁用 Telnet 服务（如已安装）\nSet-Service -Name TlntSvr -StartupType Disabled -ErrorAction SilentlyContinue\n\n# 禁用 Windows Remote Management（如不需要）\n# Set-Service -Name WinRM -StartupType Disabled\n\n# 禁用 NetBIOS over TCP/IP（减少攻击面）\n$adapters = Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object {$_.IPEnabled}\nforeach ($adapter in $adapters) {\n    $adapter.SetTcpipNetbios(2)  # 2 = 禁用\n}\n\n# 禁用 SMBv1（安全风险极高）\nDisable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol -NoRestart\nSet-SmbServerConfiguration -EnableSMB1Protocol $false -Force\n\n# 配置 Windows 防火墙默认策略\nSet-NetFirewallProfile -Profile Domain,Public,Private -DefaultInboundAction Block\nSet-NetFirewallProfile -Profile Domain,Public,Private -DefaultOutboundAction Allow\n\n# 启用 Windows Defender 实时保护\nSet-MpPreference -DisableRealtimeMonitoring $false\nSet-MpPreference -DisableBehaviorMonitoring $false\nSet-MpPreference -DisableIOAVProtection $false\n\n# 配置 Windows Defender 扫描策略\nSet-MpPreference -ScanScheduleDay Everyday\nSet-MpPreference -SignatureUpdateInterval 4\n"])</script><script>self.__next_f.push([1,"57:T537,"])</script><script>self.__next_f.push([1,"# === 禁用不必要的服务 ===\n\n# 禁用远程注册表服务\nSet-Service -Name RemoteRegistry -StartupType Disabled\nStop-Service -Name RemoteRegistry -Force -ErrorAction SilentlyContinue\n\n# 禁用 Telnet 服务（如已安装）\nSet-Service -Name TlntSvr -StartupType Disabled -ErrorAction SilentlyContinue\n\n# 禁用 Windows Remote Management（如不需要）\n# Set-Service -Name WinRM -StartupType Disabled\n\n# 禁用 NetBIOS over TCP/IP（减少攻击面）\n$adapters = Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object {$_.IPEnabled}\nforeach ($adapter in $adapters) {\n    $adapter.SetTcpipNetbios(2)  # 2 = 禁用\n}\n\n# 禁用 SMBv1（安全风险极高）\nDisable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol -NoRestart\nSet-SmbServerConfiguration -EnableSMB1Protocol $false -Force\n\n# 配置 Windows 防火墙默认策略\nSet-NetFirewallProfile -Profile Domain,Public,Private -DefaultInboundAction Block\nSet-NetFirewallProfile -Profile Domain,Public,Private -DefaultOutboundAction Allow\n\n# 启用 Windows Defender 实时保护\nSet-MpPreference -DisableRealtimeMonitoring $false\nSet-MpPreference -DisableBehaviorMonitoring $false\nSet-MpPreference -DisableIOAVProtection $false\n\n# 配置 Windows Defender 扫描策略\nSet-MpPreference -ScanScheduleDay Everyday\nSet-MpPreference -SignatureUpdateInterval 4\n"])</script><script>self.__next_f.push([1,"39:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"$56\"}],[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-powershell\",\"children\":\"$57\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"3b:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"# === 用户权限加固 ===\\n\\n# 重命名 Administrator 账户（增加攻击难度）\\nRename-LocalUser -Name \\\"Administrator\\\" -NewName \\\"LocalSysAdmin\\\"\\n\\n# 禁用 Guest 账户\\nDisable-LocalUser -Name \\\"Guest\\\"\\n\\n# 查看本地管理员组成员（应最小化）\\nGet-LocalGroupMember -Group \\\"Administrators\\\"\\n\\n# 移除不必要的管理员组成员\\n# Remove-LocalGroupMember -Group \\\"Administrators\\\" -Member \\\"UserToRemove\\\"\\n\\n# 配置 UAC 级别为最高\\nSet-ItemProperty -Path \\\"HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Policies\\\\System\\\" `\\n    -Name \\\"ConsentPromptBehaviorAdmin\\\" -Value 2\\nSet-ItemProperty -Path \\\"HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Policies\\\\System\\\" `\\n    -Name \\\"EnableLUA\\\" -Value 1\\n\\n# 禁止在锁屏界面显示上次登录用户名\\nSet-ItemProperty -Path \\\"HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Policies\\\\System\\\" `\\n    -Name \\\"DontDisplayLastUserName\\\" -Value 1\\n\"}],[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-powershell\",\"children\":\"# === 用户权限加固 ===\\n\\n# 重命名 Administrator 账户（增加攻击难度）\\nRename-LocalUser -Name \\\"Administrator\\\" -NewName \\\"LocalSysAdmin\\\"\\n\\n# 禁用 Guest 账户\\nDisable-LocalUser -Name \\\"Guest\\\"\\n\\n# 查看本地管理员组成员（应最小化）\\nGet-LocalGroupMember -Group \\\"Administrators\\\"\\n\\n# 移除不必要的管理员组成员\\n# Remove-LocalGroupMember -Group \\\"Administrators\\\" -Member \\\"UserToRemove\\\"\\n\\n# 配置 UAC 级别为最高\\nSet-ItemProperty -Path \\\"HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Policies\\\\System\\\" `\\n    -Name \\\"ConsentPromptBehaviorAdmin\\\" -Value 2\\nSet-ItemProperty -Path \\\"HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Policies\\\\System\\\" `\\n    -Name \\\"EnableLUA\\\" -Value 1\\n\\n# 禁止在锁屏界面显示上次登录用户名\\nSet-ItemProperty -Path \\\"HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Policies\\\\System\\\" `\\n    -Name \\\"DontDisplayLastUserName\\\" -Value 1\\n\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"3f:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"# === Lynis 安装与使用 ===\\n\\n# 方式一：通过包管理器安装\\nsudo apt install lynis              # Debian/Ubuntu\\nsudo yum install lynis              # RHEL/CentOS（需 EPEL 源）\\n\\n# 方式二：从 Git 仓库获取最新版\\ncd /opt\\nsudo git clone https://github.com/CISOfy/lynis.git\\ncd lynis\\n\\n# 执行系统审计\\nsudo lynis audit system\\n\\n# 执行快速扫描（跳过等待输入）\\nsudo lynis audit system --quick\\n\\n# 只检查特定类别\\nsudo lynis audit system --tests-from-group \\\"firewalls\\\"\\nsudo lynis audit system --tests-from-group \\\"authentication\\\"\\nsudo lynis audit system --tests-from-group \\\"networking\\\"\\n\\n# 查看可用的测试组\\nsudo lynis show groups\\n\\n# 生成详细报告\\nsudo lynis audit system --quick --auditor \\\"Security Team\\\" 2\u003e\u00261 | tee /tmp/lynis_report.txt\\n\\n# 查看上次扫描报告\\nsudo cat /var/log/lynis-report.dat\\n\\n# 查看建议列表\\nsudo grep \\\"suggestion\\\\[\\\\]\\\" /var/log/lynis-report.dat\\n\"}],[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-bash\",\"children\":\"# === Lynis 安装与使用 ===\\n\\n# 方式一：通过包管理器安装\\nsudo apt install lynis              # Debian/Ubuntu\\nsudo yum install lynis              # RHEL/CentOS（需 EPEL 源）\\n\\n# 方式二：从 Git 仓库获取最新版\\ncd /opt\\nsudo git clone https://github.com/CISOfy/lynis.git\\ncd lynis\\n\\n# 执行系统审计\\nsudo lynis audit system\\n\\n# 执行快速扫描（跳过等待输入）\\nsudo lynis audit system --quick\\n\\n# 只检查特定类别\\nsudo lynis audit system --tests-from-group \\\"firewalls\\\"\\nsudo lynis audit system --tests-from-group \\\"authentication\\\"\\nsudo lynis audit system --tests-from-group \\\"networking\\\"\\n\\n# 查看可用的测试组\\nsudo lynis show groups\\n\\n# 生成详细报告\\nsudo lynis audit system --quick --auditor \\\"Security Team\\\" 2\u003e\u00261 | tee /tmp/lynis_report.txt\\n\\n# 查看上次扫描报告\\nsudo cat /var/log/lynis-report.dat\\n\\n# 查看建议列表\\nsudo grep \\\"suggestion\\\\[\\\\]\\\" /var/log/lynis-report.dat\\n\"}]}]]}]\n"])</script><script>self.__next_f.push([1,"58:T621,"])</script><script>self.__next_f.push([1,"# === OpenSCAP 安装与使用 ===\n\n# 安装 OpenSCAP 及 SCAP 安全指南\nsudo apt install openscap-scanner scap-security-guide    # Debian/Ubuntu\nsudo yum install openscap-scanner scap-security-guide     # RHEL/CentOS\n\n# 查看可用的 SCAP 内容\nls /usr/share/xml/scap/ssg/content/\n\n# 查看可用的安全配置文件（Profile）\noscap info /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml\n\n# 执行 CIS Level 1 基线核查（以 Ubuntu 22.04 为例）\nsudo oscap xccdf eval \\\n    --profile xccdf_org.ssgproject.content_profile_cis_level1_server \\\n    --results /tmp/oscap_results.xml \\\n    --report /tmp/oscap_report.html \\\n    /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml\n\n# 执行 CIS Level 2 基线核查\nsudo oscap xccdf eval \\\n    --profile xccdf_org.ssgproject.content_profile_cis_level2_server \\\n    --results /tmp/oscap_results_l2.xml \\\n    --report /tmp/oscap_report_l2.html \\\n    /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml\n\n# RHEL/CentOS 核查\nsudo oscap xccdf eval \\\n    --profile xccdf_org.ssgproject.content_profile_cis \\\n    --results /tmp/oscap_results.xml \\\n    --report /tmp/oscap_report.html \\\n    /usr/share/xml/scap/ssg/content/ssg-rhel8-ds.xml\n\n# 生成修复脚本（基于检查结果自动生成 Bash 修复脚本）\nsudo oscap xccdf generate fix \\\n    --fix-type bash \\\n    --result-id \"\" \\\n    /tmp/oscap_results.xml \u003e /tmp/remediation.sh\n\n# 生成 Ansible Playbook 修复方案\nsudo oscap xccdf generate fix \\\n    --fix-type ansible \\\n    --result-id \"\" \\\n    /tmp/oscap_results.xml \u003e /tmp/remediation.yml\n"])</script><script>self.__next_f.push([1,"59:T621,"])</script><script>self.__next_f.push([1,"# === OpenSCAP 安装与使用 ===\n\n# 安装 OpenSCAP 及 SCAP 安全指南\nsudo apt install openscap-scanner scap-security-guide    # Debian/Ubuntu\nsudo yum install openscap-scanner scap-security-guide     # RHEL/CentOS\n\n# 查看可用的 SCAP 内容\nls /usr/share/xml/scap/ssg/content/\n\n# 查看可用的安全配置文件（Profile）\noscap info /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml\n\n# 执行 CIS Level 1 基线核查（以 Ubuntu 22.04 为例）\nsudo oscap xccdf eval \\\n    --profile xccdf_org.ssgproject.content_profile_cis_level1_server \\\n    --results /tmp/oscap_results.xml \\\n    --report /tmp/oscap_report.html \\\n    /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml\n\n# 执行 CIS Level 2 基线核查\nsudo oscap xccdf eval \\\n    --profile xccdf_org.ssgproject.content_profile_cis_level2_server \\\n    --results /tmp/oscap_results_l2.xml \\\n    --report /tmp/oscap_report_l2.html \\\n    /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml\n\n# RHEL/CentOS 核查\nsudo oscap xccdf eval \\\n    --profile xccdf_org.ssgproject.content_profile_cis \\\n    --results /tmp/oscap_results.xml \\\n    --report /tmp/oscap_report.html \\\n    /usr/share/xml/scap/ssg/content/ssg-rhel8-ds.xml\n\n# 生成修复脚本（基于检查结果自动生成 Bash 修复脚本）\nsudo oscap xccdf generate fix \\\n    --fix-type bash \\\n    --result-id \"\" \\\n    /tmp/oscap_results.xml \u003e /tmp/remediation.sh\n\n# 生成 Ansible Playbook 修复方案\nsudo oscap xccdf generate fix \\\n    --fix-type ansible \\\n    --result-id \"\" \\\n    /tmp/oscap_results.xml \u003e /tmp/remediation.yml\n"])</script><script>self.__next_f.push([1,"44:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"$58\"}],[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-bash\",\"children\":\"$59\"}]}]]}]\n5a:Td33,"])</script><script>self.__next_f.push([1,"#!/bin/bash\n# Linux 安全基线快速核查脚本\n\necho \"=========================================\"\necho \"  Linux Security Baseline Quick Check\"\necho \"  $(date '+%Y-%m-%d %H:%M:%S')\"\necho \"=========================================\"\n\nPASS=0\nFAIL=0\nWARN=0\n\ncheck() {\n    local description=\"$1\"\n    local result=\"$2\"\n    if [ \"$result\" = \"PASS\" ]; then\n        echo -e \"[\\033[32mPASS\\033[0m] $description\"\n        ((PASS++))\n    elif [ \"$result\" = \"FAIL\" ]; then\n        echo -e \"[\\033[31mFAIL\\033[0m] $description\"\n        ((FAIL++))\n    else\n        echo -e \"[\\033[33mWARN\\033[0m] $description\"\n        ((WARN++))\n    fi\n}\n\n# 1. SSH root 登录检查\nif grep -qE \"^PermitRootLogin\\s+no\" /etc/ssh/sshd_config 2\u003e/dev/null; then\n    check \"SSH root login disabled\" \"PASS\"\nelse\n    check \"SSH root login disabled\" \"FAIL\"\nfi\n\n# 2. 密码认证检查\nif grep -qE \"^PasswordAuthentication\\s+no\" /etc/ssh/sshd_config 2\u003e/dev/null; then\n    check \"SSH password authentication disabled\" \"PASS\"\nelse\n    check \"SSH password authentication disabled\" \"WARN\"\nfi\n\n# 3. 空密码账户检查\nEMPTY_PW=$(sudo awk -F: '$2==\"\" {print $1}' /etc/shadow 2\u003e/dev/null)\nif [ -z \"$EMPTY_PW\" ]; then\n    check \"No empty password accounts\" \"PASS\"\nelse\n    check \"No empty password accounts (found: $EMPTY_PW)\" \"FAIL\"\nfi\n\n# 4. UID 0 账户检查\nROOT_ACCOUNTS=$(awk -F: '$3==0 {print $1}' /etc/passwd | grep -v \"^root$\")\nif [ -z \"$ROOT_ACCOUNTS\" ]; then\n    check \"No non-root UID 0 accounts\" \"PASS\"\nelse\n    check \"No non-root UID 0 accounts (found: $ROOT_ACCOUNTS)\" \"FAIL\"\nfi\n\n# 5. 防火墙检查\nif systemctl is-active --quiet firewalld 2\u003e/dev/null || \\\n   systemctl is-active --quiet ufw 2\u003e/dev/null || \\\n   iptables -L -n 2\u003e/dev/null | grep -q \"Chain INPUT\"; then\n    check \"Firewall is active\" \"PASS\"\nelse\n    check \"Firewall is active\" \"FAIL\"\nfi\n\n# 6. SELinux/AppArmor 检查\nif getenforce 2\u003e/dev/null | grep -qE \"Enforcing|Permissive\"; then\n    check \"SELinux is enabled\" \"PASS\"\nelif aa-status 2\u003e/dev/null | grep -q \"profiles are loaded\"; then\n    check \"AppArmor is enabled\" \"PASS\"\nelse\n    check \"SELinux/AppArmor is enabled\" \"WARN\"\nfi\n\n# 7. IP 转发检查\nif [ \"$(sysctl -n net.ipv4.ip_forward 2\u003e/dev/null)\" = \"0\" ]; then\n    check \"IP forwarding disabled\" \"PASS\"\nelse\n    check \"IP forwarding disabled\" \"FAIL\"\nfi\n\n# 8. /etc/shadow 权限检查\nSHADOW_PERM=$(stat -c \"%a\" /etc/shadow 2\u003e/dev/null)\nif [ \"$SHADOW_PERM\" = \"600\" ] || [ \"$SHADOW_PERM\" = \"640\" ] || [ \"$SHADOW_PERM\" = \"0\" ]; then\n    check \"/etc/shadow permissions ($SHADOW_PERM)\" \"PASS\"\nelse\n    check \"/etc/shadow permissions ($SHADOW_PERM)\" \"FAIL\"\nfi\n\n# 9. 自动更新检查\nif systemctl is-enabled --quiet unattended-upgrades 2\u003e/dev/null || \\\n   systemctl is-enabled --quiet dnf-automatic 2\u003e/dev/null; then\n    check \"Automatic security updates enabled\" \"PASS\"\nelse\n    check \"Automatic security updates enabled\" \"WARN\"\nfi\n\n# 10. NTP 时间同步检查\nif systemctl is-active --quiet chronyd 2\u003e/dev/null || \\\n   systemctl is-active --quiet systemd-timesyncd 2\u003e/dev/null || \\\n   systemctl is-active --quiet ntpd 2\u003e/dev/null; then\n    check \"NTP time sync is active\" \"PASS\"\nelse\n    check \"NTP time sync is active\" \"FAIL\"\nfi\n\necho \"\"\necho \"=========================================\"\necho \"  Results: PASS=$PASS  FAIL=$FAIL  WARN=$WARN\"\necho \"  Total checks: $((PASS + FAIL + WARN))\"\necho \"=========================================\"\n"])</script><script>self.__next_f.push([1,"4c:[\"$\",\"div\",null,{\"className\":\"code-block-wrapper relative group my-6\",\"children\":[[\"$\",\"$L51\",null,{\"text\":\"$5a\"}],\"$L5b\"]}]\n"])</script><script>self.__next_f.push([1,"5c:Td33,"])</script><script>self.__next_f.push([1,"#!/bin/bash\n# Linux 安全基线快速核查脚本\n\necho \"=========================================\"\necho \"  Linux Security Baseline Quick Check\"\necho \"  $(date '+%Y-%m-%d %H:%M:%S')\"\necho \"=========================================\"\n\nPASS=0\nFAIL=0\nWARN=0\n\ncheck() {\n    local description=\"$1\"\n    local result=\"$2\"\n    if [ \"$result\" = \"PASS\" ]; then\n        echo -e \"[\\033[32mPASS\\033[0m] $description\"\n        ((PASS++))\n    elif [ \"$result\" = \"FAIL\" ]; then\n        echo -e \"[\\033[31mFAIL\\033[0m] $description\"\n        ((FAIL++))\n    else\n        echo -e \"[\\033[33mWARN\\033[0m] $description\"\n        ((WARN++))\n    fi\n}\n\n# 1. SSH root 登录检查\nif grep -qE \"^PermitRootLogin\\s+no\" /etc/ssh/sshd_config 2\u003e/dev/null; then\n    check \"SSH root login disabled\" \"PASS\"\nelse\n    check \"SSH root login disabled\" \"FAIL\"\nfi\n\n# 2. 密码认证检查\nif grep -qE \"^PasswordAuthentication\\s+no\" /etc/ssh/sshd_config 2\u003e/dev/null; then\n    check \"SSH password authentication disabled\" \"PASS\"\nelse\n    check \"SSH password authentication disabled\" \"WARN\"\nfi\n\n# 3. 空密码账户检查\nEMPTY_PW=$(sudo awk -F: '$2==\"\" {print $1}' /etc/shadow 2\u003e/dev/null)\nif [ -z \"$EMPTY_PW\" ]; then\n    check \"No empty password accounts\" \"PASS\"\nelse\n    check \"No empty password accounts (found: $EMPTY_PW)\" \"FAIL\"\nfi\n\n# 4. UID 0 账户检查\nROOT_ACCOUNTS=$(awk -F: '$3==0 {print $1}' /etc/passwd | grep -v \"^root$\")\nif [ -z \"$ROOT_ACCOUNTS\" ]; then\n    check \"No non-root UID 0 accounts\" \"PASS\"\nelse\n    check \"No non-root UID 0 accounts (found: $ROOT_ACCOUNTS)\" \"FAIL\"\nfi\n\n# 5. 防火墙检查\nif systemctl is-active --quiet firewalld 2\u003e/dev/null || \\\n   systemctl is-active --quiet ufw 2\u003e/dev/null || \\\n   iptables -L -n 2\u003e/dev/null | grep -q \"Chain INPUT\"; then\n    check \"Firewall is active\" \"PASS\"\nelse\n    check \"Firewall is active\" \"FAIL\"\nfi\n\n# 6. SELinux/AppArmor 检查\nif getenforce 2\u003e/dev/null | grep -qE \"Enforcing|Permissive\"; then\n    check \"SELinux is enabled\" \"PASS\"\nelif aa-status 2\u003e/dev/null | grep -q \"profiles are loaded\"; then\n    check \"AppArmor is enabled\" \"PASS\"\nelse\n    check \"SELinux/AppArmor is enabled\" \"WARN\"\nfi\n\n# 7. IP 转发检查\nif [ \"$(sysctl -n net.ipv4.ip_forward 2\u003e/dev/null)\" = \"0\" ]; then\n    check \"IP forwarding disabled\" \"PASS\"\nelse\n    check \"IP forwarding disabled\" \"FAIL\"\nfi\n\n# 8. /etc/shadow 权限检查\nSHADOW_PERM=$(stat -c \"%a\" /etc/shadow 2\u003e/dev/null)\nif [ \"$SHADOW_PERM\" = \"600\" ] || [ \"$SHADOW_PERM\" = \"640\" ] || [ \"$SHADOW_PERM\" = \"0\" ]; then\n    check \"/etc/shadow permissions ($SHADOW_PERM)\" \"PASS\"\nelse\n    check \"/etc/shadow permissions ($SHADOW_PERM)\" \"FAIL\"\nfi\n\n# 9. 自动更新检查\nif systemctl is-enabled --quiet unattended-upgrades 2\u003e/dev/null || \\\n   systemctl is-enabled --quiet dnf-automatic 2\u003e/dev/null; then\n    check \"Automatic security updates enabled\" \"PASS\"\nelse\n    check \"Automatic security updates enabled\" \"WARN\"\nfi\n\n# 10. NTP 时间同步检查\nif systemctl is-active --quiet chronyd 2\u003e/dev/null || \\\n   systemctl is-active --quiet systemd-timesyncd 2\u003e/dev/null || \\\n   systemctl is-active --quiet ntpd 2\u003e/dev/null; then\n    check \"NTP time sync is active\" \"PASS\"\nelse\n    check \"NTP time sync is active\" \"FAIL\"\nfi\n\necho \"\"\necho \"=========================================\"\necho \"  Results: PASS=$PASS  FAIL=$FAIL  WARN=$WARN\"\necho \"  Total checks: $((PASS + FAIL + WARN))\"\necho \"=========================================\"\n"])</script><script>self.__next_f.push([1,"5b:[\"$\",\"pre\",null,{\"className\":\"!m-0\",\"children\":[\"$\",\"code\",null,{\"className\":\"language-bash\",\"children\":\"$5c\"}]}]\n"])</script></body></html>

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { getSortedPosts, getPostBySlug, getAllSlugs, compileMDX, extractHeadings } from "@/lib/blog";
+import { getSortedPosts, getPostBySlug, getAllSlugs, compileMDX, extractHeadings, mdxRemarkPlugins, mdxRehypePlugins } from "@/lib/blog";
 import { SITE } from "@/lib/config";
 import { Tag } from "@/components/Tag";
 import { Datetime } from "@/components/Datetime";
@@ -12,6 +11,12 @@ import TableOfContents from "@/components/TableOfContents";
 import { MobileTOC } from "@/components/MobileTOC";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { slugifyStr } from "@/lib/slugify";
+import { BackButton } from "@/components/BackButton";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import { Grid } from "@/components/mdx/Grid";
+import { Card } from "@/components/mdx/Card";
+import { Callout } from "@/components/mdx/Callout";
+import { Pre } from "@/components/mdx/Pre";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -68,6 +73,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+const mdxComponents = {
+  Grid,
+  Card,
+  Callout,
+  pre: Pre,
+};
+
 export default async function PostPage({ params }: PageProps) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
@@ -79,7 +91,7 @@ export default async function PostPage({ params }: PageProps) {
   const sortedPosts = await getSortedPosts();
   const { title, description, pubDatetime, modDatetime, timezone, tags, coverImage, heroImage, hideEditPost } = post.data;
 
-  // Compile MDX to HTML
+  // Compile MDX to HTML simply to extract headings reliably using existing string processor
   const compiledHtml = await compileMDX(post.content);
   const headings = extractHeadings(compiledHtml);
   const tocHeadings = headings.filter((h) => h.depth > 1 && h.depth < 4);
@@ -144,9 +156,11 @@ export default async function PostPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      <BackButton />
+
       <main
         id="main-content"
-        className="layout-frame w-full pb-12"
+        className={["layout-frame w-full pb-12", !SITE.showBackButton ? "mt-8" : ""].filter(Boolean).join(" ")}
         data-pagefind-body
       >
         <h1
@@ -188,7 +202,16 @@ export default async function PostPage({ params }: PageProps) {
               loading="lazy"
             />
           )}
-          <div dangerouslySetInnerHTML={{ __html: compiledHtml }} />
+          <MDXRemote 
+            source={post.content} 
+            components={mdxComponents}
+            options={{
+              mdxOptions: {
+                remarkPlugins: mdxRemarkPlugins as any,
+                rehypePlugins: mdxRehypePlugins as any,
+              }
+            }}
+          />
         </article>
 
         {/* Table of Contents */}
