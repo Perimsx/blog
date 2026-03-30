@@ -15,6 +15,7 @@ import ShareLinks from "@/components/ShareLinks.astro";
 import StructuredData from "@/components/StructuredData.astro";
 import Tag from "@/components/Tag.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
+import MobileTOC from "@/components/MobileTOC.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import { getPath } from "@/utils/getPath";
@@ -177,9 +178,12 @@ const mdxComponents = {
 
     {
       tocHeadings.length > 0 && (
-        <aside class="hidden xl:block fixed top-24 right-6 2xl:right-24 w-64 z-40">
-          <TableOfContents headings={tocHeadings} />
-        </aside>
+        <>
+          <aside class="hidden xl:block fixed top-24 right-6 2xl:right-24 w-64 z-40">
+            <TableOfContents headings={tocHeadings} />
+          </aside>
+          <MobileTOC headings={tocHeadings} />
+        </>
       )
     }
 

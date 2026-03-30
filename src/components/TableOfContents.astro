@@ -2,13 +2,14 @@
 // src/components/TableOfContents.astro
 export interface Props {
   headings: { depth: number; slug: string; text: string }[];
+  hideTitle?: boolean;
 }
 
-const { headings } = Astro.props;
+const { headings, hideTitle = false } = Astro.props;
 ---
 
 <nav class="toc-container">
-  <h2 class="text-[0.9rem] font-semibold mb-2 text-foreground/90">目录</h2>
+  {!hideTitle && <h2 class="text-[0.9rem] font-semibold mb-2 text-foreground/90">目录</h2>}
   <div class="toc-scroll-area overflow-y-auto max-h-[calc(100vh-9rem)]">
     <ul class="relative border-l border-foreground/10 flex flex-col gap-1 text-[0.8rem]">
       {
