@@ -14,6 +14,7 @@ import Grid from "@/components/mdx/Grid.astro";
 import ShareLinks from "@/components/ShareLinks.astro";
 import StructuredData from "@/components/StructuredData.astro";
 import Tag from "@/components/Tag.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import { getPath } from "@/utils/getPath";
@@ -42,8 +43,11 @@ const {
   heroImage,
 } = post.data;
 
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 const readingTime = calculateReadingTime(post.body ?? "");
+
+// 过滤一下标题，通常目录只展示 H2 和 H3 就够了（depth 2 和 3）
+const tocHeadings = headings.filter((h) => h.depth > 1 && h.depth < 4);
 
 let ogImageUrl: string | undefined;
 const articleImage = coverImage ?? heroImage;
@@ -157,19 +161,29 @@ const mdxComponents = {
       </div>
       <EditPost class="max-sm:hidden" {hideEditPost} {post} />
     </div>
-    <article id="article" class="article-detail mx-auto prose mt-8 max-w-3xl">
+    <div class="flex flex-col lg:flex-row lg:justify-center lg:gap-10 items-start w-full mt-8">
+      <article id="article" class="article-detail prose max-w-3xl min-w-0 w-full shrink">
+        {
+          articleImage && (
+            <AdaptiveImage
+              src={articleImage}
+              alt={title}
+              class="mb-6 aspect-video w-full rounded-md object-cover"
+              loading="lazy"
+            />
+          )
+        }
+        <Content components={mdxComponents} />
+      </article>
+
       {
-        articleImage && (
-          <AdaptiveImage
-            src={articleImage}
-            alt={title}
-            class="mb-6 aspect-video w-full rounded-md object-cover"
-            loading="lazy"
-          />
+        tocHeadings.length > 0 && (
+          <aside class="hidden lg:block sticky top-24 w-64 shrink-0">
+            <TableOfContents headings={tocHeadings} />
+          </aside>
         )
       }
-      <Content components={mdxComponents} />
-    </article>
+    </div>
 
 
 

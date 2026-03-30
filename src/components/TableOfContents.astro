@@ -1,0 +1,74 @@
+---
+// src/components/TableOfContents.astro
+export interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+---
+
+<nav class="toc-container">
+  <h2 class="text-lg font-semibold mb-4 text-foreground/90">目录</h2>
+  <ul class="relative border-l border-foreground/10 flex flex-col gap-2 text-sm">
+    {
+      headings.map((heading) => (
+        <li class={`toc-item ${heading.depth === 3 ? "ml-4" : ""}`}>
+          <a
+            href={`#${heading.slug}`}
+            class="block pl-4 py-1 text-foreground/60 hover:text-accent transition-colors duration-200 toc-link"
+            data-slug={heading.slug}
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<script>
+  // 页面加载完成后初始化滚动监听
+  function initToc() {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // 遍历所有观察的标题元素
+        entries.forEach((entry) => {
+          const id = entry.target.getAttribute("id");
+          const link = document.querySelector(`.toc-link[data-slug="${id}"]`);
+          
+          if (!link) return;
+
+          if (entry.isIntersecting) {
+            // 当标题进入视口时，移除其他链接的高亮，给当前链接加上高亮类
+            document.querySelectorAll(".toc-link").forEach((l) => {
+              l.classList.remove("text-accent", "font-medium", "border-l-2", "border-accent");
+              l.classList.add("text-foreground/60");
+              // 如果你想让左侧有线条高亮效果，可以在移除/添加时操作 border
+              l.parentElement?.classList.remove("border-l-2", "border-accent", "-ml-[1px]");
+            });
+
+            link.classList.remove("text-foreground/60");
+            link.classList.add("text-accent", "font-medium");
+            // 给当前高亮项的父元素(li)加上左侧高亮边框
+            link.parentElement?.classList.add("border-l-2", "border-accent", "-ml-[1px]");
+          }
+        });
+      },
+      {
+        // 核心参数：视口判定区域。当标题滚动到视口顶部往下 10% 到 20% 的区间时触发
+        rootMargin: "-10% 0px -80% 0px",
+      }
+    );
+
+    // 获取文章中所有带 id 的标题，并交给 observer 观察
+    const article = document.getElementById("article");
+    if (article) {
+      const headings = article.querySelectorAll("h2, h3, h4");
+      headings.forEach((heading) => observer.observe(heading));
+    }
+  }
+
+  // 兼容 Astro 的 View Transitions
+  document.addEventListener("astro:page-load", initToc);
+  initToc();
+</script>
