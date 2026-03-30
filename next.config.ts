@@ -13,6 +13,7 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
+  output: "export",
   reactStrictMode: true,
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
   images: {
