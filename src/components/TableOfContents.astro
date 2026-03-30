@@ -15,7 +15,7 @@ const { headings } = Astro.props;
         <li class={`toc-item ${heading.depth === 3 ? "ml-4" : ""}`}>
           <a
             href={`#${heading.slug}`}
-            class="block pl-4 py-0.5 text-foreground/60 hover:text-accent transition-colors duration-200 toc-link"
+            class="block pl-4 py-0.5 text-foreground/60 hover:text-accent transition-colors duration-200 toc-link truncate"
             data-slug={heading.slug}
           >
             {heading.text}
@@ -41,14 +41,14 @@ const { headings } = Astro.props;
           if (entry.isIntersecting) {
             // 当标题进入视口时，移除其他链接的高亮，给当前链接加上高亮类
             document.querySelectorAll(".toc-link").forEach((l) => {
-              l.classList.remove("text-accent", "font-medium", "border-l-2", "border-accent");
-              l.classList.add("text-foreground/60");
+              l.classList.remove("text-accent", "font-medium", "border-l-2", "border-accent", "whitespace-normal");
+              l.classList.add("text-foreground/60", "truncate");
               // 如果你想让左侧有线条高亮效果，可以在移除/添加时操作 border
               l.parentElement?.classList.remove("border-l-2", "border-accent", "-ml-[1px]");
             });
 
-            link.classList.remove("text-foreground/60");
-            link.classList.add("text-accent", "font-medium");
+            link.classList.remove("text-foreground/60", "truncate");
+            link.classList.add("text-accent", "font-medium", "whitespace-normal");
             // 给当前高亮项的父元素(li)加上左侧高亮边框
             link.parentElement?.classList.add("border-l-2", "border-accent", "-ml-[1px]");
           }
