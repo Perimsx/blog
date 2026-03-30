@@ -55,12 +55,12 @@ const { headings, hideTitle = false } = Astro.props;
             // 给当前高亮项的父元素(li)加上左侧高亮边框
             link.parentElement?.classList.add("border-l-2", "border-accent", "-ml-[1px]");
 
-            // 自动滚动侧边栏使得激活项保持在中间视图
+            // 自动滚动侧边栏使得激活项尽可能靠顶部展示
             const scrollArea = link.closest('.toc-scroll-area');
             if (scrollArea) {
               const offsetTop = link.parentElement?.offsetTop || 0;
               scrollArea.scrollTo({
-                top: offsetTop - scrollArea.clientHeight / 2 + 50,
+                top: offsetTop > 20 ? offsetTop - 20 : 0,
                 behavior: 'smooth'
               });
             }
