@@ -10,7 +10,7 @@ import { Socials } from "@/components/Socials";
 import { LinkButton } from "@/components/LinkButton";
 
 export const metadata: Metadata = {
-  title: "序栈 | Perimsx",
+  title: "序栈",
   description: "记录成长，分享价值。信息安全专业学生，Web 开发爱好者。",
 };
 

@@ -4,7 +4,7 @@ import { SITE } from "@/lib/config";
 import { PostHeatmap } from "@/components/PostHeatmap";
 
 export const metadata: Metadata = {
-  title: `关于 | ${SITE.title}`,
+  title: "关于",
   description: "Perimsx | 记录成长，分享价值",
 };
 
@@ -48,57 +48,56 @@ export default async function AboutPage() {
         </div>
 
         {/* Credits */}
-        <div className="about-block">
+        <div className="about-block about-credits">
           <h2>鸣谢与开源规划</h2>
-          <p>
-           本站的开发离不开开源社区的启发，特别感谢
-            <span className="about-author-badges">
-              <a
-                className="about-author-badge"
-                href="https://github.com/L33Z22L11"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  className="about-author-badge__avatar"
-                  src="https://github.com/L33Z22L11.png?size=56"
-                  alt=""
-                  width={28}
-                  height={28}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <span className="about-author-badge__label">Zhilu</span>
-              </a>
-              <a
-                className="about-author-badge"
-                href="https://github.com/lxchapu"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  className="about-author-badge__avatar"
-                  src="https://github.com/lxchapu.png?size=56"
-                  alt=""
-                  width={28}
-                  height={28}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <span className="about-author-badge__label">lxchapu</span>
-              </a>
-            </span>
-            两位作者的开源项目与创意设计。
-          </p>
-          <p className="about-note">
-            当前主要参考了
-            <a href="https://github.com/L33Z22L11/blog-v3" target="_blank" rel="noopener noreferrer">blog-v3</a>
-            与
-            <a href="https://github.com/lxchapu/astro-gyoza" target="_blank" rel="noopener noreferrer">astro-gyoza</a>。
-          </p>
-          <p className="about-note">
-            当前博客待细节优化后也即将开源，欢迎关注仓库：<a href="https://github.com/Perimsx/blog" target="_blank" rel="noopener noreferrer">Perimsx/blog</a>。
-          </p>
+          <div className="about-credits-card">
+            <p className="about-credits-intro">
+              本站的开发离不开开源社区的启发，特别感谢
+              <span className="about-author-badges">
+                <a
+                  className="about-author-badge"
+                  href="https://github.com/L33Z22L11"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    className="about-author-badge__avatar"
+                    src="https://github.com/L33Z22L11.png?size=56"
+                    alt="Zhilu"
+                    width={28}
+                    height={28}
+                    loading="lazy"
+                  />
+                  <span className="about-author-badge__label">Zhilu</span>
+                </a>
+                <a
+                  className="about-author-badge"
+                  href="https://github.com/lxchapu"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    className="about-author-badge__avatar"
+                    src="https://github.com/lxchapu.png?size=56"
+                    alt="lxchapu"
+                    width={28}
+                    height={28}
+                    loading="lazy"
+                  />
+                  <span className="about-author-badge__label">lxchapu</span>
+                </a>
+              </span>
+              两位作者的开源项目与创意设计。
+            </p>
+            <div className="about-credits-footer">
+              <p className="about-note">
+                当前主要参考了 <a href="https://github.com/L33Z22L11/blog-v3" target="_blank" rel="noopener noreferrer">blog-v3</a> 与 <a href="https://github.com/lxchapu/astro-gyoza" target="_blank" rel="noopener noreferrer">astro-gyoza</a>。
+              </p>
+              <p className="about-note">
+                博客待优化后也将开源，欢迎关注：<a href="https://github.com/Perimsx/blog" target="_blank" rel="noopener noreferrer">Perimsx/blog</a>。
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -212,6 +211,30 @@ export default async function AboutPage() {
         #about .about-author-badge__label {
           font-weight: 500;
           line-height: 1;
+        }
+        #about .about-credits-card {
+          margin-top: 0.85rem;
+          padding: 1.15rem;
+          border-radius: 1rem;
+          background: color-mix(in srgb, var(--color-foreground) 2%, transparent);
+          border: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
+          box-shadow: 0 4px 12px -8px rgba(0,0,0,0.05);
+        }
+        #about .about-credits-intro {
+          margin: 0 0 0.85rem !important;
+          font-size: 0.92rem;
+          line-height: 1.72;
+          color: color-mix(in srgb, var(--color-foreground) 85%, transparent);
+        }
+        #about .about-credits-footer {
+          padding-top: 0.85rem;
+          border-top: 1px dashed color-mix(in srgb, var(--color-border) 80%, transparent);
+        }
+        #about .about-credits-footer .about-note {
+          margin: 0.2rem 0 !important;
+          font-size: 0.84rem;
+          opacity: 0.65;
+          line-height: 1.6;
         }
         #about .about-note {
           margin-top: 0.5rem;

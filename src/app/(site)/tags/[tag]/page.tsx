@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!tagInfo) return {};
 
   return {
-    title: `标签: ${tagInfo.tagName} | ${SITE.title}`,
+    title: `标签: ${tagInfo.tagName}`,
     description: `所有包含标签「${tagInfo.tagName}」的文章`,
   };
 }

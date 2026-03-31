@@ -4,7 +4,7 @@ import { SITE } from "@/lib/config";
 import { Tag } from "@/components/Tag";
 
 export const metadata: Metadata = {
-  title: `标签 | ${SITE.title}`,
+  title: "标签",
   description: "按标签浏览所有博客文章",
 };
 

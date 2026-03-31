@@ -4,7 +4,7 @@ import { SITE } from "@/lib/config";
 import { Card } from "@/components/Card";
 
 export const metadata: Metadata = {
-  title: `文章归档 | ${SITE.title}`,
+  title: "文章归档",
   description: "按时间浏览 Perimsx 的全部公开文章，涵盖信息安全、Web 开发与技术实践。",
 };
 
