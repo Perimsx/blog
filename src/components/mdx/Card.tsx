@@ -30,18 +30,18 @@ export const Card: React.FC<CardProps> = ({
   return (
     <aside
       className={[
-        "not-prose my-8 rounded-[1.25rem] border px-6 py-5 text-[0.92rem] leading-7 shadow-sm",
+        "not-prose my-3.5 rounded-xl border px-4.5 py-3 text-[0.88rem] leading-snug shadow-sm",
         currentAccent,
       ].join(" ")}
     >
       {eyebrow && (
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/45">
+        <p className={`text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/45 ${title || desc || children ? 'mb-2' : ''}`}>
           {eyebrow}
         </p>
       )}
-      {title && <p className="mb-3 font-semibold tracking-tight text-foreground">{title}</p>}
-      {desc && <p className="mt-2 text-sm leading-6 text-foreground/72">{desc}</p>}
-      <div className="callout-content opacity-90">{children}</div>
+      {title && <p className={`font-bold tracking-tight text-foreground ${desc || children ? 'mb-1.5' : ''}`}>{title}</p>}
+      {desc && <p className="mt-1 text-[13px] leading-relaxed text-foreground/70">{desc}</p>}
+      {children && <div className="callout-content opacity-90">{children}</div>}
     </aside>
   );
 };

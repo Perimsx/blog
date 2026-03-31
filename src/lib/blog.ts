@@ -185,16 +185,22 @@ function remarkProxyExternalImages() {
 // Shiki highlighter singleton
 // ---------------------------------------------------------------------------
 
-let _highlighter: Awaited<ReturnType<typeof createHighlighter>> | null = null;
+let _highlighter: any = null;
+let _highlighterPromise: Promise<any> | null = null;
 
 export async function getHighlighter() {
-  if (!_highlighter) {
-    _highlighter = await createHighlighter({
-      themes: ["min-light", "night-owl"],
-      langs: [],
-    });
+  if (_highlighter) return _highlighter;
+  
+  if (!_highlighterPromise) {
+    _highlighterPromise = (async () => {
+      _highlighter = await createHighlighter({
+        themes: ["min-light", "night-owl"],
+        langs: ["typescript", "javascript", "tsx", "jsx", "css", "html", "json", "markdown", "bash", "sh", "yaml", "rust", "go", "python"],
+      });
+      return _highlighter;
+    })();
   }
-  return _highlighter;
+  return _highlighterPromise;
 }
 
 // ---------------------------------------------------------------------------
@@ -369,19 +375,6 @@ export const mdxRemarkPlugins = [
 export const mdxRehypePlugins = [
   [rehypeRaw, { passThrough: ['mdxJsxFlowElement', 'mdxJsxTextElement', 'mdxjsEsm'] }],
   rehypeSlug,
-  [rehypeAutolinkHeadings, {
-    behavior: "append",
-    properties: {
-      className: ["anchor-link"],
-      ariaLabel: "Permalink",
-    },
-    content: {
-      type: "element",
-      tagName: "span",
-      properties: {},
-      children: [{ type: "text", value: "#" }],
-    },
-  }],
 ];
 
 /**
@@ -445,8 +438,18 @@ async function highlightCodeBlocks(
     const language = lang && lang !== "" ? lang : "text";
 
     try {
+      const loaded = highlighter.getLoadedLanguages();
+      let resolvedLang = language;
+      if (!loaded.includes(resolvedLang)) {
+        try {
+          await highlighter.loadLanguage(resolvedLang as any);
+        } catch {
+          resolvedLang = "text";
+        }
+      }
+
       const highlighted = highlighter.codeToHtml(rawCode, {
-        lang: language,
+        lang: resolvedLang,
         themes: {
           light: "min-light",
           dark: "night-owl",
@@ -492,8 +495,11 @@ export function extractHeadings(html: string): Heading[] {
   while ((match = headingRegex.exec(html)) !== null) {
     const depth = parseInt(match[1], 10);
     const slug = match[2];
-    // Extract text content, stripping any inner HTML tags
-    const rawText = match[3].replace(/<[^>]+>/g, "").trim();
+    // Extract text content, stripping any inner HTML tags and trailing hash/spaces
+    let rawText = match[3].replace(/<[^>]+>/g, "").trim();
+    if (rawText.endsWith("#")) {
+      rawText = rawText.slice(0, -1).trim();
+    }
 
     headings.push({ depth, slug, text: rawText });
   }

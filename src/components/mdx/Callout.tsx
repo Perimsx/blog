@@ -30,15 +30,15 @@ export const Callout: React.FC<CalloutProps> = ({
     accent === "default" ? "text-foreground/45" : currentAccent.split(" ")[2];
 
   return (
-    <div className={["rounded-2xl border p-4 shadow-sm", currentAccent].join(" ")}>
+    <div className={["rounded-xl border px-4 py-3 shadow-sm my-3", currentAccent].join(" ")}>
       {eyebrow && (
         <p className={["text-[11px] font-semibold uppercase tracking-[0.22em]", eyebrowColor].join(" ")}>
           {eyebrow}
         </p>
       )}
-      {title && <p className="mt-3 text-base font-semibold text-foreground">{title}</p>}
-      {desc && <p className="mt-2 text-sm leading-6 text-foreground/72">{desc}</p>}
-      <div className="callout-content opacity-90">{children}</div>
+      {title && <p className={`text-base font-semibold text-foreground ${eyebrow ? 'mt-1.5' : ''}`}>{title}</p>}
+      {desc && <p className="mt-1 text-sm leading-6 text-foreground/72">{desc}</p>}
+      <div className="callout-content opacity-90 mt-1">{children}</div>
     </div>
   );
 };
