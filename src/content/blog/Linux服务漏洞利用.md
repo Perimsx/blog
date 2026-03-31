@@ -4,9 +4,8 @@ title: Linux服务漏洞利用
 featured: false
 draft: false
 tags:
-  - Linux
-  - 漏洞利用
-  - 服务攻击
+  - Linux安全与加固
+  - 渗透测试(预攻/后渗透)
 description: Linux常见服务攻击面分析，SSH暴力破解、FTP匿名访问、Samba漏洞利用与Apache攻击实战
 coverImage: ./covers/sec024-cover.webp
 url: sec024

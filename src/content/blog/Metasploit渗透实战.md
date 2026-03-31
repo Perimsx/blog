@@ -4,9 +4,8 @@ title: Metasploit渗透实战
 featured: false
 draft: false
 tags:
-  - Metasploit
-  - 漏洞利用
-  - Meterpreter
+  - 安全工具及靶场
+  - 渗透测试(预攻/后渗透)
 description: Metasploit完整实战教程，模块架构解析、EternalBlue利用全过程、Meterpreter与MSFvenom
 coverImage: ./covers/sec027-cover.webp
 url: sec027

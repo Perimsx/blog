@@ -5,9 +5,7 @@ featured: false
 draft: false
 tags:
   - 应急响应
-  - Windows
-  - 入侵排查
-  - 取证
+  - Windows安全/域渗透
 description: Windows入侵排查完整指南，进程分析、事件日志审计、注册表自启动检查与Autoruns使用
 coverImage: ./covers/sec018-cover.webp
 url: sec018

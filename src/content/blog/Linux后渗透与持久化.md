@@ -4,10 +4,8 @@ title: Linux后渗透与持久化
 featured: false
 draft: false
 tags:
-  - Linux
-  - 后渗透
-  - 反弹Shell
-  - 持久化
+  - Linux安全与加固
+  - 渗透测试(预攻/后渗透)
 description: 反弹Shell技术大全、SSH隧道三种模式实战、多种持久化后门部署与痕迹清理技术
 coverImage: ./covers/sec026-cover.webp
 url: sec026

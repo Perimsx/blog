@@ -4,10 +4,7 @@ title: 威胁情报与ATT&CK
 featured: false
 draft: false
 tags:
-  - 威胁情报
-  - ATT&CK
-  - IOC
-  - TTPs
+  - 威胁情报与感知
 description: 威胁情报体系入门，从IOC指标到MITRE ATT&CK框架14个战术阶段详解与实战应用
 coverImage: ./covers/sec012-cover.webp
 url: sec012

@@ -4,10 +4,7 @@ title: Windows端口攻击面分析
 featured: false
 draft: false
 tags:
-  - Windows
-  - SMB
-  - RDP
-  - WinRM
+  - Windows安全/域渗透
 description: Windows服务攻击实战，永恒之蓝利用、NTLM中继、RDP暴力破解、WinRM远程执行与MSSQL攻击
 coverImage: ./covers/sec029-cover.webp
 url: sec029

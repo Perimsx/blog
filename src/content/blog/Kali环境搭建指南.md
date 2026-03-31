@@ -4,9 +4,7 @@ title: Kali环境搭建指南
 featured: false
 draft: false
 tags:
-  - Kali Linux
-  - 安全工具
-  - 靶场
+  - 安全工具及靶场
 description: Kali Linux安装配置全指南，渗透测试工具链分类概览与DVWA靶场环境搭建
 coverImage: ./covers/sec022-cover.webp
 url: sec022

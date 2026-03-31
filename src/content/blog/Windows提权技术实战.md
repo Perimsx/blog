@@ -4,10 +4,8 @@ title: Windows提权技术实战
 featured: false
 draft: false
 tags:
-  - Windows
-  - 提权
-  - UAC绕过
-  - 令牌窃取
+  - Windows安全/域渗透
+  - 渗透测试(预攻/后渗透)
 description: Windows提权技术全景，UAC绕过、Potato系列令牌窃取、服务路径劫持与WinPEAS自动化枚举
 coverImage: ./covers/sec030-cover.webp
 url: sec030

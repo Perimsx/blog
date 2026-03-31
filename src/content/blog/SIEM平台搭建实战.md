@@ -4,10 +4,7 @@ title: SIEM平台搭建实战
 featured: false
 draft: false
 tags:
-  - SIEM
-  - ELK
-  - 日志分析
-  - Elasticsearch
+  - 日志与流量分析
 description: ELK Stack完整部署教程，Logstash日志解析管道配置与Kibana可视化告警实战
 coverImage: ./covers/sec013-cover.webp
 url: sec013

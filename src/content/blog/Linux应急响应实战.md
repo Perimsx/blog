@@ -5,9 +5,7 @@ featured: false
 draft: false
 tags:
   - 应急响应
-  - Linux
-  - 入侵排查
-  - 取证
+  - Linux安全与加固
 description: Linux入侵排查实战手册，用户/进程/网络/文件系统全面排查与Rootkit检测
 coverImage: ./covers/sec019-cover.webp
 url: sec019

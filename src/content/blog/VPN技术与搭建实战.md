@@ -4,10 +4,7 @@ title: VPN技术与搭建实战
 featured: false
 draft: false
 tags:
-  - VPN
-  - OpenVPN
-  - WireGuard
-  - IPSec
+  - 网络防护(IDS/IPS/VPN)
 description: 三大主流VPN技术原理与完整搭建教程，含证书生成、配置文件示例和性能对比
 coverImage: ./covers/sec008-cover.webp
 url: sec008

@@ -4,9 +4,8 @@ title: Windows渗透环境搭建
 featured: false
 draft: false
 tags:
-  - Windows
-  - 信息收集
-  - SMB枚举
+  - Windows安全/域渗透
+  - 渗透测试(预攻/后渗透)
 description: Windows渗透测试靶机环境搭建，SMB/LDAP/RPC枚举技术与Nmap NSE脚本实战
 coverImage: ./covers/sec028-cover.webp
 url: sec028

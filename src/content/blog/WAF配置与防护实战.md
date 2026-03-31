@@ -4,9 +4,7 @@ title: WAF配置与防护实战
 featured: false
 draft: false
 tags:
-  - WAF
-  - ModSecurity
-  - Web安全
+  - Web安全与加固
 description: ModSecurity部署实战，OWASP CRS规则集配置，自定义防SQL注入/XSS规则与误报处理
 coverImage: ./covers/sec009-cover.webp
 url: sec009

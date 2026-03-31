@@ -4,10 +4,7 @@ title: Windows后渗透实战
 featured: false
 draft: false
 tags:
-  - Windows
-  - Mimikatz
-  - Kerberos
-  - 票据攻击
+  - Windows安全/域渗透
 description: Mimikatz凭据提取全模块实战，黄金票据与白银票据攻击完整流程，DCSync与持久化后门
 coverImage: ./covers/sec032-cover.webp
 url: sec032
