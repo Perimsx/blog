@@ -39,6 +39,39 @@
   }
 
   /* ===== Code Blocks & Syntax Highlighting ===== */
+  
+
+
+  /* Light mode: each span reads its own --shiki-light variable */
+  html[data-theme='light'] pre.shiki,
+  html[data-theme='light'] .prose pre.shiki {
+    color: var(--shiki-light, inherit) !important;
+    background-color: var(--shiki-light-bg, transparent) !important;
+  }
+
+  html[data-theme='light'] .shiki span,
+  html[data-theme='light'] .prose .shiki span {
+    color: var(--shiki-light, inherit) !important;
+    font-style: var(--shiki-light-font-style, inherit) !important;
+    font-weight: var(--shiki-light-font-weight, inherit) !important;
+    text-decoration: var(--shiki-light-text-decoration, inherit) !important;
+  }
+
+  /* Dark mode: each span reads its own --shiki-dark variable */
+  html[data-theme='dark'] pre.shiki,
+  html[data-theme='dark'] .prose pre.shiki {
+    color: var(--shiki-dark, inherit) !important;
+    background-color: var(--shiki-dark-bg, transparent) !important;
+  }
+
+  html[data-theme='dark'] .shiki span,
+  html[data-theme='dark'] .prose .shiki span {
+    color: var(--shiki-dark, inherit) !important;
+    font-style: var(--shiki-dark-font-style, inherit) !important;
+    font-weight: var(--shiki-dark-font-weight, inherit) !important;
+    text-decoration: var(--shiki-dark-text-decoration, inherit) !important;
+  }
+
   pre:has(code) {
     @apply border border-border;
   }
@@ -49,24 +82,29 @@
   }
 
   .prose table code {
-    /* add line breaks whenever necessary for codes under table */
     @apply break-all sm:break-normal;
   }
+
+  /* ===== Article Detail — 基础排版 ===== */
 
   .article-detail {
     font-family: var(--font-sans);
     font-size: 0.96rem;
-    line-height: 1.76;
+    line-height: 1.65;
     letter-spacing: 0.006em;
     font-weight: 430;
   }
 
   .article-detail :is(p, ul, ol, blockquote) {
-    margin-block: 0.92em;
+    margin-block: 0.45em;
   }
 
   .article-detail :is(li, figcaption) {
-    line-height: 1.74;
+    line-height: 1.68;
+  }
+
+  .article-detail li + li {
+    margin-top: 0.15em;
   }
 
   .article-detail mark {
@@ -115,36 +153,129 @@
     text-decoration-thickness: 0.11em;
   }
 
+  /* ===== Blockquote ===== */
+
   .article-detail blockquote {
     font-family: var(--font-serif);
-    font-size: 1em;
-    line-height: 1.78;
+    font-size: 0.96em;
+    line-height: 1.6;
     letter-spacing: 0.01em;
     font-weight: 400;
+    padding: 0.15em 0.85em;
+    margin-block: 0.55em;
+    background: color-mix(in oklab, var(--muted) 28%, transparent);
+    border-radius: 0 0.5rem 0.5rem 0;
   }
+
+  .article-detail blockquote > :first-child {
+    margin-top: 0;
+  }
+
+  .article-detail blockquote > :last-child {
+    margin-bottom: 0;
+  }
+
+  /* ===== Headings ===== */
 
   .article-detail h2 {
     font-size: 1.34rem;
     line-height: 1.3;
-    margin-top: 1.7em;
+    margin-top: 1em;
+    margin-bottom: 0.3em;
   }
 
   .article-detail h3 {
     font-size: 1.16rem;
     line-height: 1.38;
-    margin-top: 1.45em;
+    margin-top: 0.85em;
+    margin-bottom: 0.2em;
   }
 
   .article-detail h4 {
     font-size: 1.03rem;
     line-height: 1.42;
-    margin-top: 1.25em;
+    margin-top: 0.85em;
+    margin-bottom: 0.2em;
   }
 
   .article-detail pre {
     font-size: 0.84rem;
-    line-height: 1.62;
+    line-height: 1.55;
   }
+
+  /* ===== Images ===== */
+
+  .article-detail img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    transition: opacity 0.2s ease;
+  }
+
+  .article-detail img.img-loading-error {
+    opacity: 0.5;
+    min-height: 4rem;
+  }
+
+  /* ===== Table — 居中 + 响应式横滚 ===== */
+
+  .table-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-block: 1.2em;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+  }
+
+  .table-scroll-wrapper table {
+    margin: 0 !important;
+    border: none !important;
+  }
+
+  .table-scroll-wrapper th,
+  .table-scroll-wrapper td {
+    border-left: none !important;
+    border-right: none !important;
+  }
+
+  .table-scroll-wrapper thead tr:first-child th {
+    border-top: none !important;
+  }
+
+  .table-scroll-wrapper tr:last-child td {
+    border-bottom: none !important;
+  }
+
+  .article-detail table {
+    margin-inline: auto;
+    width: auto;
+    max-width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .article-detail th {
+    background: color-mix(in oklab, var(--muted) 55%, transparent);
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .article-detail td {
+    text-align: left;
+  }
+
+  .article-detail th,
+  .article-detail td {
+    padding: 0.42em 0.75em;
+  }
+
+  .article-detail tbody tr:hover {
+    background: color-mix(in oklab, var(--muted) 22%, transparent);
+  }
+
+  /* ===== Code Block Title ===== */
 
   .code-block-title {
     margin-top: 1.4em;
@@ -172,18 +303,26 @@
     top: 0.75rem;
   }
 
+  /* ===== Desktop (>=640px) ===== */
+
   @media (min-width: 640px) {
     .article-detail {
       font-size: 1.01rem;
-      line-height: 1.82;
+      line-height: 1.7;
+    }
+
+    .article-detail :is(p, ul, ol, blockquote) {
+      margin-block: 0.5em;
     }
 
     .article-detail h2 {
-      font-size: 1.5rem;
+      font-size: 1.45rem;
+      margin-top: 1.2em;
     }
 
     .article-detail h3 {
-      font-size: 1.24rem;
+      font-size: 1.2rem;
+      margin-top: 0.9em;
     }
 
     .article-detail h4 {
@@ -191,33 +330,86 @@
     }
   }
 
+  /* ===== Mobile (<640px) — 紧凑间距 ===== */
+
+  @media (max-width: 639px) {
+    .article-detail {
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .article-detail :is(p, ul, ol, blockquote) {
+      margin-block: 0.35em;
+    }
+
+    .article-detail :is(li, figcaption) {
+      line-height: 1.55;
+    }
+
+    .article-detail h2 {
+      font-size: 1.18rem;
+      margin-top: 0.85em;
+      margin-bottom: 0.25em;
+    }
+
+    .article-detail h3 {
+      font-size: 1.04rem;
+      margin-top: 0.7em;
+      margin-bottom: 0.18em;
+    }
+
+    .article-detail h4 {
+      font-size: 0.96rem;
+      margin-top: 0.6em;
+      margin-bottom: 0.12em;
+    }
+
+    .article-detail pre {
+      font-size: 0.78rem;
+      line-height: 1.5;
+      padding: 0.6rem !important;
+      margin-inline: -0.25rem;
+      border-radius: 0.4rem;
+    }
+
+    .article-detail blockquote {
+      font-size: 0.92em;
+      padding: 0.1em 0.65em;
+      margin-block: 0.4em;
+    }
+
+    .article-detail table {
+      font-size: 0.8rem;
+    }
+
+    .article-detail th,
+    .article-detail td {
+      padding: 0.3em 0.45em;
+    }
+
+    .table-scroll-wrapper {
+      margin-block: 0.6em;
+      margin-inline: -0.25rem;
+    }
+
+    .code-block-wrapper {
+      margin-block: 0.6em !important;
+    }
+
+    .code-block-title {
+      margin-top: 0.6em;
+      padding: 0.45rem 0.65rem;
+      font-size: 0.72rem;
+    }
+
+    .article-detail img {
+      border-radius: 0.35rem;
+    }
+  }
+
   pre > code {
     white-space: pre;
   }
 
-  /* Light mode syntax highlighting contrast improvements */
-  html[data-theme="light"] pre:has(code),
-  html[data-theme="light"] pre:has(code) span,
-  :root pre:has(code),
-  :root pre:has(code) span {
-    /* Darken comment colors by ~30% total for better contrast */
-    --shiki-color-comment: #495057;
-    --shiki-token-comment: #495057;
-  }
 
-  /* Override inline styles for comments in light mode */
-  html[data-theme="light"] pre code span[style*="color:#6C757D"],
-  :root pre code span[style*="color:#6C757D"] {
-    color: #495057 !important;
-  }
-
-  /* Apply Dark Theme (if multi-theme specified) */
-  html[data-theme="dark"] pre:has(code),
-  html[data-theme="dark"] pre:has(code) span {
-    color: var(--shiki-dark) !important;
-    background-color: var(--shiki-dark-bg) !important;
-    font-style: var(--shiki-dark-font-style) !important;
-    font-weight: var(--shiki-dark-font-weight) !important;
-    text-decoration: var(--shiki-dark-text-decoration) !important;
-  }
 }

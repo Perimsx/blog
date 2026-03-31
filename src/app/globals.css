@@ -269,6 +269,10 @@ html[data-theme="dark"] .status-panel__pill {
 }
 
 @media (max-width: 640px) {
+  :root {
+    --layout-page-gutter: 0.75rem;
+  }
+
   .ui-page {
     letter-spacing: 0.01em;
   }
@@ -285,6 +289,11 @@ html[data-theme="dark"] .status-panel__pill {
 
   .ui-page p {
     line-height: 1.75;
+  }
+
+  /* 文章页底部间距收紧 */
+  #main-content {
+    padding-bottom: 2rem;
   }
 
   .status-panel {
