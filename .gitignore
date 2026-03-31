@@ -28,9 +28,14 @@ pnpm-debug.log*
 .vercel/
 .edgeone/
 
-# Temporary directories used for importing posts
+# Pagefind search index (build output)
+public/pagefind/
+
+# Temporary directories and scripts
 temp-*/
 src/content/temp/
+merge_tags.js
+tmp_tags.js
 
 # Editor directories and files
 .idea/
