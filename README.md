@@ -1,177 +1,110 @@
 # Perimsx / 序栈
 
-一个基于 Astro 构建的中文技术博客，聚焦信息安全、Web 开发、算法笔记与个人知识沉淀。
+一个基于 **Next.js 15** 构建的极简、高性能技术博客。聚焦信息安全、Web 开发、算法笔记与个人知识沉淀。
 
-当前仓库已经围绕发文效率、搜索体验、SEO、封面资源、本地字体与文章路由做了较多定制，适合作为个人博客长期维护，而不是直接照搬模板使用。
+本项目已由 Astro 架构全面迁移至 Next.js (Static Site Generation)，并在视觉密度、搜索体验与底层架构上进行了极致优化。
 
-## 项目定位
+---
 
-- 面向中文技术写作，内容以信息安全、渗透测试、应急响应、流量分析、算法与工程实践为主。
-- 支持 Markdown / MDX 发文、自定义文章 URL、草稿与非公开文章控制。
-- 内置 Pagefind 站内搜索、RSS、Sitemap、结构化数据、动态 OG 图与 PWA。
-- 视觉与交互层做了定制，包括搜索弹窗、联系弹窗、深色模式动画与移动端适配。
+## 核心特性
+
+- 🚀 **极致性能**：基于 Next.js 静态导出 (SSG)，全站预渲染，秒级首屏加载。
+- 🎨 **精密视觉设计**：专注视觉密度与阅读节奏，支持深色模式切换、平滑的主题过渡动画（View Transitions）。
+- 🔍 **智能检索引擎**：内置 **Pagefind** 全文搜索，支持毫秒级标题与章节索引，提供类 Spotlight 的交互体验。
+- 📝 **深度 MDX 集成**：支持 Markdown/MDX 写作，集成 **Shiki** 高亮器、自动生成悬浮目录（TOC）、代码块复制功能。
+- 🛠️ **稳健架构**：使用 Tailwind CSS 4 构建原子化样式系统，严格的类型检查与代码规范。
+- 📈 **SEO 专家级优化**：自动生成 Sitemap、RSS、结构化数据 (JSON-LD)，支持 Canonical URL 与全量元数据控制。
 
 ## 技术栈
 
-- Astro 5
-- Tailwind CSS 4
-- MDX
-- Pagefind
-- React 19
-- Biome
-- EdgeOne Astro Adapter
-- Astro PWA
+- **框架**: Next.js 15 (App Router)
+- **样式**: Tailwind CSS 4
+- **内容**: MDX + Shiki (Syntax Highlighting)
+- **搜索**: Pagefind (Static Search Engine)
+- **渲染**: Static Site Generation (SSG)
+- **开发工具**: TypeScript, Biome (Linting & Formatting)
 
-## 目录结构
+## 快速开始
+
+### 1. 安装依赖
+
+推荐使用 `pnpm` 以获得最佳的安装速度与依赖管理倾向。
+
+```bash
+pnpm install
+```
+
+### 2. 本地开发
+
+```bash
+pnpm dev
+```
+
+> **注意**：本地开发环境下，搜索功能需要先执行一次完整构建以生成索引。
+
+### 3. 构建与部署
+
+生成静态站点产物及其搜索索引：
+
+```bash
+pnpm build
+```
+
+构建结果将输出至 `out` 目录，可直接部署于 Vercel, Cloudflare Pages 或任何静态托管平台。
+
+## 项目结构探照
 
 ```text
 .
-├── public/                     # 静态资源、PWA 配置、主题切换脚本
 ├── src/
-│   ├── assets/                 # 站点图标与通用图片资源
-│   ├── components/             # UI 组件与交互组件
+│   ├── app/                # Next.js App Router (页面与全局配置)
+│   ├── components/         # 核心 UI 组件
+│   │   ├── icons/          # 向量图标库
+│   │   ├── mdx/            # MDX 自定义渲染组件
+│   │   └── ui/             # 通用基础组件
 │   ├── content/
-│   │   └── blog/               # 博客正文与文章封面
-│   │       ├── *.md            # 博客文章
-│   │       └── covers/         # 本地封面资源
-│   ├── layouts/                # 页面布局与文章详情布局
-│   ├── pages/                  # 路由页面、API、RSS、OG 图入口
-│   ├── styles/                 # 全局样式与排版样式
-│   └── utils/                  # 路由、校验、搜索、OG 等工具函数
-├── astro.config.mjs            # Astro 主配置
-├── biome.json                  # 代码检查与格式化配置
-├── package.json                # 依赖与脚本
-└── README.md
+│   │   └── blog/           # 博客正文 (.md/.mdx) 与封面资源
+│   ├── hooks/              # 自定义 React Hooks (Search, Scroll等)
+│   ├── lib/                # 核心逻辑 (内容解析、配置、工具函数)
+│   └── styles/             # Tailwind & 全局样式系统
+├── public/                 # 静态公共资源
+├── next.config.ts          # Next.js 配置 (含静态导出锁定)
+└── package.json            # 项目依赖与脚本
 ```
 
-## 常用命令
+## 写作规范
 
-| 命令 | 说明 |
-| --- | --- |
-| `npm install` | 安装依赖 |
-| `npm run dev` | 启动本地开发服务，默认端口 `3000` |
-| `npm run build` | 生产构建并生成 Pagefind 搜索索引 |
-| `npm run build:check` | 类型检查 + 构建 + 生成搜索索引 |
-| `npm run preview` | 本地预览构建产物 |
-| `npm run check` | 使用 Biome 检查代码 |
-| `npm run format` | 使用 Biome 格式化源码 |
+### Frontmatter 标准
 
-## 发文流程
+每一篇文章均需在头部包含标准的元数据：
 
-### 1. 新建文章
-
-在 [src/content/blog](/Users/Chen/Desktop/blog/src/content/blog) 下创建一篇 `.md` 或 `.mdx` 文件。
-
-建议文件名直接使用文章标题，便于维护；真正的访问路径由 frontmatter 里的 `url` 决定。
-
-### 2. 编写 frontmatter
-
-最常用字段如下：
-
-```md
+```yaml
 ---
-title: 零信任落地实践
-description: 从身份、设备、网络和审计四个维度梳理零信任落地路径。
-pubDatetime: 2026-03-28T10:00:00+08:00
+title: "文章标题"
+description: "精炼的文章摘要，将用于 SEO 与搜索预览"
+pubDatetime: 2026-04-01T10:00:00+08:00
 tags:
-  - 零信任
-  - 安全运营
+  - 标签1
+  - 标签2
 draft: false
-unlisted: false
-featured: false
-url: security/zero-trust-practice
-coverImage: ./covers/your-cover.webp
+url: "category/post-slug"
+coverImage: "./covers/preview.png"
 ---
 ```
 
-字段规则以 [src/content.config.ts](/Users/Chen/Desktop/blog/src/content.config.ts) 为准。
+### 路由逻辑
 
-### 3. 路由与可见性规则
-
-- `url` 为必填，用于生成文章实际访问路径。
-- `url` 必须唯一，不能包含非法路径段，也不能与分页等保留路径冲突。
-- `draft: true` 的文章不会进入公开构建结果。
-- `unlisted: true` 的文章会生成详情页，但不会出现在公开列表、首页与 RSS 中。
-- 发布时间受 `pubDatetime` 控制，项目支持定时发布。
-
-### 4. 封面规范
-
-- 封面统一放在 [src/content/blog/covers](/Users/Chen/Desktop/blog/src/content/blog/covers)。
-- 优先使用本地图片，不保留外链。
-- 推荐比例为 `16:9`，便于列表页、详情页和分享图裁切。
-- 每篇文章应使用独立封面，避免视觉重复。
-
-### 5. 本地检查
-
-发文前至少执行：
-
-```bash
-npm run build:check
-```
-
-如果要验证搜索、RSS、OG 图和 PWA，推荐再执行一次：
-
-```bash
-npm run preview
-```
-
-## 搜索与 SEO
-
-- 搜索底层使用 Pagefind，构建后索引输出到 `dist/pagefind`。
-- 头部搜索入口默认使用弹窗搜索；`/search` 页面作为兜底入口保留。
-- 文章详情页支持 canonical、OG、Twitter Card、JSON-LD。
-- 首页、归档页、标签页、404/500 均有单独标题和描述。
-
-## 部署说明
-
-当前仓库使用 [@edgeone/astro](https://www.npmjs.com/package/@edgeone/astro) 适配器，部署目标以 EdgeOne Pages 配置为准。
-
-构建命令：
-
-```bash
-npm run build
-```
-
-如果你切换部署平台，优先检查这些文件：
-
-- [astro.config.mjs](/Users/Chen/Desktop/blog/astro.config.mjs)
-- [src/consts.ts](/Users/Chen/Desktop/blog/src/consts.ts)
-- [src/pages/rss.xml.ts](/Users/Chen/Desktop/blog/src/pages/rss.xml.ts)
-- [src/components/StructuredData.astro](/Users/Chen/Desktop/blog/src/components/StructuredData.astro)
-
-## 常见排查
-
-### 搜索弹窗没有结果
-
-- 先执行 `npm run build`
-- 再重启 `npm run dev`
-- 如果只是想验证构建产物，直接用 `npm run preview`
-
-### 文章打开 404
-
-- 检查 frontmatter 的 `url` 是否正确
-- 检查访问地址是否多了尾斜杠
-- 检查是否误带了旧的 `/client/` 前缀
-
-### 文章不显示在首页或归档
-
-- 检查 `draft`
-- 检查 `unlisted`
-- 检查 `pubDatetime`
-- 检查首页是否有额外年份筛选
-
-### OG 图或封面异常
-
-- 检查 `coverImage` 是否存在
-- 检查图片路径是否仍在 `src/content/blog/covers`
-- 检查构建时是否有图片处理警告
+- `url` 字段决定了文章的最终访问路径。
+- 图片资源建议存放于文章同级或 `covers` 目录下，并使用相对路径引用。
 
 ## 维护建议
 
-- 每次批量改内容、封面或路由后，都执行一次 `npm run build:check`
-- 搜索、封面和路由相关改动最好一起回归首页、文章页、归档页和 `/search`
-- Git 提交尽量保持原子化，便于回滚和排查
+1. **原子化提交**：遵循 `feat(scope): message` 规范进行 Git 提交。
+2. **构建验证**：在合并重大变更前，始终执行 `pnpm build` 以验证 SSG 与 Pagefind 索引的完整性。
+3. **视觉一致性**：新增组件应严格遵循 `typography.css` 定义的垂直韵律与间距规范。
 
-## 说明
+---
 
-这个仓库基于 Astro 生态持续改造，但 README、结构和功能说明都以当前仓库实际实现为准，不对应任何第三方模板仓库的默认文档。
+## 协议
+
+本项目内容由 **Perimsx** 原创，遵循 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) 协议。代码部分基于 MIT 协议。
