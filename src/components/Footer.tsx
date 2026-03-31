@@ -18,21 +18,21 @@ export const Footer: React.FC<FooterProps> = ({ noMarginTop = false }) => {
       <Hr noPadding />
       <div className="flex flex-col items-center justify-between py-3 sm:flex-row-reverse sm:py-4">
         <Socials centered compactOnMobile />
-        <div className="my-2 flex flex-col items-center whitespace-nowrap text-[0.82rem] sm:items-start sm:text-sm">
+        <div className="my-2 flex flex-col items-center whitespace-nowrap text-[0.8rem] text-foreground/50 sm:items-start">
           <a
             href="https://github.com/Perimsx/blog"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-accent"
+            className="hover:text-accent transition-colors duration-200 font-medium"
           >
             CC BY 4.0 · Code MIT
           </a>
-          <div className="mt-1.5 flex flex-col items-center gap-1 text-[0.72rem] opacity-70 sm:mt-1 sm:flex-row sm:gap-3 sm:text-xs">
+          <div className="mt-0.5 flex flex-col items-center gap-1.5 opacity-80 sm:flex-row sm:gap-3 text-[0.75rem]">
             <a
               href="https://beian.miit.gov.cn/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-accent"
+              className="hover:text-accent transition-colors duration-200"
             >
               鄂ICP备2025157857号
             </a>
@@ -40,14 +40,9 @@ export const Footer: React.FC<FooterProps> = ({ noMarginTop = false }) => {
               href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=42018502008592"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-accent flex items-center gap-1 sm:mt-0"
+              className="hover:text-accent transition-colors duration-200"
             >
-              <img
-                src="https://img.alicdn.com/tfs/TB1..50QpXXXXX7XpXXXXXXXXXX-20-20.png"
-                alt="公安备案图标"
-                className="w-3.5 h-3.5"
-              />
-              鄂公网安备42018502008592号
+              鄂公网安备 42018502008592号
             </a>
           </div>
         </div>

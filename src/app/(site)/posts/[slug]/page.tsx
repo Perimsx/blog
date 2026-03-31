@@ -7,11 +7,11 @@ import { Tag } from "@/components/Tag";
 import { Datetime } from "@/components/Datetime";
 import { ShareLinks } from "@/components/ShareLinks";
 import { IconChevronLeft, IconChevronRight, IconEdit } from "@/components/icons";
-import TableOfContents from "@/components/TableOfContents";
-import { MobileTOC } from "@/components/MobileTOC";
-import { ReadingProgress } from "@/components/ReadingProgress";
+import FloatingToc from "@/components/FloatingToc";
+import { TocProvider } from "@/components/TocContext";
 import { slugifyStr } from "@/lib/slugify";
 import { BackButton } from "@/components/BackButton";
+import { ArticleEnhancer } from "@/components/ArticleEnhancer";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { Grid } from "@/components/mdx/Grid";
 import { Card } from "@/components/mdx/Card";
@@ -147,9 +147,7 @@ export default async function PostPage({ params }: PageProps) {
   const editPostUrl = `${SITE.editPost.url}${post.filePath}`;
 
   return (
-    <>
-      <ReadingProgress />
-
+    <TocProvider>
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
@@ -160,17 +158,17 @@ export default async function PostPage({ params }: PageProps) {
 
       <main
         id="main-content"
-        className={["layout-frame w-full pb-12", !SITE.showBackButton ? "mt-8" : ""].filter(Boolean).join(" ")}
+        className={["layout-frame w-full pb-8", !SITE.showBackButton ? "mt-4" : "mt-2"].filter(Boolean).join(" ")}
         data-pagefind-body
       >
         <h1
           title={title}
-          className="block w-full text-[1.78rem] leading-[1.16] font-semibold text-accent sm:text-[1.98rem] lg:text-[1.9rem] lg:truncate"
+          className="block w-full text-[1.45rem] leading-[1.18] font-semibold text-accent sm:text-[1.98rem] lg:text-[1.9rem] lg:truncate"
         >
           {title}
         </h1>
 
-        <div className="mt-1.5 mb-5 flex items-center justify-between gap-4">
+        <div className="mt-1 mb-1.5 sm:mt-1.5 sm:mb-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Datetime pubDatetime={pubDatetime} modDatetime={modDatetime} timezone={timezone} size="lg" />
             {readingTime && (
@@ -193,7 +191,7 @@ export default async function PostPage({ params }: PageProps) {
           )}
         </div>
 
-        <article id="article" className="article-detail prose mx-auto mt-8 max-w-3xl">
+        <article id="article" className="article-detail prose mx-auto mt-2 sm:mt-6 max-w-3xl">
           {articleImage && typeof articleImage === "string" && (
             <img
               src={articleImage}
@@ -212,23 +210,17 @@ export default async function PostPage({ params }: PageProps) {
               }
             }}
           />
+          <ArticleEnhancer />
         </article>
 
-        {/* Table of Contents */}
-        {tocHeadings.length > 0 && (
-          <>
-            <aside className="hidden xl:block fixed top-24 right-6 2xl:right-24 w-64 z-40">
-              <TableOfContents headings={tocHeadings} />
-            </aside>
-            <MobileTOC headings={tocHeadings} />
-          </>
-        )}
+        {/* Floating Table of Contents & Scroll Tools */}
+        <FloatingToc toc={headings} />
 
         {/* Tags and Share */}
         <div className="flex flex-wrap items-center justify-between gap-4 mt-4 mb-4 sm:my-6">
           <ul className="flex flex-wrap gap-x-4 gap-y-2">
-            {(tags ?? []).map((tag) => (
-              <Tag key={tag} tag={slugifyStr(tag)} tagName={tag} />
+            {(tags ?? []).map((tag, idx) => (
+              <Tag key={`${tag}-${idx}`} tag={slugifyStr(tag)} tagName={tag} />
             ))}
           </ul>
           <ShareLinks url={new URL(postUrl, SITE.website).href} title={title} />
@@ -278,6 +270,6 @@ export default async function PostPage({ params }: PageProps) {
           ) : <div />}
         </div>
       </main>
-    </>
+    </TocProvider>
   );
 }

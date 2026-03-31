@@ -1,130 +1,251 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+
+const STORAGE_KEY = "site-announcement-dismissed";
+const ANNOUNCEMENT_VERSION = "2026-04-01";
+const AUTO_DISMISS_MS = 6000;
 
 export const SiteAnnouncement: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [visible, setVisible] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const timers = useRef<number[]>([]);
+  const autoRef = useRef<number>(0);
+  const elapsedRef = useRef(0);
+  const startRef = useRef(0);
+
+  const later = useCallback((fn: () => void, ms: number) => {
+    timers.current.push(window.setTimeout(fn, ms));
+  }, []);
+
+  // 自动关闭定时器（可暂停恢复）
+  const startAutoClose = useCallback((remaining: number) => {
+    startRef.current = Date.now();
+    autoRef.current = window.setTimeout(() => {
+      setVisible(false);
+      localStorage.setItem(STORAGE_KEY, ANNOUNCEMENT_VERSION);
+    }, remaining);
+  }, []);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    }
+    if (localStorage.getItem(STORAGE_KEY) === ANNOUNCEMENT_VERSION) return;
+    later(() => {
+      setVisible(true);
+      startAutoClose(AUTO_DISMISS_MS);
+    }, 600);
     return () => {
-      document.body.style.overflow = "";
+      timers.current.forEach(clearTimeout);
+      clearTimeout(autoRef.current);
     };
-  }, [isOpen]);
+  }, [later, startAutoClose]);
 
-  const closeModal = () => {
-    const container = document.getElementById("bulletin-container");
-    if (container) {
-      container.style.opacity = "0";
-      container.style.transform = "translateY(-10px)";
-    }
-    setTimeout(() => {
-      setIsOpen(false);
-      document.body.style.overflow = "";
-    }, 300);
-  };
+  // hover 暂停 / 恢复
+  const onEnter = useCallback(() => {
+    setPaused(true);
+    elapsedRef.current += Date.now() - startRef.current;
+    clearTimeout(autoRef.current);
+  }, []);
 
-  if (!isOpen) return null;
+  const onLeave = useCallback(() => {
+    setPaused(false);
+    const remaining = AUTO_DISMISS_MS - elapsedRef.current;
+    if (remaining > 0) startAutoClose(remaining);
+  }, [startAutoClose]);
+
+  const dismiss = useCallback(() => {
+    clearTimeout(autoRef.current);
+    setVisible(false);
+    localStorage.setItem(STORAGE_KEY, ANNOUNCEMENT_VERSION);
+  }, []);
 
   return (
-    <div
-      id="bulletin-container"
-      className="fixed inset-0 z-[9999] flex flex-col justify-center overflow-y-auto bg-background p-4 text-foreground transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] sm:p-8"
-      role="dialog"
-      aria-modal="true"
-    >
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes printInFast {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .anim-print {
-          animation: printInFast 0.6s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+    <>
+      <style dangerouslySetInnerHTML={{ __html: `
+        .sa-wrap {
+          position: fixed;
+          z-index: 9999;
+          pointer-events: none;
           opacity: 0;
+          right: var(--layout-floating-right);
+          bottom: calc(var(--layout-floating-bottom) + 48px);
+          width: min(380px, calc(100vw - 40px));
+          transform: translateY(14px) scale(0.96);
+          transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                      opacity 0.45s ease;
+        }
+        .sa-wrap[data-visible="true"] {
+          pointer-events: auto;
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+
+        @media (max-width: 640px) {
+          .sa-wrap {
+            right: 0; bottom: 0; left: 0;
+            width: 100%;
+            transform: translateY(100%);
+            padding: 0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+          }
+          .sa-wrap[data-visible="true"] { transform: translateY(0); }
+          .sa-card {
+            border-radius: 16px 16px 0 0 !important;
+            border-bottom: none !important;
+            padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0)) !important;
+          }
+        }
+
+        .sa-card {
+          position: relative;
+          overflow: hidden;
+          border-radius: 16px;
+          padding: 16px 18px;
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          border: 1px solid var(--color-border);
+          background: var(--color-background);
+          box-shadow:
+            0 24px 56px -16px rgba(0,0,0,0.14),
+            0 8px 20px -8px rgba(0,0,0,0.06);
+          color: var(--color-foreground);
+          transition: box-shadow 0.3s ease;
+        }
+        .sa-card:hover {
+          box-shadow:
+            0 28px 64px -16px rgba(0,0,0,0.18),
+            0 10px 24px -8px rgba(0,0,0,0.08),
+            inset 0 0.5px 0 color-mix(in srgb, var(--color-foreground) 5%, transparent);
+        }
+        html[data-theme="dark"] .sa-card {
+          border-color: rgba(255,255,255,0.06);
+          box-shadow:
+            0 24px 56px -16px rgba(0,0,0,0.6),
+            0 8px 20px -8px rgba(0,0,0,0.3),
+            inset 0 0.5px 0 rgba(255,255,255,0.06);
+        }
+        html[data-theme="dark"] .sa-card:hover {
+          box-shadow:
+            0 28px 64px -16px rgba(0,0,0,0.7),
+            0 10px 24px -8px rgba(0,0,0,0.35),
+            inset 0 0.5px 0 rgba(255,255,255,0.08);
+        }
+
+        /* 左侧 accent 色条 */
+        .sa-card::before {
+          content: "";
+          position: absolute;
+          left: 0; top: 0; bottom: 0;
+          width: 3px;
+          background: var(--color-accent);
+          opacity: 0.6;
+        }
+
+        /* 底部进度条 */
+        .sa-card::after {
+          content: "";
+          position: absolute;
+          left: 0; bottom: 0;
+          height: 2px;
+          width: 100%;
+          background: linear-gradient(90deg, var(--color-accent), color-mix(in srgb, var(--color-accent) 40%, transparent));
+          opacity: 0.45;
+        }
+        .sa-wrap[data-visible="true"]:not([data-paused="true"]) .sa-card::after {
+          width: 0%;
+          transition: width ${AUTO_DISMISS_MS}ms linear;
+        }
+        /* hover 暂停进度条 */
+        .sa-wrap[data-paused="true"] .sa-card::after {
+          transition: none;
+        }
+
+        .sa-icon {
+          flex-shrink: 0;
+          margin-top: 2px;
+          width: 32px; height: 32px;
+          border-radius: 8px;
+          background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--color-accent);
+        }
+
+        .sa-body { flex: 1; min-width: 0; }
+        .sa-label {
+          display: block;
+          font-size: 0.7rem;
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          opacity: 0.85;
+          margin-bottom: 2px;
+        }
+        .sa-text {
+          margin: 0;
+          font-size: 0.78rem;
+          line-height: 1.55;
+          opacity: 0.55;
+        }
+        .sa-text strong {
+          color: var(--color-foreground);
+          font-weight: 600;
+          opacity: 0.8;
+        }
+
+        .sa-close {
+          flex-shrink: 0;
+          width: 24px; height: 24px;
+          border-radius: 50%;
+          border: none;
+          background: color-mix(in srgb, var(--color-foreground) 5%, transparent);
+          color: var(--color-foreground);
+          opacity: 0.25;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: opacity 0.2s, background 0.2s, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+          padding: 0;
+          margin: 2px -4px 0 0;
+        }
+        .sa-close:hover {
+          opacity: 0.6;
+          background: color-mix(in srgb, var(--color-foreground) 10%, transparent);
+          transform: scale(1.08);
+        }
+        .sa-close:active {
+          transform: scale(0.95);
         }
       `}} />
 
-      {/* 真公告排版：紧凑架构，保证桌面端一屏展示 */}
-      <div className="mx-auto w-full max-w-[42rem]">
-        
-        {/* 报头 / 眉首 */}
-        <header className="anim-print mb-6 border-b-2 border-foreground pb-4" style={{ animationDelay: '0s' }}>
-          <h1 className="text-center font-sans text-xl font-black tracking-widest sm:text-3xl">
-            系统重构升级公告
-          </h1>
-          <div className="mt-4 flex flex-row items-center justify-between font-sans text-[0.65rem] font-semibold tracking-wider opacity-60 sm:text-xs">
-            <span>文献编号：PRMSX-2026-UPGRADE</span>
-            <span>执行状态：发布实施</span>
+      <div
+        className="sa-wrap"
+        data-visible={visible}
+        data-paused={paused}
+        role="status"
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
+      >
+        <div className="sa-card">
+          <span className="sa-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4" /><path d="M12 8h.01" />
+            </svg>
+          </span>
+          <div className="sa-body">
+            <span className="sa-label">站点公告</span>
+            <p className="sa-text">
+              底层架构已迁移至 <strong>Next.js SSG</strong>，部分页面仍在调优中，如遇异常敬请包涵。
+            </p>
           </div>
-        </header>
-
-        {/* 公文正文主体 - 高度紧凑 */}
-        <main className="space-y-5 font-serif text-[0.85rem] leading-relaxed tracking-wide text-foreground/90 sm:text-[0.95rem] sm:leading-[1.8]">
-          
-          <p className="anim-print text-justify" style={{ animationDelay: '0.1s' }}>
-            <strong>致各位访客与同行：</strong><br />
-            鉴于深层性能诉求，本站已启动彻底的底层重构。工程栈由 Astro 全域变轨至 <strong>Next.js (App Router)</strong>。核心调整明细如下：
-          </p>
-
-          <section className="anim-print space-y-2" style={{ animationDelay: '0.2s' }}>
-            <h2 className="flex items-center gap-2 font-sans text-[0.95rem] font-bold text-foreground">
-              <span className="flex h-4 w-4 shrink-0 items-center justify-center bg-foreground text-[0.6rem] text-background">一</span>
-              全模态静态跃迁 (SSG Export)
-            </h2>
-            <div className="border-l-2 border-foreground/20 pl-4 opacity-90 text-[0.9em]">
-              彻底废除 Node.js 运行时及动态中间件，Data-Fetching 100% 转移至 Build 侧，消除 SSR 承载损耗，极致压降 TTFB（首字节延迟）。
-            </div>
-          </section>
-
-          <section className="anim-print space-y-2" style={{ animationDelay: '0.3s' }}>
-            <h2 className="flex items-center gap-2 font-sans text-[0.95rem] font-bold text-foreground">
-              <span className="flex h-4 w-4 shrink-0 items-center justify-center bg-foreground text-[0.6rem] text-background">二</span>
-              视图解耦与微观交互革新
-            </h2>
-            <div className="border-l-2 border-foreground/20 pl-4 opacity-90 text-[0.9em]">
-              基于 RSC 组件重置基准网格布局，废弃生硬交互，上线响应式 Drawer 层级栈 (TOC)，并接管 View Transitions 实现主体无极切换平滑度。
-            </div>
-          </section>
-
-          <section className="anim-print space-y-2" style={{ animationDelay: '0.4s' }}>
-            <h2 className="flex items-center gap-2 font-sans text-[0.95rem] font-bold text-foreground">
-              <span className="flex h-4 w-4 shrink-0 items-center justify-center bg-accent text-[0.6rem] text-background">三</span>
-              系统免责声明 (WIP)
-            </h2>
-            <div className="border-l-2 border-accent pl-4 opacity-90 text-[0.9em]">
-              为实现像素级跨栈映射，正强制介入 MDX 解析链。当前生产系统处 <span className="text-accent font-bold">高敏调优期</span>，引发的局部样式异化及 404 断层属预期现象，敬请无视与包容。
-            </div>
-          </section>
-
-        </main>
-
-        {/* 落款与确认区 */}
-        <footer className="anim-print mt-8 flex flex-row items-end justify-between border-t border-foreground/20 pt-6" style={{ animationDelay: '0.5s' }}>
-          
-          <div className="flex flex-col text-left font-sans">
-            <span className="mb-1 text-[0.8rem] font-bold tracking-[0.1em] text-foreground sm:text-[0.9rem]">
-              Perimsx (1722288011)
-            </span>
-            <span className="text-[0.65rem] tracking-wider text-foreground/60 sm:text-xs">
-              {new Date().toISOString().split('T')[0].replace(/-/g, ' · ')}
-            </span>
-          </div>
-
-          <button
-            onClick={closeModal}
-            className="group relative inline-flex h-9 shrink-0 items-center justify-center border-2 border-foreground bg-transparent px-5 font-sans text-[0.7rem] font-bold tracking-widest text-foreground transition-all duration-300 hover:bg-foreground hover:text-background focus:outline-none sm:h-10 sm:px-8 sm:text-[0.75rem]"
-          >
-            知悉并进入
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="ml-2 transition-transform duration-300 group-hover:translate-x-1">
-              <path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path>
+          <button className="sa-close" onClick={dismiss} aria-label="关闭">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
             </svg>
           </button>
-
-        </footer>
-
+        </div>
       </div>
-    </div>
+    </>
   );
 };
