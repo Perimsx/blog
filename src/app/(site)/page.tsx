@@ -89,7 +89,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      <div className="mt-1 mb-4 text-center sm:mt-2 sm:mb-5">
+      <div className="mt-1 mb-2 text-center sm:mt-2 sm:mb-3">
         <LinkButton href="/posts">
           所有文章
           <IconArrowRight className="inline-block" />

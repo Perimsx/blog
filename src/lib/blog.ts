@@ -5,7 +5,7 @@ import { visit } from "unist-util-visit";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
-import remarkToc from "remark-toc";
+import type { PluggableList } from "unified";
 import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
@@ -68,14 +68,7 @@ export const BLOG_DIR = "src/content/blog";
 // Remark plugins (adapted from Astro)
 // ---------------------------------------------------------------------------
 
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+import { escapeHtml } from "./html";
 
 function extractCodeBlockTitle(meta: string | undefined) {
   if (!meta) return undefined;
@@ -364,15 +357,14 @@ export async function getAllSlugs(): Promise<string[]> {
   return posts.map((p) => p.url);
 }
 
-export const mdxRemarkPlugins = [
+export const mdxRemarkPlugins: PluggableList = [
   remarkGfm,
-  remarkToc,
   remarkCodeBlockTitle,
   remarkLazyLoadImages,
   remarkProxyExternalImages,
 ];
 
-export const mdxRehypePlugins = [
+export const mdxRehypePlugins: PluggableList = [
   [rehypeRaw, { passThrough: ['mdxJsxFlowElement', 'mdxJsxTextElement', 'mdxjsEsm'] }],
   rehypeSlug,
 ];
@@ -506,3 +498,42 @@ export function extractHeadings(html: string): Heading[] {
 
   return headings;
 }
+
+/**
+ * Extract headings directly from raw markdown without full MDX compilation.
+ * Uses lightweight remark-parse AST traversal to avoid the expensive
+ * remark/rehype pipeline + shiki highlighting for heading-only extraction.
+ * Slugs are generated to match rehype-slug behavior.
+ */
+export function extractHeadingsFromMarkdown(content: string): Heading[] {
+  const processor = unified().use(remarkParse);
+  const file = processor.parse(content);
+  const headings: Heading[] = [];
+
+  visit(file, "heading", (node: { depth: number; children?: Array<{ type: string; value?: string }> }) => {
+    if (node.depth < 2 || node.depth > 3) return;
+
+    let text = "";
+    for (const child of node.children ?? []) {
+      if (child.type === "text" && child.value) {
+        text += child.value;
+      } else if (child.type === "inlineCode" && child.value) {
+        text += child.value;
+      }
+    }
+
+    if (!text.trim()) return;
+
+    const slug = text
+      .trim()
+      .replace(/\s+/g, "-")
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, "");
+
+    headings.push({ depth: node.depth, slug, text: text.trim() });
+  });
+
+  return headings;
+}
+
+export { escapeHtml } from "./html";

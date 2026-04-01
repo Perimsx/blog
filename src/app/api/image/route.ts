@@ -7,6 +7,48 @@ import {
   parseExternalImageUrl,
 } from "@/lib/imageProxy";
 
+function isPrivateIpv4(hostname: string): boolean {
+  if (!/^\d{1,3}(?:\.\d{1,3}){3}$/.test(hostname)) return false;
+  const octets = hostname.split(".").map((part) => Number.parseInt(part, 10));
+  if (octets.some((part) => Number.isNaN(part) || part < 0 || part > 255)) return false;
+  const [a, b] = octets;
+  return (
+    a === 0 ||
+    a === 10 ||
+    a === 127 ||
+    (a === 169 && b === 254) ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168)
+  );
+}
+
+function isPrivateIpv6(hostname: string): boolean {
+  const normalized = hostname.replace(/^\[|\]$/g, "").toLowerCase();
+  return (
+    normalized === "::1" ||
+    normalized.startsWith("fc") ||
+    normalized.startsWith("fd") ||
+    normalized.startsWith("fe80:")
+  );
+}
+
+async function checkDnsRebinding(hostname: string): Promise<boolean> {
+  try {
+    const dns = await import("node:dns");
+    const addresses4 = await dns.promises.resolve4(hostname).catch(() => []);
+    const addresses6 = await dns.promises.resolve6(hostname).catch(() => []);
+    const allAddresses = [...addresses4, ...addresses6];
+    if (allAddresses.length > 0) {
+      for (const addr of allAddresses) {
+        if (isPrivateIpv4(addr) || isPrivateIpv6(addr)) return false;
+      }
+    }
+    return true;
+  } catch {
+    return true;
+  }
+}
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const rawUrl = requestUrl.searchParams.get("url");
@@ -18,6 +60,12 @@ export async function GET(request: Request) {
 
   if (!getHotlinkPlatform(targetUrl)) {
     return new Response("当前地址不在防盗链代理范围内", { status: 400 });
+  }
+
+  // DNS rebinding protection: resolve the hostname and block if it resolves to a private IP
+  const dnsCheck = await checkDnsRebinding(targetUrl.hostname);
+  if (!dnsCheck) {
+    return new Response("图片地址解析失败（DNS rebinding 保护）", { status: 400 });
   }
 
   const upstreamResponse = await fetch(targetUrl, {
@@ -38,7 +86,7 @@ export async function GET(request: Request) {
   headers.set("Content-Type", contentType || guessImageContentType(targetUrl));
   headers.set(
     "Cache-Control",
-    "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400"
+    "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400",
   );
 
   const etag = upstreamResponse.headers.get("etag");

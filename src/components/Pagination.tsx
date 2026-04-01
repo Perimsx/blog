@@ -15,13 +15,15 @@ export const Pagination: React.FC<PaginationProps> = ({
 }) => {
   if (totalPages <= 1) return null;
 
+  // baseUrl for pagination is e.g. "/posts/page", list root is "/posts"
+  const listRoot = baseUrl.replace(/\/page$/, "") || "/";
   const prevUrl = currentPage > 1
-    ? currentPage === 2 ? `${baseUrl}/` : `${baseUrl}/${currentPage - 1}`
+    ? currentPage === 2 ? `${listRoot}/` : `${baseUrl}/${currentPage - 1}`
     : null;
   const nextUrl = currentPage < totalPages ? `${baseUrl}/${currentPage + 1}` : null;
 
   return (
-    <nav className="mt-auto mb-8 flex items-center justify-center text-sm sm:text-base" aria-label="Pagination">
+    <nav className="mt-auto mb-4 flex items-center justify-center text-sm sm:text-base" aria-label="Pagination">
       {prevUrl ? (
         <Link
           href={prevUrl}

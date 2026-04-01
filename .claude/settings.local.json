@@ -13,10 +13,46 @@
       "Bash(npx next:*)",
       "Bash(cd:*)",
       "Bash(find C:/Users/Chen/Desktop/blog/src -name *.astro -o -name *.mjs -o -name *.mdx)",
-      "Bash(taskkill //F //IM node.exe)"
+      "Bash(taskkill //F //IM node.exe)",
+      "Read(//c/Users/Chen/Desktop/favicon.pub/**)",
+      "Bash(xxd -l 32 \"C:/Users/Chen/Desktop/favicon.pub\")",
+      "Bash(cp \"C:/Users/Chen/Desktop/favicon.pub/favicon-16x16.png\" \"C:/Users/Chen/Desktop/blog/public/\")",
+      "Bash(cp \"C:/Users/Chen/Desktop/favicon.pub/favicon-32x32.png\" \"C:/Users/Chen/Desktop/blog/public/\")",
+      "Bash(cp \"C:/Users/Chen/Desktop/favicon.pub/favicon-48x48.png\" \"C:/Users/Chen/Desktop/blog/public/\")",
+      "Bash(cp \"C:/Users/Chen/Desktop/favicon.pub/favicon.ico\" \"C:/Users/Chen/Desktop/blog/public/\")",
+      "Bash(cp \"C:/Users/Chen/Desktop/favicon.pub/favicon.svg\" \"C:/Users/Chen/Desktop/blog/public/\")",
+      "mcp__MiniMax__understand_image",
+      "Bash(python -c \"from PIL import Image; print\\(''PIL OK''\\)\")",
+      "Bash(python -c \":*)",
+      "WebFetch(domain:platform.minimaxi.com)",
+      "mcp__web-search-prime__web_search_prime",
+      "mcp__MiniMax__web_search",
+      "mcp__zread__search_doc",
+      "Skill(update-config)",
+      "mcp__zread__get_repo_structure",
+      "Bash(npm search:*)",
+      "Bash(npm view:*)",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(''''Name:'''', d.get\\(''''name''''\\)\\); print\\(''''Version:'''', d.get\\(''''version''''\\)\\); print\\(''''Description:'''', d.get\\(''''description''''\\)\\); print\\(''''Main:'''', d.get\\(''''main''''\\)\\); print\\(''''Bin:'''', d.get\\(''''bin''''\\)\\); print\\(''''Dependencies:'''', list\\(d.get\\(''''dependencies'''', {}\\).keys\\(\\)\\)\\)\")",
+      "Bash(minimax-mcp-js --help)",
+      "Read(//c/Users/Chen/.claude/**)",
+      "Read(//c/Users/Chen/.claude/projects/**)",
+      "WebFetch(domain:www.chenguitao.com)",
+      "Bash(curl -s --max-time 10 \"https://www.chenguitao.com/\")",
+      "Bash(curl:*)",
+      "Bash(rm -rf src/utils/)",
+      "Bash(rm -f merge_tags.js tmp_tags.js)",
+      "Bash(rm -f src/components/BackButton.tsx src/components/StructuredData.tsx src/hooks/useTheme.ts src/config.ts src/consts.ts src/constants.ts src/site.ts)",
+      "Bash(rm -f src/lib/readingTime.ts src/lib/tags.ts src/lib/path.ts)",
+      "Bash(rm -f src/lib/remarkCodeBlockTitle.mjs)",
+      "Bash(npx tsc:*)",
+      "Bash(pnpm build:*)"
     ],
     "additionalDirectories": [
       "c:\\Users\\Chen\\.claude\\agents"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "minimax"
+  ]
 }

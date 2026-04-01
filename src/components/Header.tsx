@@ -240,7 +240,6 @@ export const Header: React.FC = () => {
                       className="theme-toggle-btn focus-outline relative size-10 p-3 sm:size-8 hover:[&>svg]:stroke-accent"
                       title="Toggles light & dark"
                       aria-label="auto"
-                      aria-live="polite"
                       onClick={toggleTheme}
                     >
                       <IconMoon className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />

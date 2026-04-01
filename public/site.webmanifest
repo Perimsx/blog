@@ -1,17 +1,19 @@
 {
   "name": "Perimsx",
   "short_name": "Perimsx",
-  "description": "Perimsx | 记录成长，分享价值",
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "16x16 32x32 48x48",
-      "type": "image/x-icon"
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ],
-  "start_url": "/",
-  "display": "standalone",
-  "theme_color": "#006cac",
-  "background_color": "#fdfdfd",
-  "lang": "zh-CN"
+  "theme_color": "#1a1a2e",
+  "background_color": "#ffffff",
+  "display": "standalone"
 }

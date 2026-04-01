@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getSortedPosts } from "@/lib/blog";
 import { Card } from "@/components/Card";
 import { Pagination } from "@/components/Pagination";
@@ -26,12 +27,28 @@ const MONTHS = [
 
 const POSTS_PER_PAGE = 10;
 
-export default async function PostsPage() {
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function PostPaginationPage({ params }: PageProps) {
+  const { slug } = await params;
+  const page = Number.parseInt(slug, 10);
+
+  if (Number.isNaN(page) || page < 2) {
+    notFound();
+  }
+
   const sortedPosts = await getSortedPosts();
   const totalPosts = sortedPosts.length;
   const totalPages = Math.max(1, Math.ceil(totalPosts / POSTS_PER_PAGE));
 
-  const pagePosts = sortedPosts.slice(0, POSTS_PER_PAGE);
+  if (page > totalPages) {
+    notFound();
+  }
+
+  const start = (page - 1) * POSTS_PER_PAGE;
+  const pagePosts = sortedPosts.slice(start, start + POSTS_PER_PAGE);
 
   const byYear = getPostsByGroupCondition(pagePosts, (post) => {
     return new Date(post.data.pubDatetime).getFullYear();
@@ -75,7 +92,7 @@ export default async function PostsPage() {
         </div>
       ))}
 
-      <Pagination currentPage={1} totalPages={totalPages} baseUrl="/posts/page" />
+      <Pagination currentPage={page} totalPages={totalPages} baseUrl="/posts/page" />
     </main>
   );
 }

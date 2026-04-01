@@ -1,19 +1,24 @@
+import type { BundledLanguage } from "shiki";
 import React from "react";
 import { getHighlighter } from "@/lib/blog";
 import { CopyButton } from "./CopyButton";
 
-/** Recursively extract plain text from React children (string | element | array). */
+/** Recursively extract plain text from React children. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extractText(node: any): string {
   if (typeof node === "string") return node;
   if (typeof node === "number") return String(node);
   if (!node) return "";
   if (Array.isArray(node)) return node.map(extractText).join("");
-  if (node.props?.children) return extractText(node.props.children);
+  if (typeof node === "object" && "props" in node && node.props?.children) return extractText(node.props.children);
   return "";
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const Pre = async ({ children, ...props }: any) => {
-  const codeProps = children?.props || {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const codeProps = (children as any)?.props || {};
   const className = codeProps.className || "";
   const lang = className.replace("language-", "") || "text";
 
@@ -33,10 +38,9 @@ export const Pre = async ({ children, ...props }: any) => {
   try {
     const loaded = highlighter.getLoadedLanguages();
     if (!loaded.includes(resolvedLang)) {
-      await highlighter.loadLanguage(resolvedLang as any);
+      await highlighter.loadLanguage(resolvedLang as BundledLanguage);
     }
   } catch {
-    // Unknown language, fall back to plaintext
     resolvedLang = "text";
   }
 
@@ -65,5 +69,3 @@ export const Pre = async ({ children, ...props }: any) => {
     );
   }
 };
-
-

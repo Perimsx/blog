@@ -43,9 +43,11 @@ export const BackToTop: React.FC = () => {
   if (!isMounted) return null;
 
   return (
+    <>
     <AnimatePresence>
       {isVisible && (
         <motion.div
+          key="back-to-top"
           id="back-to-top-group"
           className="fixed z-50 flex flex-col items-center"
           initial={{ opacity: 0, scale: 0.5, y: 20 }}
@@ -120,6 +122,7 @@ export const BackToTop: React.FC = () => {
               <AnimatePresence>
                 {isHovered && (
                   <motion.span
+                    key="hover-label"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 5 }}
@@ -144,16 +147,17 @@ export const BackToTop: React.FC = () => {
           </motion.button>
         </motion.div>
       )}
-
-      <style>{`
-        @media (min-width: 640px) {
-          #back-to-top-group {
-            right: var(--layout-floating-right) !important;
-            bottom: var(--layout-floating-bottom) !important;
-          }
-        }
-      `}</style>
     </AnimatePresence>
+
+    <style>{`
+      @media (min-width: 640px) {
+        #back-to-top-group {
+          right: var(--layout-floating-right) !important;
+          bottom: var(--layout-floating-bottom) !important;
+        }
+      }
+    `}</style>
+    </>
   );
 };
 

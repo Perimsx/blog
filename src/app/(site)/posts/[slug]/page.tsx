@@ -1,22 +1,21 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getSortedPosts, getPostBySlug, getAllSlugs, compileMDX, extractHeadings, mdxRemarkPlugins, mdxRehypePlugins } from "@/lib/blog";
+import { getSortedPosts, getPostBySlug, getAllSlugs, extractHeadingsFromMarkdown, mdxRemarkPlugins, mdxRehypePlugins } from "@/lib/blog";
 import { SITE } from "@/lib/config";
 import { Tag } from "@/components/Tag";
 import { Datetime } from "@/components/Datetime";
 import { ShareLinks } from "@/components/ShareLinks";
 import { IconChevronLeft, IconChevronRight, IconEdit } from "@/components/icons";
-import FloatingToc from "@/components/FloatingToc";
 import { TocProvider } from "@/components/TocContext";
 import { slugifyStr } from "@/lib/slugify";
-import { BackButton } from "@/components/BackButton";
 import { ArticleEnhancer } from "@/components/ArticleEnhancer";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { Grid } from "@/components/mdx/Grid";
 import { Card } from "@/components/mdx/Card";
 import { Callout } from "@/components/mdx/Callout";
 import { Pre } from "@/components/mdx/Pre";
+import FloatingToc from "@/components/FloatingToc";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -91,9 +90,9 @@ export default async function PostPage({ params }: PageProps) {
   const sortedPosts = await getSortedPosts();
   const { title, description, pubDatetime, modDatetime, timezone, tags, coverImage, heroImage, hideEditPost } = post.data;
 
-  // Compile MDX to HTML simply to extract headings reliably using existing string processor
-  const compiledHtml = await compileMDX(post.content);
-  const headings = extractHeadings(compiledHtml);
+  // Extract headings from raw markdown using lightweight AST traversal
+  // (avoids expensive full MDX compilation + shiki highlighting)
+  const headings = extractHeadingsFromMarkdown(post.content);
   const tocHeadings = headings.filter((h) => h.depth > 1 && h.depth < 4);
 
   // Reading time and word count
@@ -154,16 +153,14 @@ export default async function PostPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <BackButton />
-
       <main
         id="main-content"
-        className={["layout-frame w-full pb-8", !SITE.showBackButton ? "mt-4" : "mt-2"].filter(Boolean).join(" ")}
+        className="layout-frame w-full pb-8 mt-4"
         data-pagefind-body
       >
         <h1
           title={title}
-          className="block w-full text-[1.45rem] leading-[1.18] font-semibold text-accent sm:text-[1.98rem] lg:text-[1.9rem] lg:truncate"
+          className="block w-full text-[1.22rem] leading-[1.18] font-semibold text-accent sm:text-[1.98rem] lg:text-[1.9rem] lg:truncate"
         >
           {title}
         </h1>
@@ -205,8 +202,8 @@ export default async function PostPage({ params }: PageProps) {
             components={mdxComponents}
             options={{
               mdxOptions: {
-                remarkPlugins: mdxRemarkPlugins as any,
-                rehypePlugins: mdxRehypePlugins as any,
+                remarkPlugins: mdxRemarkPlugins,
+                rehypePlugins: mdxRehypePlugins,
               }
             }}
           />
