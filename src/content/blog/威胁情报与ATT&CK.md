@@ -5,7 +5,7 @@ featured: false
 draft: false
 tags:
   - 威胁情报与感知
-description: 威胁情报体系入门，从IOC指标到MITRE ATT&CK框架14个战术阶段详解与实战应用
+description: 威胁情报体系全面梳理，从IOC指标（哈希、IP、域名、URL）提取到结构化威胁情报共享格式（STIX/TAXII），MITRE ATT&CK框架14个战术阶段与200余项技术深度解析与实战应用指南
 coverImage: ./covers/sec012-cover.webp
 url: sec012
 ---

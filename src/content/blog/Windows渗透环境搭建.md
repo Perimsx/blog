@@ -6,7 +6,7 @@ draft: false
 tags:
   - Windows安全/域渗透
   - 渗透测试(预攻/后渗透)
-description: Windows渗透测试靶机环境搭建，SMB/LDAP/RPC枚举技术与Nmap NSE脚本实战
+description: 从零搭建完整的Windows渗透测试靶场环境，涵盖Active Directory域环境配置、SMB/LDAP/RPC协议枚举技术与Nmap NSE高级脚本实战应用，帮助渗透测试工程师快速构建可控实验环境
 coverImage: ./covers/sec028-cover.webp
 url: sec028
 ---

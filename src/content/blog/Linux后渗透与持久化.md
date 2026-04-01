@@ -6,7 +6,7 @@ draft: false
 tags:
   - Linux安全与加固
   - 渗透测试(预攻/后渗透)
-description: 反弹Shell技术大全、SSH隧道三种模式实战、多种持久化后门部署与痕迹清理技术
+description: 反弹Shell技术大全与SSH隧道三种模式实战，涵盖Bash/Python/PHP/Perl多种方式，配合多种持久化后门部署技术与痕迹清理方案，助你全面掌握后渗透核心技能。
 coverImage: ./covers/sec026-cover.webp
 url: sec026
 ---

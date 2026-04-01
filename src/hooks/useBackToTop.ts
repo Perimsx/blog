@@ -7,7 +7,6 @@ export interface BackToTopResult {
   isVisible: boolean;
 }
 
-const CIRCUMFERENCE = 125.66;
 const THRESHOLD = 300;
 
 export function useBackToTop(): BackToTopResult {
@@ -32,9 +31,4 @@ export function useBackToTop(): BackToTopResult {
   }, [updateProgress]);
 
   return { progress, isVisible };
-}
-
-export function useBackToTopStrokeDashoffset(progress: number): string {
-  const offset = CIRCUMFERENCE - progress * CIRCUMFERENCE;
-  return String(offset);
 }

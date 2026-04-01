@@ -6,7 +6,7 @@ draft: false
 tags:
   - 应急响应
   - Windows安全/域渗透
-description: Windows入侵排查完整指南，进程分析、事件日志审计、注册表自启动检查与Autoruns使用
+description: Windows主机入侵排查全流程实战，涵盖可疑进程定位、事件日志深度审计、注册表自启动项检查、Autoruns工具使用与常见恶意行为特征识别，帮助安全工程师快速定位入侵痕迹
 coverImage: ./covers/sec018-cover.webp
 url: sec018
 ---

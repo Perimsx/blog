@@ -5,7 +5,7 @@ featured: false
 draft: false
 tags:
   - Web安全与加固
-description: ModSecurity部署实战，OWASP CRS规则集配置，自定义防SQL注入/XSS规则与误报处理
+description: ModSecurity部署实战完整指南，OWASP CRS规则集配置与调优，自定义防SQL注入、XSS、CSRF规则编写与误报处理策略，构建企业级Web应用防火墙防护体系。
 coverImage: ./covers/sec009-cover.webp
 url: sec009
 ---

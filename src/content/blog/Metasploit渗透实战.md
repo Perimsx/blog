@@ -6,7 +6,7 @@ draft: false
 tags:
   - 安全工具及靶场
   - 渗透测试(预攻/后渗透)
-description: Metasploit完整实战教程，模块架构解析、EternalBlue利用全过程、Meterpreter与MSFvenom
+description: Metasploit Framework完整实战教程，深入解析模块架构与msfconsole核心用法，EternalBlue利用全过程实战演示，Meterpreter高级功能与MSFvenom木马生成技术详解。
 coverImage: ./covers/sec027-cover.webp
 url: sec027
 ---

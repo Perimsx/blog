@@ -5,7 +5,7 @@ featured: false
 draft: false
 tags:
   - 网络防护(IDS/IPS/VPN)
-description: 三大主流VPN技术原理与完整搭建教程，含证书生成、配置文件示例和性能对比
+description: VPN三大主流技术原理解析，从IPSec到OpenVPN再到WireGuard，完整搭建教程含证书生成与配置文件示例，性能对比助你选型，搭建安全可靠的远程访问通道。
 coverImage: ./covers/sec008-cover.webp
 url: sec008
 ---

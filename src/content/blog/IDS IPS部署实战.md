@@ -5,7 +5,7 @@ featured: false
 draft: false
 tags:
   - 网络防护(IDS/IPS/VPN)
-description: IDS/IPS核心概念与部署实战，包括Snort规则语法、Suricata多线程配置和自定义检测规则编写
+description: IDS/IPS核心概念与部署实战完全指南，从Snort规则语法到Suricata多线程配置，配合自定义检测规则编写与真实攻击流量分析，搭建企业级入侵检测体系。
 coverImage: ./covers/sec007-cover.webp
 url: sec007
 ---

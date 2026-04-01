@@ -23,20 +23,6 @@ export const SITE = {
   timezone: "Asia/Shanghai",
 } as const;
 
-export const NAV_LINKS = [
-  { href: "/posts", label: "Posts" },
-  { href: "/tags", label: "Tags" },
-  { href: "/about", label: "About" },
-] as const;
-
-export const SOCIAL_LINKS = [
-  { href: "https://github.com/Perimsx", label: "GitHub" },
-  { href: "mailto:1722288011@qq.com", label: "Email" },
-  { href: "https://space.bilibili.com/9655855", label: "Bilibili" },
-  { href: "https://v.douyin.com/HWMgjLaTtFk", label: "Douyin" },
-  { href: "/rss.xml", label: "RSS" },
-] as const;
-
 export const SOCIALS = [
   { name: "Github", href: "https://github.com/Perimsx", linkTitle: ` ${SITE.title} on Github`, icon: "github", active: true },
   { name: "X", href: "https://x.com/Perimsx", linkTitle: `${SITE.title} on X`, icon: "twitter", active: true },
@@ -52,13 +38,3 @@ export const SHARE_LINKS = [
   { name: "Telegram", href: "https://t.me/share/url?url=", linkTitle: "分享到 Telegram", icon: "telegram" },
   { name: "Facebook", href: "https://www.facebook.com/sharer.php?u=", linkTitle: "分享到 Facebook", icon: "facebook" },
 ] as const;
-
-export const ICON_MAP: Record<string, string> = {
-  GitHub: "github",
-  Twitter: "twitter",
-  BlueSky: "bsky",
-  RSS: "rss",
-  Email: "mail",
-  Bilibili: "bilibili",
-  Douyin: "douyin",
-};

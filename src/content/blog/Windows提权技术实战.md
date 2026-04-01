@@ -6,7 +6,7 @@ draft: false
 tags:
   - Windows安全/域渗透
   - 渗透测试(预攻/后渗透)
-description: Windows提权技术全景，UAC绕过、Potato系列令牌窃取、服务路径劫持与WinPEAS自动化枚举
+description: Windows权限提升技术全景解析，UAC机制分析与绕过方法、Potato系列令牌窃取攻击、服务路径劫持与计划任务滥用，结合WinPEAS自动化枚举工具实现高效提权路径发现
 coverImage: ./covers/sec030-cover.webp
 url: sec030
 ---

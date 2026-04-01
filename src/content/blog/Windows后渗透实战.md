@@ -5,7 +5,7 @@ featured: false
 draft: false
 tags:
   - Windows安全/域渗透
-description: Mimikatz凭据提取全模块实战，黄金票据与白银票据攻击完整流程，DCSync与持久化后门
+description: 后渗透阶段核心技能全解析，Mimikatz凭据提取全模块深度使用，黄金票据与白银票据攻击原理与完整实操流程，DCSync域控同步攻击以及多种隐蔽持久化后门部署技术
 coverImage: ./covers/sec032-cover.webp
 url: sec032
 ---

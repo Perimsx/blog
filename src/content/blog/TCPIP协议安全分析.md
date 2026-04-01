@@ -7,7 +7,7 @@ tags:
   - TCP/IP
   - 协议分析
   - 网络攻击
-description: 逐层剖析TCP/IP协议栈安全隐患，包括ARP欺骗、IP欺骗、SYN Flood等攻击手法及对应防护措施
+description: 逐层剖析TCP/IP协议栈核心安全隐患，从ARP欺骗到IP欺骗与DNS劫持，从SYN Flood到HTTP Flood等DDoS攻击手法，详解每种攻击原理并给出针对性防护措施与加固方案。
 coverImage: ./covers/sec002-cover.webp
 url: sec002
 ---

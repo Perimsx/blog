@@ -5,7 +5,7 @@ featured: false
 draft: false
 tags:
   - 安全工具及靶场
-description: Kali Linux安装配置全指南，渗透测试工具链分类概览与DVWA靶场环境搭建
+description: Kali Linux安装与配置完整指南，从虚拟机搭建到工具链分类概览，再到DVWA靶场环境部署，手把手带你搭建专业渗透测试环境。
 coverImage: ./covers/sec022-cover.webp
 url: sec022
 ---

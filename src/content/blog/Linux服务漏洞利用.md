@@ -6,7 +6,7 @@ draft: false
 tags:
   - Linux安全与加固
   - 渗透测试(预攻/后渗透)
-description: Linux常见服务攻击面分析，SSH暴力破解、FTP匿名访问、Samba漏洞利用与Apache攻击实战
+description: Linux常见服务攻击面深度分析，SSH暴力破解与密钥登录、FTP匿名访问与提权、Samba漏洞利用与Apache攻击实战，配合Metasploit框架快速验证常见服务漏洞。
 coverImage: ./covers/sec024-cover.webp
 url: sec024
 ---

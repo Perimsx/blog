@@ -6,7 +6,7 @@ draft: false
 tags:
   - 应急响应
   - Linux安全与加固
-description: Linux入侵排查实战手册，用户/进程/网络/文件系统全面排查与Rootkit检测
+description: Linux入侵排查实战手册，用户、进程、网络与文件系统全面排查思路与命令详解，结合Rootkit检测技术与日志分析，带你掌握高效应急响应全流程。
 coverImage: ./covers/sec019-cover.webp
 url: sec019
 ---

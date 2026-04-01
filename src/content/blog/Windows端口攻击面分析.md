@@ -5,7 +5,7 @@ featured: false
 draft: false
 tags:
   - Windows安全/域渗透
-description: Windows服务攻击实战，永恒之蓝利用、NTLM中继、RDP暴力破解、WinRM远程执行与MSSQL攻击
+description: Windows常见服务端口攻击面深度剖析，EternalBlue永恒之蓝漏洞利用、NTLM认证中继攻击、RDP协议暴力破解与远程桌面攻击、WinRM远程代码执行以及MSSQL数据库攻击链完整演示
 coverImage: ./covers/sec029-cover.webp
 url: sec029
 ---

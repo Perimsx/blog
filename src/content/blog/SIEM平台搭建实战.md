@@ -5,7 +5,7 @@ featured: false
 draft: false
 tags:
   - 日志与流量分析
-description: ELK Stack完整部署教程，Logstash日志解析管道配置与Kibana可视化告警实战
+description: ELK Stack完整部署教程，从Elasticsearch集群搭建到Logstash日志解析管道配置，Kibana可视化仪表盘与告警规则实战，构建企业级安全信息与事件管理平台。
 coverImage: ./covers/sec013-cover.webp
 url: sec013
 ---
