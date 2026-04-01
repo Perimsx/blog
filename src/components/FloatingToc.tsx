@@ -16,7 +16,6 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
   const listContainerRef = useRef<HTMLElement | null>(null)
   const isUserInteractingRef = useRef(false)
   const interactTimerRef = useRef<number | null>(null)
-  const tickingRef = useRef(false)
 
   const tocItems = useMemo(() => {
     return (toc || [])
@@ -41,67 +40,66 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
     return `${percent}%`
   }, [activeIndex, tocItems.length])
 
-  const updateActiveToc = useCallback(() => {
-    if (!tocIds.length) {
-      setActiveId("")
-      return
-    }
-
-    const headings = tocIds
-      .map((id) => document.getElementById(id))
-      .filter((node): node is HTMLElement => Boolean(node))
-
-    if (!headings.length) {
-      setActiveId("")
-      return
-    }
-
-    const viewportHeight = window.innerHeight
-    // 调整检测阈值实现正文滚动到近中间位置时即切换高亮
-    const threshold = viewportHeight * 0.45
-
-    let currentActive = ""
-
-    for (let i = headings.length - 1; i >= 0; i--) {
-      const heading = headings[i]
-      const rect = heading.getBoundingClientRect()
-      
-      if (rect.top <= threshold) {
-        currentActive = heading.id
-        break
-      }
-    }
-
-    if (!currentActive && window.scrollY < 100) {
-      setActiveId("")
-    } else if (currentActive) {
-      setActiveId(currentActive)
-    }
-  }, [tocIds])
-
   useEffect(() => {
     if (!tocIds.length) return
 
-    const onScroll = () => {
-      if (tickingRef.current) return
-      tickingRef.current = true
-      window.requestAnimationFrame(() => {
-        updateActiveToc()
-        tickingRef.current = false
-      })
-    }
+    // 维护所有标题的可见性状态
+    const headingStates = new Map<string, boolean>()
 
-    const onHashChange = () => updateActiveToc()
-    document.addEventListener("scroll", onScroll, { capture: true, passive: true })
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          headingStates.set(entry.target.id, entry.isIntersecting)
+        })
+
+        // 找到最后一个在“激活区”及其上方的标题
+        // 激活区由 rootMargin 定义，这里设置为视口顶部到 25% 处
+        let lastId = ""
+        for (const id of tocIds) {
+          if (headingStates.get(id)) {
+            lastId = id
+          }
+        }
+
+        if (lastId) {
+          setActiveId(lastId)
+        } else if (window.scrollY < 100) {
+          // 页面顶部兜底
+          setActiveId("")
+        }
+      },
+      {
+        // 捕捉落在视口上半部分 25% 区域内及上方的标题
+        // 将顶部 margin 设为 100% 确保已通过的标题依然被记为可见，维持状态连续性
+        rootMargin: "100% 0px -75% 0px",
+        threshold: 0,
+      }
+    )
+
+    tocIds.forEach((id) => {
+      const el = document.getElementById(id)
+      if (el) observer.observe(el)
+    })
+
+    const onHashChange = () => {
+      const rawHash = window.location.hash.replace("#", "")
+      if (!rawHash) return
+      
+      try {
+        const decodedId = decodeURIComponent(rawHash)
+        if (tocIds.includes(decodedId)) setActiveId(decodedId)
+        else if (tocIds.includes(rawHash)) setActiveId(rawHash)
+      } catch (e) {
+        if (tocIds.includes(rawHash)) setActiveId(rawHash)
+      }
+    }
     window.addEventListener("hashchange", onHashChange)
-    const initTimer = window.setTimeout(updateActiveToc, 80)
 
     return () => {
-      document.removeEventListener("scroll", onScroll, true)
+      observer.disconnect()
       window.removeEventListener("hashchange", onHashChange)
-      window.clearTimeout(initTimer)
     }
-  }, [tocIds, updateActiveToc])
+  }, [tocIds])
 
   useEffect(() => {
     if (!open || !activeId || isUserInteractingRef.current || !listContainerRef.current) return

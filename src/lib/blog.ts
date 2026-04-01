@@ -13,6 +13,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeStringify from "rehype-stringify";
 import { createHighlighter } from "shiki";
 import readingTimeLib from "reading-time";
+import GithubSlugger from "github-slugger";
 
 import { slugifyStr } from "./slugify";
 import { shouldProxyExternalImage, toImageProxyUrl } from "./imageProxy";
@@ -509,6 +510,7 @@ export function extractHeadingsFromMarkdown(content: string): Heading[] {
   const processor = unified().use(remarkParse);
   const file = processor.parse(content);
   const headings: Heading[] = [];
+  const slugger = new GithubSlugger();
 
   visit(file, "heading", (node: { depth: number; children?: Array<{ type: string; value?: string }> }) => {
     if (node.depth < 2 || node.depth > 3) return;
@@ -524,11 +526,7 @@ export function extractHeadingsFromMarkdown(content: string): Heading[] {
 
     if (!text.trim()) return;
 
-    const slug = text
-      .trim()
-      .replace(/\s+/g, "-")
-      .toLowerCase()
-      .replace(/[^a-z0-9-]/g, "");
+    const slug = slugger.slug(text.trim());
 
     headings.push({ depth: node.depth, slug, text: text.trim() });
   });
