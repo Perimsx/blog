@@ -108,6 +108,10 @@ export const SearchModal: React.FC = () => {
         .search-highlight {
           color: var(--color-accent);
           font-weight: 600;
+          background-color: color-mix(in srgb, var(--color-accent) 15%, transparent);
+          border-radius: 4px;
+          padding: 0 3px;
+          margin: 0 -1px;
         }
         .search-scroll::-webkit-scrollbar {
           width: 4px;
