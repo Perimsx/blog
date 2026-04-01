@@ -16,7 +16,7 @@ export const Grid: React.FC<GridProps> = ({ cols = 3, className = "", children }
   const gridCols = gridColsMap[cols] || gridColsMap[3];
 
   return (
-    <div className={["not-prose my-6 grid gap-x-6 gap-y-3 [&>*]:my-0", gridCols, className].join(" ")}>
+    <div className={["not-prose my-3 sm:my-6 grid gap-x-6 gap-y-2 sm:gap-y-3 [&>*]:my-0", gridCols, className].join(" ")}>
       {children}
     </div>
   );

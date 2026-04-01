@@ -30,7 +30,7 @@ export const Callout: React.FC<CalloutProps> = ({
     accent === "default" ? "text-foreground/45" : currentAccent.split(" ")[2];
 
   return (
-    <div className={["rounded-xl border px-4 py-3 shadow-sm my-3", currentAccent].join(" ")}>
+    <div className={["rounded-xl border px-3 sm:px-4 py-2.5 sm:py-3 shadow-sm my-2 sm:my-3", currentAccent].join(" ")}>
       {eyebrow && (
         <p className={["text-[11px] font-semibold uppercase tracking-[0.22em]", eyebrowColor].join(" ")}>
           {eyebrow}

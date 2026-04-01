@@ -30,7 +30,7 @@ export const Card: React.FC<CardProps> = ({
   return (
     <aside
       className={[
-        "not-prose my-3.5 rounded-xl border px-4.5 py-3 text-[0.88rem] leading-snug shadow-sm",
+        "not-prose my-2 sm:my-3.5 rounded-xl border px-3 sm:px-4.5 py-2.5 sm:py-3 text-[0.85rem] sm:text-[0.88rem] leading-snug shadow-sm",
         currentAccent,
       ].join(" ")}
     >
