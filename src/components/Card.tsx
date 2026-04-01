@@ -38,7 +38,7 @@ export const Card: React.FC<CardProps> = ({
           <Datetime pubDatetime={pubDatetime} modDatetime={modDatetime} timezone={postTimezone} />
           <span className="text-sm italic opacity-80">• {readingTimeStr}</span>
         </div>
-        <div className="flex items-start gap-3 sm:gap-4">
+        <div className="flex items-start gap-4 sm:gap-6">
           {showImage && articleImage && (
             <Link
               href={postPath}
@@ -49,12 +49,12 @@ export const Card: React.FC<CardProps> = ({
                 alt={title}
                 width={140}
                 height={79}
-                className="rounded shadow-sm transition-all duration-200 group-hover:shadow-md group-hover:scale-105 object-cover"
+                className="rounded-md shadow-sm transition-all duration-300 group-hover:shadow-md group-hover:scale-105 object-cover grayscale-[0.2] group-hover:grayscale-0"
                 quality={80}
               />
             </Link>
           )}
-          <p className="flex-1 text-[0.95rem] leading-7 opacity-80 sm:text-base sm:leading-8">{description}</p>
+          <p className="flex-1 text-[0.92rem] leading-[1.6] font-[430] opacity-80 tracking-[0.006em] sm:text-[0.95rem] [font-feature-settings:'liga'1,'calt'1]">{description}</p>
         </div>
       </div>
     </li>
