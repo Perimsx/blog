@@ -90,26 +90,26 @@
   .article-detail {
     font-family: var(--font-sans);
     font-size: 0.96rem;
-    line-height: 1.65;
+    line-height: 1.6; /* 从 1.65 减小到 1.6，文字更紧凑 */
     letter-spacing: 0.006em;
     font-weight: 430;
   }
 
   .article-detail :is(p, ul, ol, blockquote) {
-    margin-block: 0.45em;
+    margin-block: 0.35em; /* 从 0.45em 减小到 0.35em，缩减段落间距 */
   }
 
   .article-detail :is(li, figcaption) {
-    line-height: 1.68;
+    line-height: 1.55; /* 从 1.68 减小到 1.55 */
   }
 
   .article-detail li + li {
-    margin-top: 0.15em;
+    margin-top: 0.1em; /* 从 0.15em 减小，列表项更紧凑 */
   }
 
   .article-detail mark {
-    padding: 0.08em 0.38em;
-    border-radius: 0.42rem;
+    padding: 0.05em 0.28em; /* 从 0.08em 0.38em 减小，防止撑大行高 */
+    border-radius: 0.3rem; /* 圆角微调 */
     background: color-mix(in oklab, var(--accent) 18%, transparent);
     color: var(--foreground);
     box-decoration-break: clone;
@@ -124,15 +124,15 @@
 
   .article-detail kbd {
     display: inline-block;
-    min-width: 1.6em;
-    padding: 0.1em 0.45em;
+    min-width: 1.4em;
+    padding: 0.05em 0.35em; /* 从 0.1em 0.45em 减小 */
     border: 1px solid color-mix(in oklab, var(--border) 92%, transparent);
-    border-radius: 0.5rem;
+    border-radius: 0.4rem;
     background: color-mix(in oklab, var(--muted) 84%, transparent);
     box-shadow: 0 1px 0 color-mix(in oklab, var(--foreground) 12%, transparent);
     color: var(--foreground);
     font-family: var(--font-mono);
-    font-size: 0.84em;
+    font-size: 0.82em;
     line-height: 1.2;
     vertical-align: baseline;
   }
@@ -163,50 +163,51 @@
 
   .article-detail blockquote {
     font-family: var(--font-serif);
-    font-size: 0.96em;
-    line-height: 1.6;
+    font-size: 1.05rem; /* 微缩字号，提升精致度 */
+    line-height: 1.52; /* 恢复更舒适的长句行高 */
     letter-spacing: 0.01em;
-    font-weight: 400;
-    padding: 0.15em 0.85em;
-    margin-block: 0.55em;
+    font-weight: 430;
+    padding: 0.35rem 0.8rem; /* 适度放宽，赋予呼吸感 */
+    margin-block: 0.8rem;
     background: color-mix(in oklab, var(--muted) 28%, transparent);
-    border-radius: 0 0.5rem 0.5rem 0;
+    border-radius: 0 0.4rem 0.4rem 0;
   }
 
-  .article-detail blockquote > :first-child {
-    margin-top: 0;
+  /* 内部子元素边距归零，间距由父级 padding 统一控制，防止重复堆叠 */
+  .article-detail blockquote > :is(p, ul, ol) {
+    margin-block: 0 !important;
   }
 
-  .article-detail blockquote > :last-child {
-    margin-bottom: 0;
+  .article-detail blockquote > :not(:first-child) {
+    margin-top: 0.35em; /* 段落间保留极窄的活口 */
   }
 
   /* ===== Headings ===== */
 
   .article-detail h2 {
-    font-size: 1.34rem;
+    font-size: 1.3rem; /* 从 1.34rem 略微缩小 */
     line-height: 1.3;
-    margin-top: 1em;
-    margin-bottom: 0.3em;
+    margin-top: 0.85em; /* 从 1em 减小 */
+    margin-bottom: 0.25em; /* 从 0.3em 减小 */
   }
 
   .article-detail h3 {
-    font-size: 1.16rem;
-    line-height: 1.38;
-    margin-top: 0.85em;
+    font-size: 1.12rem; /* 从 1.16rem 略微缩小 */
+    line-height: 1.35;
+    margin-top: 0.7em; /* 从 0.85em 减小 */
     margin-bottom: 0.2em;
   }
 
   .article-detail h4 {
-    font-size: 1.03rem;
-    line-height: 1.42;
-    margin-top: 0.85em;
-    margin-bottom: 0.2em;
+    font-size: 1.02rem;
+    line-height: 1.4;
+    margin-top: 0.6em; /* 从 0.85em 减小 */
+    margin-bottom: 0.15em;
   }
 
   .article-detail pre {
     font-size: 0.84rem;
-    line-height: 1.55;
+    line-height: 1.45; /* 代码块行高从 1.55 减小到 1.45 */
   }
 
   /* ===== Images ===== */
@@ -274,7 +275,18 @@
 
   .article-detail th,
   .article-detail td {
-    padding: 0.42em 0.75em;
+    /* 上下恢复到 0.45em 避免文字顶着线，左右保持 0.6em */
+    padding: 0.45em 0.6em; 
+  }
+
+  /* 修复最左侧和最右侧贴边的问题：给首尾列强行增加安全留白 */
+  .article-detail tr th:first-child,
+  .article-detail tr td:first-child {
+    padding-left: 0.85em !important;
+  }
+  .article-detail tr th:last-child,
+  .article-detail tr td:last-child {
+    padding-right: 0.85em !important;
   }
 
   .article-detail tbody tr:hover {
@@ -309,17 +321,17 @@
   /* ===== Code Block Title ===== */
 
   .code-block-title {
-    margin-top: 1.4em;
+    margin-top: 1.2em; /* 顶部外边距从 1.4em 减小 */
     margin-bottom: 0;
-    padding: 0.7rem 0.95rem;
+    padding: 0.5rem 0.8rem; /* 内边距从 0.7rem 0.95rem 收紧 */
     border: 1px solid var(--border);
     border-bottom: 0;
-    border-radius: 0.75rem 0.75rem 0 0;
+    border-radius: 0.5rem 0.5rem 0 0; /* 圆角从 0.75rem 减小 */
     background: color-mix(in oklab, var(--muted) 82%, transparent);
     color: color-mix(in oklab, var(--foreground) 78%, transparent);
     font-family: var(--font-mono);
     font-size: 0.78rem;
-    line-height: 1.5;
+    line-height: 1.4;
     overflow-x: auto;
     white-space: nowrap;
   }
@@ -331,33 +343,34 @@
   }
 
   .code-block-title + .code-block-wrapper .copy-code {
-    top: 0.75rem;
+    top: 0.55rem; /* 配合 padding 减小，调整复制按钮位置 */
   }
 
   /* ===== Desktop (>=640px) ===== */
 
   @media (min-width: 640px) {
     .article-detail {
-      font-size: 1.01rem;
-      line-height: 1.7;
+      font-size: 1rem;
+      line-height: 1.6; /* 桌面端行高同步压实至 1.6 */
     }
 
     .article-detail :is(p, ul, ol, blockquote) {
-      margin-block: 0.5em;
+      margin-block: 0.35em; /* 桌面端段落间距压实至 0.35em */
     }
 
     .article-detail h2 {
-      font-size: 1.45rem;
-      margin-top: 1.2em;
+      font-size: 1.35rem;
+      margin-top: 0.75em; /* 从 0.9em 减小 */
     }
 
     .article-detail h3 {
-      font-size: 1.2rem;
-      margin-top: 0.9em;
+      font-size: 1.15rem;
+      margin-top: 0.6em; /* 从 0.75em 减小 */
     }
 
     .article-detail h4 {
-      font-size: 1.08rem;
+      font-size: 1.05rem;
+      margin-top: 0.45em; /* 从 0.6em 减小 */
     }
   }
 
@@ -365,77 +378,71 @@
 
   @media (max-width: 639px) {
     .article-detail {
-      font-size: 0.88rem;
-      line-height: 1.62;
+      font-size: 0.92rem; /* 保持不变，保证移动端可读性 */
+      line-height: 1.55; /* 从 1.68 大幅减小，移动端尤为需要紧凑 */
     }
 
-    /* 移动端关闭 balance 换行，避免标题提前折行 */
     .article-detail :is(h2, h3, h4) {
       text-wrap: pretty;
     }
 
     .article-detail :is(p, ul, ol, blockquote) {
-      margin-block: 0.3em;
+      margin-block: 0.3em; /* 从 0.35em 减小 */
     }
 
     .article-detail :is(li, figcaption) {
-      line-height: 1.55;
+      line-height: 1.5; /* 从 1.6 减小 */
     }
 
     .article-detail h2 {
-      font-size: 1.02rem;
-      margin-top: 0.8em;
-      margin-bottom: 0.2em;
+      font-size: 1.15rem !important; 
+      margin-top: 0.7rem; /* 从 1rem 大幅减小 */
+      margin-bottom: 0.25rem;
     }
 
     .article-detail h3 {
-      font-size: 1rem;
-      margin-top: 0.65em;
-      margin-bottom: 0.15em;
+      font-size: 1.05rem !important;
+      margin-top: 0.6rem; /* 从 0.8rem 减小 */
+      margin-bottom: 0.2rem;
     }
 
     .article-detail h4 {
-      font-size: 0.92rem;
-      margin-top: 0.55em;
-      margin-bottom: 0.1em;
+      font-size: 0.98rem !important;
+      margin-top: 0.5rem; /* 从 0.7rem 减小 */
+      margin-bottom: 0.15rem;
     }
 
     .article-detail pre {
       font-size: 0.76rem;
-      line-height: 1.5;
-      padding: 0.55rem !important;
+      line-height: 1.4; /* 从 1.5 减小 */
+      padding: 0.5rem !important;
       margin-inline: -0.25rem;
       border-radius: 0.4rem;
     }
 
     .article-detail blockquote {
-      font-size: 0.88em;
-      padding: 0.1em 0.6em;
-      margin-block: 0.35em;
-    }
-
-    .article-detail table {
-      font-size: 0.78rem;
+      font-size: 0.98em; /* 移动端字号同步调大 */
+      padding: 0.05em 0.35rem; /* 极致极限压缩 */
+      margin-block: 0.3em;
     }
 
     .article-detail th,
     .article-detail td {
-      padding: 0.28em 0.4em;
+      /* 移动端上下不能低于 0.35em (约 5px)，否则汉字和英文大写绝对会顶边 */
+      padding: 0.35em 0.45em; 
     }
-
-    .table-scroll-wrapper {
-      margin-block: 0.5em;
-      margin-inline: -0.25rem;
-    }
-
-    .code-block-wrapper {
-      margin-block: 0.5em !important;
+    
+    /* 移动端同样需要保护最左侧不贴边 */
+    .article-detail tr th:first-child,
+    .article-detail tr td:first-child {
+      padding-left: 0.6em !important;
     }
 
     .code-block-title {
-      margin-top: 0.5em;
-      padding: 0.4rem 0.6rem;
-      font-size: 0.7rem;
+      margin-top: 0.4em;
+      /* 代码块标题稍微调大一点点上下边距，防止顶边 */
+      padding: 0.45rem 0.6rem; 
+      font-size: 0.72rem;
     }
 
     .article-detail img {

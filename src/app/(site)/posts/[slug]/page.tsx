@@ -160,12 +160,12 @@ export default async function PostPage({ params }: PageProps) {
       >
         <h1
           title={title}
-          className="block w-full text-[1.22rem] leading-[1.18] font-semibold text-accent sm:text-[1.98rem] lg:text-[1.9rem] lg:truncate"
+          className="block w-full text-[1.18rem] leading-[1.18] font-semibold text-accent sm:text-[1.98rem] lg:text-[1.9rem] lg:truncate"
         >
           {title}
         </h1>
 
-        <div className="mt-1 mb-1.5 sm:mt-1.5 sm:mb-4 flex items-center justify-between gap-4">
+        <div className="mt-1.5 mb-2 sm:mt-2 sm:mb-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Datetime pubDatetime={pubDatetime} modDatetime={modDatetime} timezone={timezone} size="lg" />
             {readingTime && (
@@ -188,12 +188,12 @@ export default async function PostPage({ params }: PageProps) {
           )}
         </div>
 
-        <article id="article" className="article-detail prose mx-auto mt-2 sm:mt-6 max-w-3xl">
+        <article id="article" className="article-detail prose mx-auto mt-4 sm:mt-8 max-w-3xl">
           {articleImage && typeof articleImage === "string" && (
             <img
               src={articleImage}
               alt={title}
-              className="mb-6 aspect-video w-full rounded-md object-cover"
+              className="mb-4 sm:mb-6 aspect-video w-full rounded-md object-cover"
               loading="lazy"
             />
           )}
