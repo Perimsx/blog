@@ -66,156 +66,149 @@ export const SiteAnnouncement: React.FC = () => {
           z-index: 9999;
           pointer-events: none;
           opacity: 0;
-          right: var(--layout-floating-right);
-          bottom: calc(var(--layout-floating-bottom) + 48px);
-          width: min(380px, calc(100vw - 40px));
-          transform: translateY(14px) scale(0.96);
-          transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-                      opacity 0.45s ease;
+          top: 24px;
+          left: 50%;
+          width: max-content;
+          max-width: calc(100vw - 32px);
+          transform: translate(-50%, -20px) scale(0.95);
+          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                      opacity 0.4s ease;
         }
         .sa-wrap[data-visible="true"] {
           pointer-events: auto;
           opacity: 1;
-          transform: translateY(0) scale(1);
+          transform: translate(-50%, 0) scale(1);
         }
 
         @media (max-width: 640px) {
           .sa-wrap {
-            right: 0; bottom: 0; left: 0;
-            width: 100%;
-            transform: translateY(100%);
-            padding: 0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
-          }
-          .sa-wrap[data-visible="true"] { transform: translateY(0); }
-          .sa-card {
-            border-radius: 16px 16px 0 0 !important;
-            border-bottom: none !important;
-            padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0)) !important;
+            top: env(safe-area-inset-top, 16px);
+            margin-top: 16px;
+            width: calc(100vw - 32px);
           }
         }
 
         .sa-card {
           position: relative;
           overflow: hidden;
-          border-radius: 16px;
-          padding: 16px 18px;
-          display: flex;
-          align-items: flex-start;
-          gap: 12px;
-          border: 1px solid var(--color-border);
-          background: var(--color-background);
-          box-shadow:
-            0 24px 56px -16px rgba(0,0,0,0.14),
-            0 8px 20px -8px rgba(0,0,0,0.06);
-          color: var(--color-foreground);
-          transition: box-shadow 0.3s ease;
-        }
-        .sa-card:hover {
-          box-shadow:
-            0 28px 64px -16px rgba(0,0,0,0.18),
-            0 10px 24px -8px rgba(0,0,0,0.08),
-            inset 0 0.5px 0 color-mix(in srgb, var(--color-foreground) 5%, transparent);
-        }
-        html[data-theme="dark"] .sa-card {
-          border-color: rgba(255,255,255,0.06);
-          box-shadow:
-            0 24px 56px -16px rgba(0,0,0,0.6),
-            0 8px 20px -8px rgba(0,0,0,0.3),
-            inset 0 0.5px 0 rgba(255,255,255,0.06);
-        }
-        html[data-theme="dark"] .sa-card:hover {
-          box-shadow:
-            0 28px 64px -16px rgba(0,0,0,0.7),
-            0 10px 24px -8px rgba(0,0,0,0.35),
-            inset 0 0.5px 0 rgba(255,255,255,0.08);
-        }
-
-        /* 左侧 accent 色条 */
-        .sa-card::before {
-          content: "";
-          position: absolute;
-          left: 0; top: 0; bottom: 0;
-          width: 3px;
-          background: var(--color-accent);
-          opacity: 0.6;
-        }
-
-        /* 底部进度条 */
-        .sa-card::after {
-          content: "";
-          position: absolute;
-          left: 0; bottom: 0;
-          height: 2px;
-          width: 100%;
-          background: linear-gradient(90deg, var(--color-accent), color-mix(in srgb, var(--color-accent) 40%, transparent));
-          opacity: 0.45;
-        }
-        .sa-wrap[data-visible="true"]:not([data-paused="true"]) .sa-card::after {
-          width: 0%;
-          transition: width ${AUTO_DISMISS_MS}ms linear;
-        }
-        /* hover 暂停进度条 */
-        .sa-wrap[data-paused="true"] .sa-card::after {
-          transition: none;
-        }
-
-        .sa-icon {
-          flex-shrink: 0;
-          margin-top: 2px;
-          width: 32px; height: 32px;
-          border-radius: 8px;
-          background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+          border-radius: 99px;
+          padding: 6px 8px 6px 6px;
           display: flex;
           align-items: center;
-          justify-content: center;
-          color: var(--color-accent);
+          gap: 12px;
+          border: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
+          background: color-mix(in srgb, var(--color-background) 75%, rgba(255,255,255,0.6));
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          box-shadow:
+            0 16px 32px -12px rgba(0,0,0,0.1),
+            0 4px 12px -4px rgba(0,0,0,0.05),
+            inset 0 1px 0 rgba(255,255,255,0.5);
+          color: var(--color-foreground);
+        }
+        
+        html[data-theme="dark"] .sa-card {
+          background: color-mix(in srgb, var(--color-background) 75%, rgba(255,255,255,0.02));
+          border-color: rgba(255,255,255,0.08);
+          box-shadow:
+            0 16px 40px -12px rgba(0,0,0,0.5),
+            0 4px 12px -4px rgba(0,0,0,0.2),
+            inset 0 1px 0 rgba(255,255,255,0.05);
         }
 
-        .sa-body { flex: 1; min-width: 0; }
-        .sa-label {
-          display: block;
-          font-size: 0.7rem;
+        .sa-badge {
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          border-radius: 99px;
+          padding: 4px 10px;
+          background: color-mix(in srgb, var(--color-foreground) 4%, transparent);
+          font-size: 0.72rem;
           font-weight: 600;
           letter-spacing: 0.04em;
-          opacity: 0.85;
-          margin-bottom: 2px;
+          white-space: nowrap;
+          color: var(--color-foreground);
+          opacity: 0.9;
         }
+        
+        @keyframes pulse-dot {
+          0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 50%, transparent); }
+          70% { box-shadow: 0 0 0 4px transparent; }
+          100% { box-shadow: 0 0 0 0 transparent; }
+        }
+
+        .sa-dot {
+          width: 6px; height: 6px;
+          border-radius: 50%;
+          background: var(--color-accent);
+          animation: pulse-dot 2s infinite;
+        }
+
+        .sa-body {
+          flex: 1;
+          min-width: 0;
+        }
+
         .sa-text {
           margin: 0;
-          font-size: 0.78rem;
-          line-height: 1.55;
-          opacity: 0.55;
+          font-size: 0.8rem;
+          line-height: 1.4;
+          opacity: 0.75;
+          font-weight: 450;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
+
         .sa-text strong {
           color: var(--color-foreground);
           font-weight: 600;
-          opacity: 0.8;
+          opacity: 0.9;
+        }
+
+        @media (max-width: 640px) {
+          .sa-card {
+            border-radius: 20px;
+            padding: 8px 10px;
+          }
+          .sa-text {
+            white-space: normal;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            font-size: 0.78rem;
+          }
+          .sa-badge {
+            align-self: flex-start;
+          }
         }
 
         .sa-close {
           flex-shrink: 0;
-          width: 24px; height: 24px;
+          width: 26px; height: 26px;
           border-radius: 50%;
           border: none;
           background: color-mix(in srgb, var(--color-foreground) 5%, transparent);
           color: var(--color-foreground);
-          opacity: 0.25;
+          opacity: 0.5;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: opacity 0.2s, background 0.2s, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+          transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
           padding: 0;
-          margin: 2px -4px 0 0;
         }
         .sa-close:hover {
-          opacity: 0.6;
+          opacity: 1;
           background: color-mix(in srgb, var(--color-foreground) 10%, transparent);
           transform: scale(1.08);
         }
         .sa-close:active {
           transform: scale(0.95);
         }
+        
+        /* 隐藏进度条相关逻辑，因为极简设计不再使用进度条 */
       `}} />
 
       <div
@@ -227,20 +220,17 @@ export const SiteAnnouncement: React.FC = () => {
         onMouseLeave={onLeave}
       >
         <div className="sa-card">
-          <span className="sa-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 16v-4" /><path d="M12 8h.01" />
-            </svg>
-          </span>
+          <div className="sa-badge">
+             <div className="sa-dot" />
+             <span>公告</span>
+          </div>
           <div className="sa-body">
-            <span className="sa-label">站点公告</span>
             <p className="sa-text">
-              底层架构已迁移至 <strong>Next.js SSG</strong>，部分页面仍在调优中，如遇异常敬请包涵。
+              底层架构已迁移至 <strong>Next.js SSG</strong>，部分页面仍在调优中。
             </p>
           </div>
           <button className="sa-close" onClick={dismiss} aria-label="关闭">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 6 6 18" /><path d="m6 6 12 12" />
             </svg>
           </button>
