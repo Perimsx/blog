@@ -82,8 +82,9 @@ export const SearchModal: React.FC = () => {
   };
 
   const flatItems = useMemo(() => {
-    if (searchState.status !== "results") return [];
-    return searchState.items.flatMap(item => [
+    if (searchState.status !== "results" && searchState.status !== "loading") return [];
+    const items = searchState.items || [];
+    return items.flatMap(item => [
       { type: 'page', title: item.title, url: item.pageUrl, excerpt: item.excerpt, parentTitle: "" },
       ...item.matches.map(m => ({ type: 'match', title: m.heading, url: m.url, excerpt: m.excerpt, parentTitle: item.title }))
     ]);
@@ -144,7 +145,7 @@ export const SearchModal: React.FC = () => {
             {/* Results List */}
             {query && (
               <div ref={scrollRef} className="search-scroll max-h-[65vh] overflow-y-auto border-t border-slate-50 dark:border-slate-900">
-                {searchState.status === "loading" && (
+                {searchState.status === "loading" && flatItems.length === 0 && (
                    <div className="px-5 py-4 text-xs font-semibold uppercase tracking-widest text-slate-400">正在搜索结果...</div>
                 )}
 
@@ -177,10 +178,6 @@ export const SearchModal: React.FC = () => {
                             ) : (
                                <span className="truncate">{item.title}</span>
                             )}
-                          </div>
-                          {/* Mocking Date/Serial from image */}
-                          <div className="shrink-0 font-mono text-[0.7rem] opacity-30 group-hover:opacity-60 transition-opacity">
-                            {i % 2 === 0 ? "9.15 10:40:11" : "1.23 21:54:02"}
                           </div>
                         </div>
                         {item.excerpt && (

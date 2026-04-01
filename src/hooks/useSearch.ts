@@ -58,11 +58,11 @@ type FlatSearchResult = {
 
 const escapeHtml = (value = "") =>
   value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
 const uniqueBy = <T>(items: T[], getKey: (item: T) => string) => {
   const seen = new Set<string>();
@@ -76,35 +76,42 @@ const uniqueBy = <T>(items: T[], getKey: (item: T) => string) => {
 
 const normalizeResultUrl = (rawUrl = "") => {
   if (!rawUrl) return "#";
+  
+  const cleanPathname = (p: string) => {
+    let res = p;
+    // Remove .html extension
+    if (res.endsWith('.html')) {
+      res = res.slice(0, -5);
+    }
+    // Remove Next.js route groups like /(site)
+    res = res.replace(/\/\([^/]+\)/g, '');
+    if (res.startsWith("/client/")) {
+      res = res.slice("/client".length);
+    } else if (res === "/client") {
+      res = "/";
+    }
+    if (res.length > 1 && res.endsWith("/")) {
+      res = res.slice(0, -1);
+    }
+    if (res && !res.startsWith('/') && !res.startsWith('#')) {
+      res = '/' + res;
+    }
+    return res || '/';
+  };
+
   try {
     const normalized = new URL(rawUrl, window.location.origin);
-    let pathname = normalized.pathname;
-    if (pathname.startsWith("/client/")) {
-      pathname = pathname.slice("/client".length);
-    } else if (pathname === "/client") {
-      pathname = "/";
-    }
-    if (pathname.length > 1 && pathname.endsWith("/")) {
-      pathname = pathname.slice(0, -1);
-    }
-    return `${pathname || "/"}${normalized.search}${normalized.hash}`;
+    const pathname = cleanPathname(normalized.pathname);
+    return `${pathname}${normalized.search}${normalized.hash}`;
   } catch {
-    let pathname = rawUrl.trim();
-    if (pathname.startsWith("/client/")) {
-      pathname = pathname.slice("/client".length);
-    } else if (pathname === "/client") {
-      pathname = "/";
-    }
-    if (pathname.length > 1 && pathname.endsWith("/")) {
-      pathname = pathname.slice(0, -1);
-    }
-    return pathname || "#";
+    const pathname = cleanPathname(rawUrl.trim());
+    return pathname === '/' && rawUrl.includes('#') ? rawUrl : pathname;
   }
 };
 
 export type SearchState =
   | { status: "idle" }
-  | { status: "loading" }
+  | { status: "loading"; items?: SearchItem[] }
   | { status: "results"; items: SearchItem[] }
   | { status: "empty"; query: string }
   | { status: "unavailable" }
@@ -170,7 +177,11 @@ export function useSearch() {
       return;
     }
 
-    setSearchState({ status: "loading" });
+    setSearchState((prev) => 
+      prev.status === "results" || prev.status === "loading"
+        ? { status: "loading", items: prev.items }
+        : { status: "loading" }
+    );
 
     try {
       const response = await pagefindApiRef.current.debouncedSearch(query, {}, 120);
