@@ -114,6 +114,12 @@
     color: var(--foreground);
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
+    white-space: nowrap;
+  }
+
+  /* 防止正文行内 code 被 CJK 字符级换行拆分 */
+  .article-detail :not(pre) > code {
+    white-space: nowrap;
   }
 
   .article-detail kbd {
@@ -334,12 +340,17 @@
 
   @media (max-width: 639px) {
     .article-detail {
-      font-size: 0.92rem;
-      line-height: 1.55;
+      font-size: 0.88rem;
+      line-height: 1.62;
+    }
+
+    /* 移动端关闭 balance 换行，避免标题提前折行 */
+    .article-detail :is(h2, h3, h4) {
+      text-wrap: pretty;
     }
 
     .article-detail :is(p, ul, ol, blockquote) {
-      margin-block: 0.35em;
+      margin-block: 0.3em;
     }
 
     .article-detail :is(li, figcaption) {
@@ -347,59 +358,59 @@
     }
 
     .article-detail h2 {
-      font-size: 1.18rem;
-      margin-top: 0.85em;
-      margin-bottom: 0.25em;
+      font-size: 1.02rem;
+      margin-top: 0.8em;
+      margin-bottom: 0.2em;
     }
 
     .article-detail h3 {
-      font-size: 1.04rem;
-      margin-top: 0.7em;
-      margin-bottom: 0.18em;
+      font-size: 1rem;
+      margin-top: 0.65em;
+      margin-bottom: 0.15em;
     }
 
     .article-detail h4 {
-      font-size: 0.96rem;
-      margin-top: 0.6em;
-      margin-bottom: 0.12em;
+      font-size: 0.92rem;
+      margin-top: 0.55em;
+      margin-bottom: 0.1em;
     }
 
     .article-detail pre {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       line-height: 1.5;
-      padding: 0.6rem !important;
+      padding: 0.55rem !important;
       margin-inline: -0.25rem;
       border-radius: 0.4rem;
     }
 
     .article-detail blockquote {
-      font-size: 0.92em;
-      padding: 0.1em 0.65em;
-      margin-block: 0.4em;
+      font-size: 0.88em;
+      padding: 0.1em 0.6em;
+      margin-block: 0.35em;
     }
 
     .article-detail table {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
     }
 
     .article-detail th,
     .article-detail td {
-      padding: 0.3em 0.45em;
+      padding: 0.28em 0.4em;
     }
 
     .table-scroll-wrapper {
-      margin-block: 0.6em;
+      margin-block: 0.5em;
       margin-inline: -0.25rem;
     }
 
     .code-block-wrapper {
-      margin-block: 0.6em !important;
+      margin-block: 0.5em !important;
     }
 
     .code-block-title {
-      margin-top: 0.6em;
-      padding: 0.45rem 0.65rem;
-      font-size: 0.72rem;
+      margin-top: 0.5em;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.7rem;
     }
 
     .article-detail img {
