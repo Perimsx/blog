@@ -1,5 +1,5 @@
-import React from "react";
 import Link from "next/link";
+import type React from "react";
 import { IconHash } from "@/components/icons";
 
 interface TagProps {
@@ -20,7 +20,9 @@ export const Tag: React.FC<TagProps> = ({ tag, tagName, size = "sm" }) => {
         href={`/tags/${tag}`}
         className={[
           "relative inline-flex max-w-full items-center whitespace-nowrap underline decoration-dashed transition-colors group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1",
-          size === "sm" ? "text-sm underline-offset-4" : "text-base underline-offset-6 sm:text-lg sm:underline-offset-8",
+          size === "sm"
+            ? "text-sm underline-offset-4"
+            : "text-base underline-offset-6 sm:text-lg sm:underline-offset-8",
         ].join(" ")}
       >
         <IconHash

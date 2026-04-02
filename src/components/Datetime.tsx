@@ -1,9 +1,9 @@
-import React from "react";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { SITE } from "@/lib/config";
+import type React from "react";
 import { IconCalendar } from "@/components/icons";
+import { SITE } from "@/lib/config";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

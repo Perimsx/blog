@@ -1,27 +1,20 @@
 import fs from "node:fs";
 import path from "node:path";
-import matter from "gray-matter";
-import { visit } from "unist-util-visit";
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkGfm from "remark-gfm";
-import type { PluggableList } from "unified";
-import remarkRehype from "remark-rehype";
-import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypeRaw from "rehype-raw";
-import rehypeStringify from "rehype-stringify";
-import { createHighlighter } from "shiki";
-import readingTimeLib from "reading-time";
 import GithubSlugger from "github-slugger";
-
-import { slugifyStr } from "./slugify";
-import { shouldProxyExternalImage, toImageProxyUrl } from "./imageProxy";
+import matter from "gray-matter";
+import readingTimeLib from "reading-time";
+import rehypeRaw from "rehype-raw";
+import rehypeSlug from "rehype-slug";
+import remarkGfm from "remark-gfm";
+import remarkParse from "remark-parse";
+import { createHighlighter } from "shiki";
+import type { PluggableList } from "unified";
+import { unified } from "unified";
+import { visit } from "unist-util-visit";
 import { SITE } from "./config";
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+import { escapeHtml } from "./html";
+import { shouldProxyExternalImage, toImageProxyUrl } from "./imageProxy";
+import { slugifyStr } from "./slugify";
 
 export interface PostFrontmatter {
   author?: string;
@@ -59,17 +52,7 @@ export interface Heading {
   text: string;
 }
 
-// ---------------------------------------------------------------------------
-// Directory
-// ---------------------------------------------------------------------------
-
 export const BLOG_DIR = "src/content/blog";
-
-// ---------------------------------------------------------------------------
-// Remark plugins (adapted from Astro)
-// ---------------------------------------------------------------------------
-
-import { escapeHtml } from "./html";
 
 function extractCodeBlockTitle(meta: string | undefined) {
   if (!meta) return undefined;
@@ -127,22 +110,26 @@ function remarkLazyLoadImages() {
   };
 }
 
+function normalizePublicAssetPath(value?: string) {
+  if (!value) return value;
+  return value.startsWith("./") ? `/${value.replace(/^\.\//, "")}` : value;
+}
+
 function remarkProxyExternalImages() {
   return (tree: any) => {
     visit(tree, "image", (node: any) => {
-      if (typeof node.url === "string") {
-        if (shouldProxyExternalImage(node.url)) {
-          node.url = toImageProxyUrl(node.url);
-        } else if (node.url.startsWith("./")) {
-          node.url = "/" + node.url.replace(/^\.\//, "");
-        }
+      if (typeof node.url !== "string") return;
+
+      if (shouldProxyExternalImage(node.url)) {
+        node.url = toImageProxyUrl(node.url);
+      } else {
+        node.url = normalizePublicAssetPath(node.url);
       }
     });
 
     visit(
       tree,
-      (node: any) =>
-        node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement",
+      (node: any) => node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement",
       (node: any) => {
         if (!["img", "AdaptiveImage"].includes(node.name)) return;
 
@@ -153,8 +140,8 @@ function remarkProxyExternalImages() {
 
         if (shouldProxyExternalImage(srcAttr.value)) {
           srcAttr.value = toImageProxyUrl(srcAttr.value);
-        } else if (srcAttr.value.startsWith("./")) {
-          srcAttr.value = "/" + srcAttr.value.replace(/^\.\//, "");
+        } else {
+          srcAttr.value = normalizePublicAssetPath(srcAttr.value);
         }
 
         if (node.name === "img") {
@@ -175,31 +162,39 @@ function remarkProxyExternalImages() {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Shiki highlighter singleton
-// ---------------------------------------------------------------------------
-
 let _highlighter: any = null;
 let _highlighterPromise: Promise<any> | null = null;
 
 export async function getHighlighter() {
   if (_highlighter) return _highlighter;
-  
+
   if (!_highlighterPromise) {
     _highlighterPromise = (async () => {
       _highlighter = await createHighlighter({
         themes: ["min-light", "night-owl"],
-        langs: ["typescript", "javascript", "tsx", "jsx", "css", "html", "json", "markdown", "bash", "sh", "yaml", "rust", "go", "python"],
+        langs: [
+          "typescript",
+          "javascript",
+          "tsx",
+          "jsx",
+          "css",
+          "html",
+          "json",
+          "markdown",
+          "bash",
+          "sh",
+          "yaml",
+          "rust",
+          "go",
+          "python",
+        ],
       });
       return _highlighter;
     })();
   }
+
   return _highlighterPromise;
 }
-
-// ---------------------------------------------------------------------------
-// Core utilities
-// ---------------------------------------------------------------------------
 
 function calculateReadingTime(text: string): string {
   const stats = readingTimeLib(text);
@@ -212,11 +207,18 @@ function isPostVisible(post: Post): boolean {
   const pubDate = new Date(post.data.pubDatetime).getTime();
   const margin = SITE.scheduledPostMargin;
   const isPublishTimePassed = now > pubDate - margin;
+
   return (
     !post.data.draft &&
     !post.data.unlisted &&
     (process.env.NODE_ENV === "development" || isPublishTimePassed)
   );
+}
+
+function normalizeFrontmatterImages(frontmatter: PostFrontmatter) {
+  for (const key of ["coverImage", "heroImage", "ogImage"] as const) {
+    frontmatter[key] = normalizePublicAssetPath(frontmatter[key]);
+  }
 }
 
 function getAllMarkdownFiles(dir: string): string[] {
@@ -226,7 +228,6 @@ function getAllMarkdownFiles(dir: string): string[] {
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      // Skip directories starting with underscore
       if (!entry.name.startsWith("_")) {
         files.push(...getAllMarkdownFiles(fullPath));
       }
@@ -241,14 +242,6 @@ function getAllMarkdownFiles(dir: string): string[] {
   return files;
 }
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
-/**
- * Read and parse all blog posts from the content directory.
- * Does NOT filter drafts or sort - returns raw posts.
- */
 export async function getAllPosts(): Promise<Post[]> {
   const blogPath = path.resolve(BLOG_DIR);
 
@@ -258,31 +251,18 @@ export async function getAllPosts(): Promise<Post[]> {
 
   const files = getAllMarkdownFiles(blogPath);
 
-  const posts: Post[] = await Promise.all(
+  return Promise.all(
     files.map(async (filePath) => {
       const raw = fs.readFileSync(filePath, "utf-8");
       const { data, content } = matter(raw);
-
       const frontmatter = data as PostFrontmatter;
 
-      // Normalize frontmatter defaults
       if (!frontmatter.tags) frontmatter.tags = ["others"];
       if (!frontmatter.author) frontmatter.author = SITE.author;
+      normalizeFrontmatterImages(frontmatter);
 
-      // Normalize relative image paths for Next.js public/ hosting
-      ["coverImage", "ogImage", "heroImage"].forEach((key) => {
-        const k = key as keyof PostFrontmatter;
-        if (typeof frontmatter[k] === "string" && (frontmatter[k] as string).startsWith("./")) {
-          // Removes leading ./ and turns it into an absolute public path
-          (frontmatter as any)[k] = "/" + (frontmatter[k] as string).replace(/^\.\//, "");
-        }
-      });
-
-      // The slug/id is derived from the relative path without extension
       const relativePath = path.relative(blogPath, filePath);
-      const slug = relativePath
-        .replace(/\\/g, "/")
-        .replace(/\.(md|mdx)$/, "");
+      const slug = relativePath.replace(/\\/g, "/").replace(/\.(md|mdx)$/, "");
 
       return {
         slug,
@@ -294,44 +274,27 @@ export async function getAllPosts(): Promise<Post[]> {
       };
     })
   );
-
-  return posts;
 }
 
-/**
- * Get all published posts, sorted by date (newest first).
- * Filters out drafts, unlisted posts, and posts scheduled too far in the future.
- */
 export async function getSortedPosts(): Promise<Post[]> {
   const posts = await getAllPosts();
 
-  return posts
-    .filter(isPostVisible)
-    .sort((a, b) => {
-      const dateA = new Date(a.data.modDatetime ?? a.data.pubDatetime).getTime();
-      const dateB = new Date(b.data.modDatetime ?? b.data.pubDatetime).getTime();
-      return Math.floor(dateB / 1000) - Math.floor(dateA / 1000);
-    });
+  return posts.filter(isPostVisible).sort((a, b) => {
+    const dateA = new Date(a.data.modDatetime ?? a.data.pubDatetime).getTime();
+    const dateB = new Date(b.data.modDatetime ?? b.data.pubDatetime).getTime();
+    return Math.floor(dateB / 1000) - Math.floor(dateA / 1000);
+  });
 }
 
-/**
- * Find a post by its URL slug (matches the `url` field in frontmatter).
- */
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   const posts = await getAllPosts();
 
-  // First try exact URL match
-  const exactMatch = posts.find((p) => p.url === slug);
+  const exactMatch = posts.find((post) => post.url === slug);
   if (exactMatch) return exactMatch;
 
-  // Fallback: try matching by file slug
-  const byFileSlug = posts.find((p) => p.slug === slug);
-  return byFileSlug ?? null;
+  return posts.find((post) => post.slug === slug) ?? null;
 }
 
-/**
- * Get all unique tags from sorted posts.
- */
 export async function getUniqueTags(): Promise<{ tag: string; tagName: string }[]> {
   const posts = await getSortedPosts();
   const seen = new Set<string>();
@@ -340,22 +303,22 @@ export async function getUniqueTags(): Promise<{ tag: string; tagName: string }[
   for (const post of posts) {
     for (const tag of post.data.tags ?? []) {
       const slug = slugifyStr(tag);
-      if (!seen.has(slug)) {
-        seen.add(slug);
-        tags.push({ tag: slug, tagName: tag });
-      }
+      if (seen.has(slug)) continue;
+      seen.add(slug);
+      tags.push({ tag: slug, tagName: tag });
     }
   }
 
   return tags.sort((a, b) => a.tag.localeCompare(b.tag));
 }
 
-/**
- * Get all URL slugs for generateStaticParams.
- */
 export async function getAllSlugs(): Promise<string[]> {
   const posts = await getSortedPosts();
-  return posts.map((p) => p.url);
+  return posts.map((post) => post.url);
+}
+
+export function getPostImage(data: PostFrontmatter) {
+  return data.coverImage ?? data.heroImage;
 }
 
 export const mdxRemarkPlugins: PluggableList = [
@@ -366,172 +329,40 @@ export const mdxRemarkPlugins: PluggableList = [
 ];
 
 export const mdxRehypePlugins: PluggableList = [
-  [rehypeRaw, { passThrough: ['mdxJsxFlowElement', 'mdxJsxTextElement', 'mdxjsEsm'] }],
+  [rehypeRaw, { passThrough: ["mdxJsxFlowElement", "mdxJsxTextElement", "mdxjsEsm"] }],
   rehypeSlug,
 ];
 
-/**
- * Compile markdown content to HTML string using a remark/rehype pipeline.
- * Includes shiki syntax highlighting with dual themes.
- */
-export async function compileMDX(content: string): Promise<string> {
-  const highlighter = await getHighlighter();
-
-  let processor: any = unified().use(remarkParse);
-  
-  for (const plugin of mdxRemarkPlugins) {
-    if (Array.isArray(plugin)) {
-      processor = processor.use(plugin[0], plugin[1]);
-    } else {
-      processor = processor.use(plugin);
-    }
-  }
-
-  processor = processor.use(remarkRehype, { allowDangerousHtml: true });
-
-  for (const plugin of mdxRehypePlugins) {
-    if (Array.isArray(plugin)) {
-      processor = processor.use(plugin[0], plugin[1]);
-    } else {
-      processor = processor.use(plugin);
-    }
-  }
-
-  const file = await processor
-    .use(rehypeStringify)
-    .process(content);
-
-  let html = String(file);
-
-  // Apply shiki syntax highlighting to code blocks
-  html = await highlightCodeBlocks(html, highlighter);
-
-  return html;
-}
-
-/**
- * Highlight code blocks in the HTML string using shiki.
- * This processes pre/code elements that weren't handled by the remark pipeline.
- */
-async function highlightCodeBlocks(
-  html: string,
-  highlighter: Awaited<ReturnType<typeof createHighlighter>>
-): Promise<string> {
-  // Match <pre><code class="language-xxx">...</code></pre> blocks
-  // and replace them with shiki-highlighted HTML
-  const codeBlockRegex = /<pre><code(?:\s+class="language-([^"]*)")?[^>]*>([\s\S]*?)<\/code><\/pre>/g;
-
-  let result = html;
-  const matches = [...html.matchAll(codeBlockRegex)];
-
-  // Process matches in reverse order to preserve string positions
-  for (const match of matches.reverse()) {
-    const [fullMatch, lang, code] = match;
-    const rawCode = decodeHtmlEntities(code);
-    const language = lang && lang !== "" ? lang : "text";
-
-    try {
-      const loaded = highlighter.getLoadedLanguages();
-      let resolvedLang = language;
-      if (!loaded.includes(resolvedLang)) {
-        try {
-          await highlighter.loadLanguage(resolvedLang as any);
-        } catch {
-          resolvedLang = "text";
-        }
-      }
-
-      const highlighted = highlighter.codeToHtml(rawCode, {
-        lang: resolvedLang,
-        themes: {
-          light: "min-light",
-          dark: "night-owl",
-        },
-        defaultColor: false,
-        transformers: [],
-      });
-
-      // Wrap in a container for the code-block-title injection point
-      result =
-        result.slice(0, match.index!) +
-        `<div class="code-block-wrapper">${highlighted}</div>` +
-        result.slice(match.index! + fullMatch.length);
-    } catch {
-      // If highlighting fails (unknown language), keep original
-      result =
-        result.slice(0, match.index!) +
-        `<div class="code-block-wrapper">${fullMatch}</div>` +
-        result.slice(match.index! + fullMatch.length);
-    }
-  }
-
-  return result;
-}
-
-function decodeHtmlEntities(str: string): string {
-  return str
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
-}
-
-/**
- * Extract headings from compiled HTML for the Table of Contents.
- */
-export function extractHeadings(html: string): Heading[] {
-  const headings: Heading[] = [];
-  const headingRegex = /<h([23])[^>]*\sid="([^"]+)"[^>]*>([\s\S]*?)<\/h[23]>/g;
-  let match: RegExpExecArray | null;
-
-  while ((match = headingRegex.exec(html)) !== null) {
-    const depth = parseInt(match[1], 10);
-    const slug = match[2];
-    // Extract text content, stripping any inner HTML tags and trailing hash/spaces
-    let rawText = match[3].replace(/<[^>]+>/g, "").trim();
-    if (rawText.endsWith("#")) {
-      rawText = rawText.slice(0, -1).trim();
-    }
-
-    headings.push({ depth, slug, text: rawText });
-  }
-
-  return headings;
-}
-
-/**
- * Extract headings directly from raw markdown without full MDX compilation.
- * Uses lightweight remark-parse AST traversal to avoid the expensive
- * remark/rehype pipeline + shiki highlighting for heading-only extraction.
- * Slugs are generated to match rehype-slug behavior.
- */
 export function extractHeadingsFromMarkdown(content: string): Heading[] {
   const processor = unified().use(remarkParse);
   const file = processor.parse(content);
   const headings: Heading[] = [];
   const slugger = new GithubSlugger();
 
-  visit(file, "heading", (node: { depth: number; children?: Array<{ type: string; value?: string }> }) => {
-    if (node.depth < 2 || node.depth > 3) return;
+  visit(
+    file,
+    "heading",
+    (node: { depth: number; children?: Array<{ type: string; value?: string }> }) => {
+      if (node.depth < 2 || node.depth > 3) return;
 
-    let text = "";
-    for (const child of node.children ?? []) {
-      if (child.type === "text" && child.value) {
-        text += child.value;
-      } else if (child.type === "inlineCode" && child.value) {
-        text += child.value;
+      let text = "";
+      for (const child of node.children ?? []) {
+        if (child.type === "text" && child.value) {
+          text += child.value;
+        } else if (child.type === "inlineCode" && child.value) {
+          text += child.value;
+        }
       }
+
+      if (!text.trim()) return;
+
+      headings.push({
+        depth: node.depth,
+        slug: slugger.slug(text.trim()),
+        text: text.trim(),
+      });
     }
-
-    if (!text.trim()) return;
-
-    const slug = slugger.slug(text.trim());
-
-    headings.push({ depth: node.depth, slug, text: text.trim() });
-  });
+  );
 
   return headings;
 }
-
-export { escapeHtml } from "./html";

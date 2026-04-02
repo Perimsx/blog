@@ -69,7 +69,7 @@ export function ArticleEnhancer() {
             img.classList.add("img-loading-error");
             img.setAttribute("src", toImageProxyUrl(src));
           },
-          { once: true },
+          { once: true }
         );
       }
     }
@@ -81,7 +81,8 @@ export function ArticleEnhancer() {
 
       heading.classList.add("group");
       const link = document.createElement("a");
-      link.className = "heading-link ml-2 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100";
+      link.className =
+        "heading-link ml-2 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100";
       link.href = `#${heading.id}`;
 
       const span = document.createElement("span");
@@ -125,13 +126,15 @@ export function ArticleEnhancer() {
 
     textNodes.forEach((textNode) => {
       const textContent = textNode.textContent;
-      if (!textContent || !textContent.includes("{% youtube ")) return;
+      if (!textContent?.includes("{% youtube ")) return;
 
       let hasChanges = false;
-      const newHtml = textContent.replace(YOUTUBE_SHORTCODE_PATTERN, (_match, rawVideoId: string) => {
-        hasChanges = true;
-        const videoId = extractYouTubeId(rawVideoId);
-        return `<div class="youtube-embed-container">
+      const newHtml = textContent.replace(
+        YOUTUBE_SHORTCODE_PATTERN,
+        (_match, rawVideoId: string) => {
+          hasChanges = true;
+          const videoId = extractYouTubeId(rawVideoId);
+          return `<div class="youtube-embed-container">
           <iframe
             width="560"
             height="315"
@@ -141,7 +144,8 @@ export function ArticleEnhancer() {
             allowfullscreen
           ></iframe>
         </div>`;
-      });
+        }
+      );
 
       if (!hasChanges) return;
 
@@ -160,4 +164,3 @@ export function ArticleEnhancer() {
 
   return null;
 }
-

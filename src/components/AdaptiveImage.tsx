@@ -1,6 +1,6 @@
-import React from "react";
-import Image from "next/image";
 import type { ImageProps } from "next/image";
+import Image from "next/image";
+import type React from "react";
 
 interface AdaptiveImageProps {
   src: string;
@@ -10,6 +10,8 @@ interface AdaptiveImageProps {
   height?: number;
   loading?: "lazy" | "eager";
   quality?: number;
+  priority?: boolean;
+  sizes?: ImageProps["sizes"];
 }
 
 export const AdaptiveImage: React.FC<AdaptiveImageProps> = ({
@@ -20,6 +22,8 @@ export const AdaptiveImage: React.FC<AdaptiveImageProps> = ({
   height,
   loading = "lazy",
   quality,
+  priority = false,
+  sizes,
 }) => {
   // Normalize relative paths: "./foo" → "/foo"
   const normalizedSrc = src.startsWith("./") ? src.slice(1) : src;
@@ -31,8 +35,10 @@ export const AdaptiveImage: React.FC<AdaptiveImageProps> = ({
       className={className}
       width={width}
       height={height}
-      loading={loading}
+      loading={priority ? undefined : loading}
       quality={quality}
+      priority={priority}
+      sizes={sizes}
     />
   );
 };

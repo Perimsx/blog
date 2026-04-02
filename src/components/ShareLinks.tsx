@@ -1,18 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import Image from "next/image";
+import type React from "react";
+import { useState } from "react";
+import { IconBrandX, IconFacebook, IconQQ, IconTelegram, IconWechat } from "@/components/icons";
 import { SHARE_LINKS } from "@/lib/config";
-import {
-  IconWechat,
-  IconQQ,
-  IconBrandX,
-  IconTelegram,
-  IconFacebook,
-} from "@/components/icons";
 
 interface ShareLinksProps {
   url: string;
-  title: string;
 }
 
 const iconMap: Record<string, React.FC<{ className?: string }>> = {
@@ -23,8 +18,9 @@ const iconMap: Record<string, React.FC<{ className?: string }>> = {
   facebook: IconFacebook,
 };
 
-export const ShareLinks: React.FC<ShareLinksProps> = ({ url, title }) => {
+export const ShareLinks: React.FC<ShareLinksProps> = ({ url }) => {
   const [isWechatModalOpen, setIsWechatModalOpen] = useState(false);
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
 
   const handleWechatClick = () => {
     setIsWechatModalOpen(true);
@@ -46,9 +42,11 @@ export const ShareLinks: React.FC<ShareLinksProps> = ({ url, title }) => {
             if (isWechat) {
               return (
                 <button
+                  type="button"
                   key={social.name}
                   className="group inline-block p-2 hover:rotate-6 transition-transform"
                   title={social.linkTitle}
+                  aria-haspopup="dialog"
                   onClick={handleWechatClick}
                 >
                   {IconComponent && (
@@ -84,23 +82,35 @@ export const ShareLinks: React.FC<ShareLinksProps> = ({ url, title }) => {
       {isWechatModalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-          onClick={closeWechatModal}
+          role="presentation"
         >
+          <button
+            type="button"
+            aria-label="关闭微信分享弹窗"
+            className="absolute inset-0 border-0 bg-transparent p-0"
+            onClick={closeWechatModal}
+          />
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="wechat-share-title"
             className="bg-background border border-border rounded-lg p-6 text-center max-w-xs mx-4 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
           >
-            <p className="mb-4 text-foreground font-medium">扫码分享到微信</p>
+            <p id="wechat-share-title" className="mb-4 text-foreground font-medium">
+              扫码分享到微信
+            </p>
             <div className="flex justify-center mb-4">
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`}
+              <Image
+                src={qrCodeUrl}
                 alt="QR Code"
                 width={200}
                 height={200}
+                unoptimized
                 style={{ borderRadius: "8px" }}
               />
             </div>
             <button
+              type="button"
               onClick={closeWechatModal}
               className="text-sm text-foreground/60 hover:text-foreground transition-colors"
             >

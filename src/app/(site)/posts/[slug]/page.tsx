@@ -1,21 +1,33 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getSortedPosts, getPostBySlug, getAllSlugs, extractHeadingsFromMarkdown, mdxRemarkPlugins, mdxRehypePlugins } from "@/lib/blog";
-import { SITE } from "@/lib/config";
-import { Tag } from "@/components/Tag";
-import { Datetime } from "@/components/Datetime";
-import { ShareLinks } from "@/components/ShareLinks";
-import { IconChevronLeft, IconChevronRight, IconEdit } from "@/components/icons";
-import { TocProvider } from "@/components/TocContext";
-import { slugifyStr } from "@/lib/slugify";
-import { ArticleEnhancer } from "@/components/ArticleEnhancer";
+import { notFound } from "next/navigation";
+import Script from "next/script";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { Grid } from "@/components/mdx/Grid";
-import { Card } from "@/components/mdx/Card";
-import { Callout } from "@/components/mdx/Callout";
-import { Pre } from "@/components/mdx/Pre";
+import { AdaptiveImage } from "@/components/AdaptiveImage";
+import { ArticleEnhancer } from "@/components/ArticleEnhancer";
+import { Datetime } from "@/components/Datetime";
+import { EditPost } from "@/components/EditPost";
 import FloatingToc from "@/components/FloatingToc";
+import { IconChevronLeft, IconChevronRight } from "@/components/icons";
+import { Callout } from "@/components/mdx/Callout";
+import { Card } from "@/components/mdx/Card";
+import { Grid } from "@/components/mdx/Grid";
+import { Pre } from "@/components/mdx/Pre";
+import { ShareLinks } from "@/components/ShareLinks";
+import { Tag } from "@/components/Tag";
+import { TocProvider } from "@/components/TocContext";
+import Comments from "@/features/comments/components/Comments";
+import {
+  extractHeadingsFromMarkdown,
+  getAllSlugs,
+  getPostBySlug,
+  getPostImage,
+  getSortedPosts,
+  mdxRehypePlugins,
+  mdxRemarkPlugins,
+} from "@/lib/blog";
+import { SITE } from "@/lib/config";
+import { slugifyStr } from "@/lib/slugify";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -35,7 +47,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const postUrl = `/posts/${post.url}`;
 
   let ogImageUrl: string | undefined;
-  const articleImage = coverImage ?? post.data.heroImage;
+  const articleImage = getPostImage(post.data);
 
   if (typeof articleImage === "string") {
     ogImageUrl = articleImage;
@@ -88,7 +100,7 @@ export default async function PostPage({ params }: PageProps) {
   }
 
   const sortedPosts = await getSortedPosts();
-  const { title, description, pubDatetime, modDatetime, timezone, tags, coverImage, heroImage, hideEditPost } = post.data;
+  const { title, description, pubDatetime, modDatetime, timezone, tags } = post.data;
 
   // Extract headings from raw markdown using lightweight AST traversal
   // (avoids expensive full MDX compilation + shiki highlighting)
@@ -107,10 +119,16 @@ export default async function PostPage({ params }: PageProps) {
   }));
   const currentIndex = allPostPaths.findIndex((p) => p.slug === post.slug);
   const prevPost = currentIndex > 0 ? allPostPaths[currentIndex - 1] : null;
-  const nextPost = currentIndex >= 0 && currentIndex < allPostPaths.length - 1 ? allPostPaths[currentIndex + 1] : null;
+  const nextPost =
+    currentIndex >= 0 && currentIndex < allPostPaths.length - 1
+      ? allPostPaths[currentIndex + 1]
+      : null;
 
   const postUrl = `/posts/${post.url}`;
-  const articleImage = coverImage ?? heroImage;
+  const articleImage = getPostImage(post.data);
+  const uniqueTags = Array.from(
+    new Map((tags ?? []).map((tag) => [slugifyStr(tag), tag])).entries()
+  );
 
   // JSON-LD structured data
   const jsonLd = {
@@ -142,69 +160,65 @@ export default async function PostPage({ params }: PageProps) {
     inLanguage: SITE.lang || "zh-CN",
   };
 
-  const showEditPost = SITE.editPost.enabled && !hideEditPost;
-  const editPostUrl = `${SITE.editPost.url}${post.filePath}`;
-
   return (
     <TocProvider>
       {/* JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <Script id={`post-json-ld-${post.slug}`} type="application/ld+json">
+        {JSON.stringify(jsonLd)}
+      </Script>
 
       <main
         id="main-content"
-        className="layout-frame w-full pb-8 mt-4"
+        className="layout-frame w-full pt-5 pb-5 sm:pt-7 sm:pb-6"
         data-pagefind-body
       >
         <h1
           title={title}
-          className="block w-full text-[1.18rem] leading-[1.18] font-semibold text-accent sm:text-[1.98rem] lg:text-[1.9rem] lg:truncate"
+          className="block w-full text-[1.12rem] leading-[1.16] font-semibold tracking-tight text-accent sm:text-[1.82rem] lg:text-[1.78rem] lg:truncate"
         >
           {title}
         </h1>
 
-        <div className="mt-1.5 mb-2 sm:mt-2 sm:mb-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Datetime pubDatetime={pubDatetime} modDatetime={modDatetime} timezone={timezone} size="lg" />
+        <div className="mt-2 mb-3.5 flex items-center justify-between gap-3 sm:mt-2.5 sm:mb-5">
+          <div className="flex items-center gap-2.5">
+            <Datetime
+              pubDatetime={pubDatetime}
+              modDatetime={modDatetime}
+              timezone={timezone}
+              size="lg"
+            />
             {readingTime && (
               <>
                 <span className="text-foreground/30">•</span>
-                <span className="text-[0.95rem] italic text-foreground/60">{readingTime}</span>
+                <span className="text-[0.88rem] italic text-foreground/60 sm:text-[0.92rem]">
+                  {readingTime}
+                </span>
               </>
             )}
           </div>
-          {showEditPost && (
-            <a
-              href={editPostUrl}
-              rel="noopener noreferrer"
-              target="_blank"
-              className="hidden max-sm:hidden opacity-80 hover:opacity-75"
-            >
-              <IconEdit className="inline-block size-6" />
-              <span className="italic max-sm:text-sm sm:inline">{SITE.editPost.text}</span>
-            </a>
-          )}
+          <EditPost post={post} hideEditPost={post.data.hideEditPost} className="hidden sm:block" />
         </div>
 
-        <article id="article" className="article-detail prose mx-auto mt-4 sm:mt-8 max-w-3xl">
+        <article id="article" className="article-detail prose mx-auto mt-4.5 max-w-3xl sm:mt-5">
           {articleImage && typeof articleImage === "string" && (
-            <img
+            <AdaptiveImage
               src={articleImage}
               alt={title}
-              className="mb-4 sm:mb-6 aspect-video w-full rounded-md object-cover"
+              width={1200}
+              height={675}
+              sizes="(max-width: 768px) 100vw, 896px"
+              className="mb-3.5 aspect-video w-full rounded-md object-cover sm:mb-5"
               loading="lazy"
             />
           )}
-          <MDXRemote 
-            source={post.content} 
+          <MDXRemote
+            source={post.content}
             components={mdxComponents}
             options={{
               mdxOptions: {
                 remarkPlugins: mdxRemarkPlugins,
                 rehypePlugins: mdxRehypePlugins,
-              }
+              },
             }}
           />
           <ArticleEnhancer />
@@ -214,44 +228,40 @@ export default async function PostPage({ params }: PageProps) {
         <FloatingToc toc={headings} />
 
         {/* Tags and Share */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mt-4 mb-4 sm:my-6">
+        <div className="mt-5 mb-5 flex flex-wrap items-center justify-between gap-3 sm:my-7">
           <ul className="flex flex-wrap gap-x-4 gap-y-2">
-            {(tags ?? []).map((tag, idx) => (
-              <Tag key={`${tag}-${idx}`} tag={slugifyStr(tag)} tagName={tag} />
+            {uniqueTags.map(([tag, tagName]) => (
+              <Tag key={tag} tag={tag} tagName={tagName} />
             ))}
           </ul>
-          <ShareLinks url={new URL(postUrl, SITE.website).href} title={title} />
+          <ShareLinks url={new URL(postUrl, SITE.website).href} />
         </div>
 
         {/* Edit Post (mobile) */}
-        {showEditPost && (
-          <a
-            href={editPostUrl}
-            rel="noopener noreferrer"
-            target="_blank"
-            className="sm:hidden opacity-80 hover:opacity-75"
-          >
-            <IconEdit className="inline-block size-6" />
-            <span className="italic text-sm">{SITE.editPost.text}</span>
-          </a>
-        )}
+        <EditPost post={post} hideEditPost={post.data.hideEditPost} className="sm:hidden" />
 
-        <hr className="my-6 border-dashed" />
+        {SITE.comments.enabled ? (
+          <>
+            <hr className="mt-6 mb-3 border-dashed sm:mt-7 sm:mb-4" />
+            <Comments postSlug={post.slug} />
+          </>
+        ) : null}
+
+        <hr className="mt-4 mb-5 border-dashed sm:mt-5 sm:mb-6" />
 
         {/* Prev/Next Post Navigation */}
-        <div className="flex flex-col sm:flex-row justify-between gap-6">
+        <div className="flex flex-col justify-between gap-8 sm:flex-row">
           {prevPost ? (
-            <Link
-              href={prevPost.path}
-              className="flex gap-2 hover:opacity-75 items-start"
-            >
+            <Link href={prevPost.path} className="flex gap-2 hover:opacity-75 items-start">
               <IconChevronLeft className="inline-block flex-shrink-0 mt-0.5" />
               <div className="min-w-0">
                 <span className="block text-sm text-foreground/70">上一篇</span>
                 <div className="text-accent/85">{prevPost.title}</div>
               </div>
             </Link>
-          ) : <div />}
+          ) : (
+            <div />
+          )}
 
           {nextPost ? (
             <Link
@@ -264,7 +274,9 @@ export default async function PostPage({ params }: PageProps) {
               </div>
               <IconChevronRight className="inline-block flex-shrink-0 mt-0.5" />
             </Link>
-          ) : <div />}
+          ) : (
+            <div />
+          )}
         </div>
       </main>
     </TocProvider>
