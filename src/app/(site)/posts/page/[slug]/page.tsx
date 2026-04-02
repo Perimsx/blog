@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getSortedPosts } from "@/lib/blog";
 import { Card } from "@/components/Card";
 import { Pagination } from "@/components/Pagination";
+import { getSortedPosts } from "@/lib/blog";
 import { getPostsByGroupCondition } from "@/lib/getPostsByGroupCondition";
 
 export const metadata: Metadata = {
@@ -59,12 +59,14 @@ export default async function PostPaginationPage({ params }: PageProps) {
     .sort((a, b) => b - a);
 
   return (
-    <main id="main-content" className="ui-page mx-auto w-full max-w-3xl px-4 pb-6 sm:pb-4">
-      <h1 className="mt-6 text-[1.75rem] font-semibold tracking-tight sm:mt-8 sm:text-3xl">所有文章</h1>
+    <main id="main-content" className="ui-page layout-frame page-shell">
+      <h1 className="mt-6 text-[1.75rem] font-semibold tracking-tight sm:mt-8 sm:text-3xl">
+        所有文章
+      </h1>
       <p className="mt-2 mb-5 text-sm italic sm:mb-6">按年月浏览全部博客文章</p>
 
       {years.map((year) => (
-        <div key={year} className="mb-7 sm:mb-8">
+        <div key={year} className="mb-8 sm:mb-10">
           <h2 className="mb-5 border-b border-accent pb-2 text-[1.35rem] font-bold sm:mb-6 sm:text-2xl">
             {year}
             <sup className="ml-1 text-sm">{byYear[year].length}</sup>
@@ -77,7 +79,7 @@ export default async function PostPaginationPage({ params }: PageProps) {
           )
             .sort(([monthA], [monthB]) => Number(monthB) - Number(monthA))
             .map(([month, monthPosts]) => (
-              <div key={month} className="mt-6 sm:mt-8">
+              <div key={month} className="mt-7 sm:mt-9">
                 <h3 className="mb-3 text-[1.08rem] font-bold sm:mb-4 sm:text-xl">
                   {MONTHS[Number(month) - 1]}
                   <sup className="ml-1 text-sm">{monthPosts.length}</sup>

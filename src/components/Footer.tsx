@@ -1,12 +1,5 @@
+import { Hr } from "@/components/Hr";
 import { Socials } from "@/components/Socials";
-
-function Hr({ noPadding = false }: { noPadding?: boolean }) {
-  return (
-    <div className={`max-w-3xl mx-auto ${noPadding ? "px-0" : "px-4"}`}>
-      <hr className="border-border" aria-hidden />
-    </div>
-  );
-}
 
 interface FooterProps {
   noMarginTop?: boolean;

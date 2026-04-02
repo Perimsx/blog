@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import type React from "react";
+import { useCallback, useState } from "react";
 import { SITE } from "@/lib/config";
 
 export default function ContactPage() {
@@ -53,11 +54,13 @@ export default function ContactPage() {
   };
 
   return (
-    <main id="main-content" className="ui-page mx-auto w-full max-w-3xl px-4 pb-8 sm:pb-4">
-      <h1 className="mt-6 text-[1.75rem] font-semibold tracking-tight sm:mt-8 sm:text-3xl">Contact</h1>
+    <main id="main-content" className="ui-page layout-frame page-shell">
+      <h1 className="mt-6 text-[1.75rem] font-semibold tracking-tight sm:mt-8 sm:text-3xl">
+        Contact
+      </h1>
       <p className="mt-2 mb-5 text-sm italic sm:mb-6">Send me a message ...</p>
 
-      <div className="space-y-6">
+      <div className="space-y-7 sm:space-y-8">
         <p className="text-[0.95rem] leading-7 text-foreground/80 sm:text-base">
           有任何问题或建议，欢迎留言。也可以通过以下方式联系我：
         </p>
@@ -67,9 +70,19 @@ export default function ContactPage() {
             href="mailto:1722288011@qq.com"
             className="inline-flex w-full items-center justify-center gap-2 rounded bg-accent px-4 py-2.5 text-[0.95rem] text-white transition-opacity hover:opacity-90 sm:w-auto sm:text-base"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect width="20" height="16" x="2" y="4" rx="2"/>
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect width="20" height="16" x="2" y="4" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
             </svg>
             发送邮件
           </a>
@@ -79,9 +92,15 @@ export default function ContactPage() {
             rel="noopener noreferrer"
             className="inline-flex w-full items-center justify-center gap-2 rounded bg-muted px-4 py-2.5 text-[0.95rem] text-foreground transition-colors hover:bg-accent/20 sm:w-auto sm:text-base"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5 0 .65-.25 1.24-.66 1.67-.41.43-.66 1.02-.66 1.67 0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5c0-.65.25-1.24.66-1.67.41-.43.66-1.02.66-1.67C14.5 6.12 13.38 5 12 5z"/>
-              <path d="M7.88 11.67c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm4.12 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm4 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5 0 .65-.25 1.24-.66 1.67-.41.43-.66 1.02-.66 1.67 0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5c0-.65.25-1.24.66-1.67.41-.43.66-1.02.66-1.67C14.5 6.12 13.38 5 12 5z" />
+              <path d="M7.88 11.67c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm4.12 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm4 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" />
             </svg>
             QQ 联系
           </a>
@@ -89,9 +108,12 @@ export default function ContactPage() {
 
         <hr className="border-border" />
 
-        <form onSubmit={handleSubmit} className="max-w-lg space-y-3.5 sm:space-y-4">
+        <form onSubmit={handleSubmit} className="max-w-lg space-y-4 sm:space-y-5">
           <div>
-            <label htmlFor="contact-page-name" className="mb-1 block text-[0.9rem] font-medium text-foreground sm:text-sm">
+            <label
+              htmlFor="contact-page-name"
+              className="mb-1 block text-[0.9rem] font-medium text-foreground sm:text-sm"
+            >
               姓名（选填）
             </label>
             <input
@@ -106,7 +128,10 @@ export default function ContactPage() {
           </div>
 
           <div>
-            <label htmlFor="contact-page-email" className="mb-1 block text-[0.9rem] font-medium text-foreground sm:text-sm">
+            <label
+              htmlFor="contact-page-email"
+              className="mb-1 block text-[0.9rem] font-medium text-foreground sm:text-sm"
+            >
               邮箱（选填）
             </label>
             <input
@@ -121,7 +146,10 @@ export default function ContactPage() {
           </div>
 
           <div>
-            <label htmlFor="contact-page-qq" className="mb-1 block text-[0.9rem] font-medium text-foreground sm:text-sm">
+            <label
+              htmlFor="contact-page-qq"
+              className="mb-1 block text-[0.9rem] font-medium text-foreground sm:text-sm"
+            >
               QQ（选填，推荐）
             </label>
             <input
@@ -136,7 +164,10 @@ export default function ContactPage() {
           </div>
 
           <div>
-            <label htmlFor="contact-page-message" className="mb-1 block text-[0.9rem] font-medium text-foreground sm:text-sm">
+            <label
+              htmlFor="contact-page-message"
+              className="mb-1 block text-[0.9rem] font-medium text-foreground sm:text-sm"
+            >
               留言内容 <span className="text-accent">*</span>
             </label>
             <textarea

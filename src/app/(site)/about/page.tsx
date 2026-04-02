@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { getSortedPosts } from "@/lib/blog";
-import { SITE } from "@/lib/config";
+import { AdaptiveImage } from "@/components/AdaptiveImage";
 import { PostHeatmap } from "@/components/PostHeatmap";
+import { getSortedPosts } from "@/lib/blog";
 
 export const metadata: Metadata = {
   title: "关于",
@@ -12,38 +12,62 @@ export default async function AboutPage() {
   const sortedPosts = await getSortedPosts();
 
   return (
-    <main id="main-content" className="ui-page mx-auto w-full max-w-3xl px-4 pb-4 sm:pb-6">
+    <main id="main-content" className="ui-page layout-frame page-shell">
       <section
         id="about"
-        className="prose mt-4 mb-6 w-full max-w-none prose-img:border-0 sm:mt-6 sm:mb-8"
-        style={{ width: "100%", maxWidth: "none", marginInline: 0, paddingInline: 0, overflowX: "clip" }}
+        className="prose mt-6 mb-0 w-full max-w-none prose-img:border-0 sm:mt-8"
+        style={{
+          width: "100%",
+          maxWidth: "none",
+          marginInline: 0,
+          paddingInline: 0,
+          overflowX: "clip",
+        }}
       >
         {/* Hero section */}
         <div className="about-hero">
-          <img
+          <AdaptiveImage
             className="about-avatar"
             src="https://img1.tucang.cc/api/image/show/634a56a76f7455df0e2fb5419533e0cf"
             alt="Perimsx 头像"
+            width={112}
+            height={112}
+            sizes="(max-width: 640px) 78px, 112px"
             loading="eager"
+            priority
           />
           <div className="about-hero-copy">
             <h2>你好，我是 Perimsx</h2>
-            <p>一名即将毕业的信息安全专业学生。这里主要记录我的网络安全学习心得、开发实践经历与技术笔记。</p>
+            <p>
+              一名即将毕业的信息安全专业学生。这里主要记录我的网络安全学习心得、开发实践经历与技术笔记。
+            </p>
           </div>
         </div>
 
         {/* Heatmap */}
         <div className="about-block about-block-heatmap">
           <h2>文章热力图</h2>
-          <PostHeatmap posts={sortedPosts.map(p => ({ pubDatetime: p.data.pubDatetime }))} />
+          <PostHeatmap posts={sortedPosts.map((p) => ({ pubDatetime: p.data.pubDatetime }))} />
         </div>
 
         {/* Recent activity */}
         <div className="about-block">
           <h2>近期活动</h2>
           <ul className="about-list about-timeline">
-            <li><strong>2026 年 3 月</strong> · 使用 Astro 和 React 框架重构个人博客主站（<a href="https://chenguitao.com" target="_blank" rel="noopener noreferrer">chenguitao.com</a>）</li>
-            <li><strong>2026 年 2 月</strong> · 使用 Nuxt 4 重构个人博客（<a href="https://blog.coet.ink" target="_blank" rel="noopener noreferrer">blog.coet.ink</a>）</li>
+            <li>
+              <strong>2026 年 3 月</strong> · 使用 Astro 和 React 框架重构个人博客主站（
+              <a href="https://chenguitao.com" target="_blank" rel="noopener noreferrer">
+                chenguitao.com
+              </a>
+              ）
+            </li>
+            <li>
+              <strong>2026 年 2 月</strong> · 使用 Nuxt 4 重构个人博客（
+              <a href="https://blog.coet.ink" target="_blank" rel="noopener noreferrer">
+                blog.coet.ink
+              </a>
+              ）
+            </li>
           </ul>
         </div>
 
@@ -60,7 +84,7 @@ export default async function AboutPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <img
+                  <AdaptiveImage
                     className="about-author-badge__avatar"
                     src="https://github.com/L33Z22L11.png?size=56"
                     alt="Zhilu"
@@ -76,7 +100,7 @@ export default async function AboutPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <img
+                  <AdaptiveImage
                     className="about-author-badge__avatar"
                     src="https://github.com/lxchapu.png?size=56"
                     alt="lxchapu"
@@ -91,10 +115,30 @@ export default async function AboutPage() {
             </p>
             <div className="about-credits-footer">
               <p className="about-note">
-                当前主要参考了 <a href="https://github.com/L33Z22L11/blog-v3" target="_blank" rel="noopener noreferrer">blog-v3</a> 与 <a href="https://github.com/lxchapu/astro-gyoza" target="_blank" rel="noopener noreferrer">astro-gyoza</a>。
+                当前主要参考了{" "}
+                <a
+                  href="https://github.com/L33Z22L11/blog-v3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  blog-v3
+                </a>{" "}
+                与{" "}
+                <a
+                  href="https://github.com/lxchapu/astro-gyoza"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  astro-gyoza
+                </a>
+                。
               </p>
               <p className="about-note">
-                博客待优化后也将开源，欢迎关注：<a href="https://github.com/Perimsx/blog" target="_blank" rel="noopener noreferrer">Perimsx/blog</a>。
+                博客待优化后也将开源，欢迎关注：
+                <a href="https://github.com/Perimsx/blog" target="_blank" rel="noopener noreferrer">
+                  Perimsx/blog
+                </a>
+                。
               </p>
             </div>
           </div>
@@ -106,8 +150,8 @@ export default async function AboutPage() {
           display: grid;
           grid-template-columns: auto minmax(0, 1fr);
           align-items: center;
-          gap: 0.85rem;
-          margin-bottom: 1.3rem;
+          gap: 1rem;
+          margin-bottom: 1.6rem;
         }
         #about .about-avatar {
           width: 5.5rem;
@@ -139,7 +183,7 @@ export default async function AboutPage() {
           line-height: 1.68;
         }
         #about .about-block + .about-block {
-          margin-top: 1.2rem;
+          margin-top: 1.5rem;
         }
         #about .about-block > h2 {
           display: flex;
@@ -213,7 +257,7 @@ export default async function AboutPage() {
           line-height: 1;
         }
         #about .about-credits-card {
-          margin-top: 0.85rem;
+          margin-top: 1rem;
           padding: 1.15rem;
           border-radius: 1rem;
           background: color-mix(in srgb, var(--color-foreground) 2%, transparent);
@@ -256,8 +300,8 @@ export default async function AboutPage() {
         @media (min-width: 641px) {
           #about .about-hero {
             grid-template-columns: 5.8rem minmax(0, 1fr);
-            gap: 1.05rem;
-            margin-bottom: 1.2rem;
+            gap: 1.2rem;
+            margin-bottom: 1.9rem;
           }
           #about .about-avatar {
             width: 5.8rem;
@@ -272,7 +316,7 @@ export default async function AboutPage() {
             line-height: 1.72;
           }
           #about .about-block + .about-block {
-            margin-top: 1.35rem;
+            margin-top: 1.75rem;
           }
           #about .about-block > h2 {
             gap: 0.56rem;

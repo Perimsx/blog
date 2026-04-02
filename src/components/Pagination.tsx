@@ -1,5 +1,5 @@
-import React from "react";
 import Link from "next/link";
+import type React from "react";
 import { IconArrowLeft, IconArrowRight } from "@/components/icons";
 
 interface PaginationProps {
@@ -17,13 +17,15 @@ export const Pagination: React.FC<PaginationProps> = ({
 
   // baseUrl for pagination is e.g. "/posts/page", list root is "/posts"
   const listRoot = baseUrl.replace(/\/page$/, "") || "/";
-  const prevUrl = currentPage > 1
-    ? currentPage === 2 ? `${listRoot}/` : `${baseUrl}/${currentPage - 1}`
-    : null;
+  const prevUrl =
+    currentPage > 1 ? (currentPage === 2 ? `${listRoot}/` : `${baseUrl}/${currentPage - 1}`) : null;
   const nextUrl = currentPage < totalPages ? `${baseUrl}/${currentPage + 1}` : null;
 
   return (
-    <nav className="mt-auto mb-4 flex items-center justify-center text-sm sm:text-base" aria-label="Pagination">
+    <nav
+      className="mt-10 mb-1 flex items-center justify-center text-sm sm:mt-12 sm:text-base"
+      aria-label="Pagination"
+    >
       {prevUrl ? (
         <Link
           href={prevUrl}

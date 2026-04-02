@@ -1,15 +1,11 @@
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
-import { SearchModal } from "@/components/SearchModal";
 import { ContactModal } from "@/components/ContactModal";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
+import { SearchModal } from "@/components/SearchModal";
 import { SiteAnnouncement } from "@/components/SiteAnnouncement";
 
-export default function SiteLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <a
@@ -21,7 +17,7 @@ export default function SiteLayout({
       </a>
       <Header />
       {children}
-      <Footer />
+      <Footer noMarginTop />
       <BackToTop />
       <SearchModal />
       <ContactModal />

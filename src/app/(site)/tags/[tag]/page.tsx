@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getSortedPosts, getUniqueTags } from "@/lib/blog";
-import { SITE } from "@/lib/config";
 import { Card } from "@/components/Card";
 import { Tag } from "@/components/Tag";
+import { getSortedPosts, getUniqueTags } from "@/lib/blog";
+import { SITE } from "@/lib/config";
 
 interface PageProps {
   params: Promise<{ tag: string }>;
@@ -43,7 +43,7 @@ export default async function TagPage({ params }: PageProps) {
   );
 
   return (
-    <main id="main-content" className="ui-page mx-auto w-full max-w-3xl px-4 pb-10 sm:pb-12">
+    <main id="main-content" className="ui-page layout-frame page-shell">
       <h1 className="mt-6 text-[1.75rem] font-semibold tracking-tight sm:mt-8 sm:text-3xl">
         标签: <span className="text-accent">{tagInfo.tagName}</span>
       </h1>
@@ -55,7 +55,7 @@ export default async function TagPage({ params }: PageProps) {
         ))}
       </ul>
 
-      <hr className="my-8 border-dashed" />
+      <hr className="my-9 border-dashed sm:my-10" />
 
       <h2 className="mb-4 text-[1.05rem] font-semibold sm:text-lg">所有标签</h2>
       <ul className="flex flex-wrap gap-x-3 gap-y-2 sm:gap-2">

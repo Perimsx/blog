@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { SITE } from "@/lib/config";
 import { StatusPanel } from "@/components/StatusPanel";
 
 export default function NotFound() {
   return (
     <main
       id="main-content"
-      className="ui-page mx-auto flex max-w-3xl flex-1 items-center justify-center px-4"
+      className="ui-page layout-frame flex flex-1 items-center justify-center py-12 sm:py-16"
     >
       <StatusPanel
         code="404"

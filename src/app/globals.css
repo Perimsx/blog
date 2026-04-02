@@ -56,6 +56,20 @@ html[data-theme="dark"] {
     letter-spacing: -0.02em;
   }
 
+  .font-wordmark {
+    font-family: "MaokenAssortedSans", "LXGW WenKai GB Screen", "MiSans", "Inter Variable", sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    font-variant-ligatures: none;
+  }
+
+  .font-wordmark-soft {
+    font-family: "MaokenAssortedSans", "LXGW WenKai GB Screen", "MiSans", "Inter Variable", sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    font-variant-ligatures: none;
+  }
+
   * {
     @apply border-border outline-accent/75;
     scrollbar-width: auto;
@@ -116,6 +130,10 @@ html[data-theme="dark"] {
   width: 100%;
   max-width: min(100%, var(--layout-page-max-width));
   padding-inline: var(--layout-page-gutter);
+}
+
+.page-shell {
+  padding-bottom: 1.75rem;
 }
 
 .layout-floating-anchor {
@@ -291,9 +309,8 @@ html[data-theme="dark"] .status-panel__pill {
     line-height: 1.75;
   }
 
-  /* 文章页底部间距收紧 */
-  #main-content {
-    padding-bottom: 2rem;
+  .page-shell {
+    padding-bottom: 1.5rem;
   }
 
   .status-panel {
