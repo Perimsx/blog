@@ -9,6 +9,7 @@ const EXIT_ANIMATION_MS = 220;
 const NOTICE_ID = "CT-SYS-2026-UPGRADE";
 const NOTICE_STATUS = "发布实施";
 const NOTICE_DATE = "2026.04.02";
+const NOTICE_SIGNATURE = "Perimsx（1722288011）";
 
 const UPDATE_ITEMS = [
   {
@@ -37,10 +38,10 @@ const ANNOUNCEMENT_STYLES = `
     align-items: center;
     justify-content: center;
     padding:
-      max(1.25rem, calc(env(safe-area-inset-top, 0px) + 1.25rem))
-      max(1rem, calc(env(safe-area-inset-right, 0px) + 1rem))
-      max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 1.25rem))
-      max(1rem, calc(env(safe-area-inset-left, 0px) + 1rem));
+      max(1.5rem, calc(env(safe-area-inset-top, 0px) + 1.5rem))
+      max(1.25rem, calc(env(safe-area-inset-right, 0px) + 1.25rem))
+      max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 1.5rem))
+      max(1.25rem, calc(env(safe-area-inset-left, 0px) + 1.25rem));
   }
 
   .notice-backdrop {
@@ -57,7 +58,8 @@ const ANNOUNCEMENT_STYLES = `
 
   .notice-shell {
     position: relative;
-    width: min(100%, 42rem);
+    width: min(100%, 48rem);
+    max-height: 100%;
     opacity: 0;
     transform: translateY(18px);
     transition:
@@ -72,7 +74,10 @@ const ANNOUNCEMENT_STYLES = `
 
   .notice-paper {
     position: relative;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
+    max-height: min(90dvh, 56rem);
     border: 1px solid rgba(17, 24, 39, 0.14);
     border-radius: 0.4rem;
     background: #fffdfa;
@@ -91,7 +96,7 @@ const ANNOUNCEMENT_STYLES = `
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
     border: 0;
     background: transparent;
     color: rgba(15, 23, 42, 0.46);
@@ -109,10 +114,17 @@ const ANNOUNCEMENT_STYLES = `
     color: rgba(15, 23, 42, 0.82);
   }
 
+  .notice-close-label {
+    display: inline-flex;
+    align-items: center;
+  }
+
   .notice-content {
     position: relative;
     z-index: 1;
-    padding: 3.35rem 2.9rem 2.35rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 3.45rem 3.05rem 2.45rem;
   }
 
   .notice-eyebrow {
@@ -152,6 +164,11 @@ const ANNOUNCEMENT_STYLES = `
     display: inline-flex;
     flex-wrap: wrap;
     gap: 0.3rem;
+  }
+
+  .notice-meta span:last-child {
+    justify-content: flex-end;
+    text-align: right;
   }
 
   .notice-meta strong {
@@ -275,7 +292,7 @@ const ANNOUNCEMENT_STYLES = `
     display: flex;
     align-items: end;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 1.4rem;
     margin-top: 1.55rem;
     padding-top: 1.3rem;
     border-top: 1px solid rgba(15, 23, 42, 0.08);
@@ -285,6 +302,7 @@ const ANNOUNCEMENT_STYLES = `
     display: flex;
     flex-direction: column;
     gap: 0.34rem;
+    min-width: 0;
   }
 
   .notice-sign strong {
@@ -293,6 +311,7 @@ const ANNOUNCEMENT_STYLES = `
     font-weight: 800;
     letter-spacing: 0.02em;
     line-height: 1.65;
+    text-wrap: balance;
   }
 
   .notice-sign span {
@@ -305,6 +324,7 @@ const ANNOUNCEMENT_STYLES = `
   }
 
   .notice-action {
+    flex-shrink: 0;
     min-width: 8.8rem;
     padding: 0.88rem 1.2rem;
     border: 1px solid rgba(15, 23, 42, 0.78);
@@ -326,24 +346,67 @@ const ANNOUNCEMENT_STYLES = `
     color: white;
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
+    .notice-root {
+      padding:
+        max(1rem, calc(env(safe-area-inset-top, 0px) + 1rem))
+        1rem
+        max(1rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
+    }
+
+    .notice-shell {
+      width: min(100%, 43rem);
+    }
+
+    .notice-paper {
+      max-height: min(92dvh, 54rem);
+    }
+
     .notice-content {
-      padding: 3.1rem 1.2rem 1.45rem;
+      padding: 3.15rem 1.7rem 1.75rem;
+    }
+
+    .notice-title {
+      font-size: clamp(1.9rem, 4.8vw, 2.35rem);
+    }
+  }
+
+  @media (max-width: 720px) {
+    .notice-shell {
+      width: 100%;
+    }
+
+    .notice-content {
+      padding: 3rem 1.15rem 1.35rem;
     }
 
     .notice-meta {
       flex-direction: column;
       align-items: flex-start;
-      gap: 0.28rem;
+      gap: 0.35rem;
+    }
+
+    .notice-meta span:last-child {
+      justify-content: flex-start;
+      text-align: left;
     }
 
     .notice-rule {
       margin-bottom: 1.15rem;
     }
 
+    .notice-lead {
+      line-height: 1.9;
+    }
+
+    .notice-item-main {
+      padding-left: 0.85rem;
+    }
+
     .notice-footer {
       flex-direction: column;
       align-items: stretch;
+      gap: 1rem;
     }
 
     .notice-action {
@@ -363,31 +426,61 @@ const ANNOUNCEMENT_STYLES = `
 
     .notice-paper {
       min-height: 100dvh;
+      max-height: 100dvh;
       border-radius: 0;
       border-left: 0;
       border-right: 0;
+      box-shadow: none;
     }
 
     .notice-close {
-      top: max(0.9rem, calc(env(safe-area-inset-top, 0px) + 0.4rem));
-      right: 0.85rem;
+      top: max(0.95rem, calc(env(safe-area-inset-top, 0px) + 0.4rem));
+      right: 0.9rem;
     }
 
     .notice-content {
       padding:
-        max(3.4rem, calc(env(safe-area-inset-top, 0px) + 2.5rem))
+        max(3.55rem, calc(env(safe-area-inset-top, 0px) + 2.65rem))
         1rem
-        max(1.35rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
+        max(1.4rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
     }
 
     .notice-title {
-      font-size: 1.8rem;
+      font-size: 1.72rem;
+      line-height: 1.16;
+    }
+
+    .notice-eyebrow,
+    .notice-meta,
+    .notice-sign span {
+      letter-spacing: 0.08em;
+    }
+
+    .notice-close-label {
+      display: none;
+    }
+
+    .notice-lead {
+      margin-top: 0.45rem;
     }
 
     .notice-lead,
     .notice-item-desc {
       font-size: 0.92rem;
       line-height: 1.82;
+    }
+
+    .notice-item {
+      gap: 0.65rem;
+    }
+
+    .notice-note {
+      font-size: 0.8rem;
+      line-height: 1.72;
+    }
+
+    .notice-sign strong {
+      font-size: 0.92rem;
     }
   }
 
@@ -484,7 +577,7 @@ export const SiteAnnouncement: React.FC = () => {
               onClick={() => dismiss()}
               aria-label="关闭公告"
             >
-              <span>Close</span>
+              <span className="notice-close-label">Close</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="14"
@@ -552,10 +645,8 @@ export const SiteAnnouncement: React.FC = () => {
 
               <footer className="notice-footer">
                 <div className="notice-sign">
-                  <strong>文献编号：{NOTICE_ID}</strong>
-                  <span>
-                    执行状态：{NOTICE_STATUS} | {NOTICE_DATE}
-                  </span>
+                  <strong>{NOTICE_SIGNATURE}</strong>
+                  <span>{NOTICE_DATE}</span>
                 </div>
 
                 <button type="button" className="notice-action" onClick={() => dismiss()}>
