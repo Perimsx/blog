@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 interface CalloutProps {
   eyebrow?: string;
@@ -26,17 +26,29 @@ export const Callout: React.FC<CalloutProps> = ({
   children,
 }) => {
   const currentAccent = accentStyles[accent] || accentStyles.default;
-  const eyebrowColor =
-    accent === "default" ? "text-foreground/45" : currentAccent.split(" ")[2];
+  const eyebrowColor = accent === "default" ? "text-foreground/45" : currentAccent.split(" ")[2];
 
   return (
-    <div className={["rounded-xl border px-3 sm:px-4 py-2.5 sm:py-3 shadow-sm my-2 sm:my-3", currentAccent].join(" ")}>
+    <div
+      className={[
+        "rounded-xl border px-3 sm:px-4 py-2.5 sm:py-3 shadow-sm my-2 sm:my-3",
+        currentAccent,
+      ].join(" ")}
+    >
       {eyebrow && (
-        <p className={["text-[11px] font-semibold uppercase tracking-[0.22em]", eyebrowColor].join(" ")}>
+        <p
+          className={["text-[11px] font-semibold uppercase tracking-[0.22em]", eyebrowColor].join(
+            " "
+          )}
+        >
           {eyebrow}
         </p>
       )}
-      {title && <p className={`text-base font-semibold text-foreground ${eyebrow ? 'mt-1.5' : ''}`}>{title}</p>}
+      {title && (
+        <p className={`text-base font-semibold text-foreground ${eyebrow ? "mt-1.5" : ""}`}>
+          {title}
+        </p>
+      )}
       {desc && <p className="mt-1 text-sm leading-6 text-foreground/72">{desc}</p>}
       <div className="callout-content opacity-90 mt-1">{children}</div>
     </div>

@@ -86,7 +86,7 @@ export async function GET(request: Request) {
   headers.set("Content-Type", contentType || guessImageContentType(targetUrl));
   headers.set(
     "Cache-Control",
-    "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400",
+    "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400"
   );
 
   const etag = upstreamResponse.headers.get("etag");

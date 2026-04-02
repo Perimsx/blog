@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 interface CardProps {
   eyebrow?: string;
@@ -35,11 +35,19 @@ export const Card: React.FC<CardProps> = ({
       ].join(" ")}
     >
       {eyebrow && (
-        <p className={`text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/45 ${title || desc || children ? 'mb-2' : ''}`}>
+        <p
+          className={`text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/45 ${title || desc || children ? "mb-2" : ""}`}
+        >
           {eyebrow}
         </p>
       )}
-      {title && <p className={`font-bold tracking-tight text-foreground ${desc || children ? 'mb-1.5' : ''}`}>{title}</p>}
+      {title && (
+        <p
+          className={`font-bold tracking-tight text-foreground ${desc || children ? "mb-1.5" : ""}`}
+        >
+          {title}
+        </p>
+      )}
       {desc && <p className="mt-1 text-[13px] leading-relaxed text-foreground/70">{desc}</p>}
       {children && <div className="callout-content opacity-90">{children}</div>}
     </aside>

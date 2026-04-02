@@ -136,13 +136,27 @@ function isPrivateIpv4(hostname: string): boolean {
     const octets = hostname.split(".").map((p) => Number.parseInt(p, 10));
     if (octets.some((p) => Number.isNaN(p) || p < 0 || p > 255)) return false;
     const [a, b] = octets;
-    return a === 0 || a === 10 || a === 127 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168);
+    return (
+      a === 0 ||
+      a === 10 ||
+      a === 127 ||
+      (a === 169 && b === 254) ||
+      (a === 172 && b >= 16 && b <= 31) ||
+      (a === 192 && b === 168)
+    );
   }
   const normalized = normalizeIpv4(hostname);
   if (!normalized) return false;
   const octets = normalized.split(".").map((p) => Number.parseInt(p, 10));
   const [a, b] = octets;
-  return a === 0 || a === 10 || a === 127 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168);
+  return (
+    a === 0 ||
+    a === 10 ||
+    a === 127 ||
+    (a === 169 && b === 254) ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168)
+  );
 }
 
 function isPrivateIpv6(hostname: string): boolean {
@@ -176,7 +190,12 @@ export function parseExternalImageUrl(value: string): URL | null {
     if (url.protocol !== "https:") return null;
 
     const hostname = url.hostname.toLowerCase();
-    if (hostname === "localhost" || hostname.endsWith(".local") || isPrivateIpv4(hostname) || isPrivateIpv6(hostname)) {
+    if (
+      hostname === "localhost" ||
+      hostname.endsWith(".local") ||
+      isPrivateIpv4(hostname) ||
+      isPrivateIpv6(hostname)
+    ) {
       return null;
     }
 
@@ -188,10 +207,16 @@ export function parseExternalImageUrl(value: string): URL | null {
 
 // checkDnsRebinding is in the API route only (uses node:dns which is server-only)
 
-export function getHotlinkPlatform(urlValue: string | URL): { name: string; referer: string } | null {
+export function getHotlinkPlatform(
+  urlValue: string | URL
+): { name: string; referer: string } | null {
   const url = typeof urlValue === "string" ? parseExternalImageUrl(urlValue) : urlValue;
   if (!url) return null;
-  return HOTLINK_PLATFORM_RULES.find((rule) => rule.hosts.some((pattern) => pattern.test(url.hostname))) ?? null;
+  return (
+    HOTLINK_PLATFORM_RULES.find((rule) =>
+      rule.hosts.some((pattern) => pattern.test(url.hostname))
+    ) ?? null
+  );
 }
 
 export function shouldProxyExternalImage(urlValue: string): boolean {

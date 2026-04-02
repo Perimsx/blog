@@ -3,303 +3,568 @@
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const STORAGE_KEY = "site-announcement-dismissed";
-const ANNOUNCEMENT_VERSION = "2026-04-02-comments-kv-v2";
-const AUTO_DISMISS_MS = 8000;
+const ENTRY_DELAY_MS = 420;
+const EXIT_ANIMATION_MS = 220;
+
+const NOTICE_ID = "CT-SYS-2026-UPGRADE";
+const NOTICE_STATUS = "发布实施";
+const NOTICE_DATE = "2026.04.02";
+
+const UPDATE_ITEMS = [
+  {
+    tone: "default",
+    title: "全站渲染链路重整",
+    desc: "站点主干已迁入 Next.js App Router，页面构建、数据获取与静态产出链路正在统一整理，以降低冗余负担并稳定首屏交付。",
+  },
+  {
+    tone: "default",
+    title: "视图编排与阅读交互更新",
+    desc: "文章页目录层级、段落组织与局部交互正在按新的组件边界重构，后续阅读路径与页面细节反馈会逐步对齐新版架构。",
+  },
+  {
+    tone: "accent",
+    title: "评论 KV 存储完善中",
+    desc: "评论链路当前进入 KV 存储补全阶段，重点处理写入稳定性、字段整理与后续扩展兼容，相关能力将按阶段逐步接入。",
+  },
+] as const;
+
 const ANNOUNCEMENT_STYLES = `
-  .sa-wrap {
+  .notice-root {
     position: fixed;
-    z-index: 9999;
-    pointer-events: none;
-    opacity: 0;
-    top: clamp(4.75rem, 7vw, 5.6rem);
-    right: max(0.9rem, calc(env(safe-area-inset-right, 0px) + 0.9rem));
-    width: min(calc(100vw - 24px), 22.5rem);
-    transform: translateY(-14px) scale(0.98);
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 0.4s ease;
-  }
-  .sa-wrap[data-visible="true"] {
-    pointer-events: auto;
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  @media (max-width: 640px) {
-    .sa-wrap {
-      top: calc(env(safe-area-inset-top, 0px) + 0.75rem);
-      left: 12px;
-      right: 12px;
-      width: auto;
-    }
-  }
-
-  .sa-card {
-    position: relative;
-    overflow: hidden;
-    border-radius: 0.95rem;
-    padding: 0.72rem 0.78rem;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 0.72rem;
-    border: 1px solid color-mix(in srgb, var(--color-accent) 12%, var(--color-border));
-    background:
-      linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 3%, white), transparent 70%),
-      color-mix(in srgb, var(--color-background) 92%, rgba(255,255,255,0.7));
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    box-shadow:
-      0 14px 30px -22px rgba(15,23,42,0.2),
-      0 6px 14px -10px rgba(15,23,42,0.1),
-      inset 0 1px 0 rgba(255,255,255,0.5);
-    color: var(--color-foreground);
-  }
-
-  html[data-theme="dark"] .sa-card {
-    background:
-      linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 8%, #0f172a), transparent 74%),
-      color-mix(in srgb, var(--color-background) 92%, rgba(255,255,255,0.02));
-    border-color: color-mix(in srgb, var(--color-accent) 14%, rgba(255,255,255,0.08));
-    box-shadow:
-      0 16px 34px -22px rgba(0,0,0,0.46),
-      0 6px 14px -10px rgba(0,0,0,0.24),
-      inset 0 1px 0 rgba(255,255,255,0.05);
-  }
-
-  .sa-mark {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.7rem;
+    inset: 0;
+    z-index: 220;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: color-mix(in srgb, var(--color-accent) 8%, transparent);
-    color: var(--color-accent);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
+    padding:
+      max(1.25rem, calc(env(safe-area-inset-top, 0px) + 1.25rem))
+      max(1rem, calc(env(safe-area-inset-right, 0px) + 1rem))
+      max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 1.25rem))
+      max(1rem, calc(env(safe-area-inset-left, 0px) + 1rem));
   }
 
-  html[data-theme="dark"] .sa-mark {
-    background: color-mix(in srgb, var(--color-accent) 13%, transparent);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  .notice-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(245, 245, 244, 0.88);
+    opacity: 0;
+    transition: opacity 0.18s ease;
   }
 
-  .sa-copy {
-    min-width: 0;
+  .notice-root[data-state="open"] .notice-backdrop {
+    opacity: 1;
   }
 
-  .sa-eyebrow {
+  .notice-shell {
+    position: relative;
+    width: min(100%, 42rem);
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.18s ease,
+      transform 0.28s ease;
+  }
+
+  .notice-root[data-state="open"] .notice-shell {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .notice-paper {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(17, 24, 39, 0.14);
+    border-radius: 0.4rem;
+    background: #fffdfa;
+    box-shadow:
+      0 18px 30px -24px rgba(15, 23, 42, 0.22),
+      0 2px 10px rgba(15, 23, 42, 0.04);
+  }
+
+  .notice-close {
+    position: absolute;
+    top: 1.3rem;
+    right: 1.35rem;
+    z-index: 2;
+    width: auto;
+    height: auto;
     display: inline-flex;
     align-items: center;
-    gap: 0.38rem;
-    margin: 0 0 0.2rem;
-    color: color-mix(in srgb, var(--color-foreground) 56%, transparent);
-    font-size: 0.65rem;
+    justify-content: center;
+    gap: 0.35rem;
+    border: 0;
+    background: transparent;
+    color: rgba(15, 23, 42, 0.46);
+    font-size: 0.76rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition:
+      transform 0.18s ease,
+      color 0.18s ease;
+  }
+
+  .notice-close:hover {
+    transform: translateX(1px);
+    color: rgba(15, 23, 42, 0.82);
+  }
+
+  .notice-content {
+    position: relative;
+    z-index: 1;
+    padding: 3.35rem 2.9rem 2.35rem;
+  }
+
+  .notice-eyebrow {
+    margin: 0;
+    text-align: center;
+    color: rgba(15, 23, 42, 0.42);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
   }
 
-  .sa-eyebrow::before {
-    content: "";
-    width: 0.32rem;
-    height: 0.32rem;
-    border-radius: 999px;
-    background: var(--color-accent);
+  .notice-title {
+    margin: 0.9rem 0 1.15rem;
+    text-align: center;
+    color: #111827;
+    font-family: var(--font-serif);
+    font-size: clamp(1.95rem, 3vw, 2.6rem);
+    font-weight: 700;
+    line-height: 1.18;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
   }
 
-  .sa-title {
-    margin: 0;
-    font-size: 0.88rem;
-    line-height: 1.35;
-    font-weight: 620;
-    color: var(--color-foreground);
-  }
-
-  .sa-desc {
-    margin: 0.22rem 0 0;
-    font-size: 0.74rem;
-    line-height: 1.48;
-    color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
-  }
-
-  .sa-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    margin-top: 0.4rem;
-    border-radius: 999px;
-    padding: 0.18rem 0.48rem;
-    background: color-mix(in srgb, var(--color-accent) 7%, transparent);
-    color: color-mix(in srgb, var(--color-foreground) 62%, transparent);
-    font-size: 0.66rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-
-  .sa-status::before {
-    content: "";
-    width: 0.32rem;
-    height: 0.32rem;
-    border-radius: 999px;
-    background: var(--color-accent);
-  }
-
-  @media (max-width: 640px) {
-    .sa-card {
-      gap: 0.62rem;
-      border-radius: 0.9rem;
-      padding: 0.7rem 0.72rem;
-    }
-    .sa-mark {
-      width: 1.9rem;
-      height: 1.9rem;
-    }
-    .sa-title {
-      font-size: 0.84rem;
-    }
-    .sa-desc {
-      font-size: 0.72rem;
-    }
-  }
-
-  .sa-close {
-    flex-shrink: 0;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: none;
-    background: color-mix(in srgb, var(--color-foreground) 4%, transparent);
-    color: var(--color-foreground);
-    opacity: 0.42;
-    cursor: pointer;
+  .notice-meta {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: rgba(15, 23, 42, 0.46);
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .notice-meta span {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .notice-meta strong {
+    color: rgba(15, 23, 42, 0.68);
+    font-weight: 800;
+  }
+
+  .notice-rule {
+    margin: 0.85rem 0 1.45rem;
+    height: 1px;
+    background: rgba(17, 24, 39, 0.82);
+  }
+
+  .notice-body {
+    color: rgba(17, 24, 39, 0.9);
+  }
+
+  .notice-salutation {
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 800;
+    line-height: 1.9;
+  }
+
+  .notice-lead {
+    margin: 0.3rem 0 0;
+    font-size: 0.98rem;
+    line-height: 1.98;
+    color: rgba(31, 41, 55, 0.86);
+  }
+
+  .notice-lead strong {
+    color: #0f172a;
+    font-weight: 800;
+  }
+
+  .notice-list {
+    margin-top: 1.55rem;
+  }
+
+  .notice-item + .notice-item {
+    margin-top: 1.1rem;
+  }
+
+  .notice-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.8rem;
+    align-items: start;
+  }
+
+  .notice-marker {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
-    padding: 0;
+    width: 0.9rem;
+    height: 0.9rem;
+    margin-top: 0.28rem;
+    color: #111827;
+    font-size: 0.78rem;
+    line-height: 1;
   }
-  .sa-close:hover {
-    opacity: 1;
-    background: color-mix(in srgb, var(--color-foreground) 8%, transparent);
-    transform: scale(1.08);
+
+  .notice-item.is-accent .notice-marker {
+    color: #0369a1;
   }
-  .sa-close:active {
-    transform: scale(0.95);
+
+  .notice-item-main {
+    padding-left: 0.95rem;
+    border-left: 1px solid rgba(15, 23, 42, 0.14);
+  }
+
+  .notice-item.is-accent .notice-item-main {
+    border-left-color: rgba(3, 105, 161, 0.42);
+  }
+
+  .notice-item-title {
+    margin: 0;
+    color: #111827;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.68;
+  }
+
+  .notice-item.is-accent .notice-item-title {
+    color: #0369a1;
+  }
+
+  .notice-item-desc {
+    margin: 0.2rem 0 0;
+    color: rgba(31, 41, 55, 0.82);
+    font-size: 0.93rem;
+    line-height: 1.88;
+  }
+
+  .notice-note {
+    margin-top: 1.55rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    color: rgba(15, 23, 42, 0.52);
+    font-size: 0.82rem;
+    line-height: 1.8;
+  }
+
+  .notice-note kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    padding: 0.05rem 0.4rem;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    border-bottom-width: 2px;
+    border-radius: 0.45rem;
+    background: rgba(255, 255, 255, 0.92);
+    color: rgba(15, 23, 42, 0.7);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .notice-footer {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.55rem;
+    padding-top: 1.3rem;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+  }
+
+  .notice-sign {
+    display: flex;
+    flex-direction: column;
+    gap: 0.34rem;
+  }
+
+  .notice-sign strong {
+    color: #111827;
+    font-size: 0.94rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1.65;
+  }
+
+  .notice-sign span {
+    color: rgba(15, 23, 42, 0.46);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1.6;
+    text-transform: uppercase;
+  }
+
+  .notice-action {
+    min-width: 8.8rem;
+    padding: 0.88rem 1.2rem;
+    border: 1px solid rgba(15, 23, 42, 0.78);
+    border-radius: 0;
+    background: transparent;
+    color: #111827;
+    font-size: 0.84rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    transition:
+      transform 0.18s ease,
+      background-color 0.18s ease,
+      color 0.18s ease;
+  }
+
+  .notice-action:hover {
+    transform: translateX(1px);
+    background: #111827;
+    color: white;
+  }
+
+  @media (max-width: 720px) {
+    .notice-content {
+      padding: 3.1rem 1.2rem 1.45rem;
+    }
+
+    .notice-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.28rem;
+    }
+
+    .notice-rule {
+      margin-bottom: 1.15rem;
+    }
+
+    .notice-footer {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .notice-action {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .notice-root {
+      align-items: stretch;
+      padding: 0;
+    }
+
+    .notice-shell {
+      width: 100%;
+    }
+
+    .notice-paper {
+      min-height: 100dvh;
+      border-radius: 0;
+      border-left: 0;
+      border-right: 0;
+    }
+
+    .notice-close {
+      top: max(0.9rem, calc(env(safe-area-inset-top, 0px) + 0.4rem));
+      right: 0.85rem;
+    }
+
+    .notice-content {
+      padding:
+        max(3.4rem, calc(env(safe-area-inset-top, 0px) + 2.5rem))
+        1rem
+        max(1.35rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
+    }
+
+    .notice-title {
+      font-size: 1.8rem;
+    }
+
+    .notice-lead,
+    .notice-item-desc {
+      font-size: 0.92rem;
+      line-height: 1.82;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .notice-backdrop,
+    .notice-shell,
+    .notice-close,
+    .notice-action {
+      transition: none;
+    }
   }
 `;
 
 export const SiteAnnouncement: React.FC = () => {
-  const [visible, setVisible] = useState(false);
-  const [paused, setPaused] = useState(false);
-  const timers = useRef<number[]>([]);
-  const autoRef = useRef<number>(0);
-  const elapsedRef = useRef(0);
-  const startRef = useRef(0);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const later = useCallback((fn: () => void, ms: number) => {
-    timers.current.push(window.setTimeout(fn, ms));
-  }, []);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const openTimerRef = useRef<number>(0);
+  const exitTimerRef = useRef<number>(0);
 
-  // 自动关闭定时器（可暂停恢复）
-  const startAutoClose = useCallback((remaining: number) => {
-    startRef.current = Date.now();
-    autoRef.current = window.setTimeout(() => {
-      setVisible(false);
-      localStorage.setItem(STORAGE_KEY, ANNOUNCEMENT_VERSION);
-    }, remaining);
+  const dismiss = useCallback(() => {
+    clearTimeout(openTimerRef.current);
+    clearTimeout(exitTimerRef.current);
+    setIsOpen(false);
+
+    exitTimerRef.current = window.setTimeout(() => {
+      setIsMounted(false);
+    }, EXIT_ANIMATION_MS);
   }, []);
 
   useEffect(() => {
-    if (localStorage.getItem(STORAGE_KEY) === ANNOUNCEMENT_VERSION) return;
-    later(() => {
-      setVisible(true);
-      startAutoClose(AUTO_DISMISS_MS);
-    }, 600);
+    openTimerRef.current = window.setTimeout(() => {
+      setIsMounted(true);
+      window.requestAnimationFrame(() => setIsOpen(true));
+    }, ENTRY_DELAY_MS);
+
     return () => {
-      timers.current.forEach(clearTimeout);
-      clearTimeout(autoRef.current);
+      clearTimeout(openTimerRef.current);
+      clearTimeout(exitTimerRef.current);
     };
-  }, [later, startAutoClose]);
-
-  // hover 暂停 / 恢复
-  const onEnter = useCallback(() => {
-    setPaused(true);
-    elapsedRef.current += Date.now() - startRef.current;
-    clearTimeout(autoRef.current);
   }, []);
 
-  const onLeave = useCallback(() => {
-    setPaused(false);
-    const remaining = AUTO_DISMISS_MS - elapsedRef.current;
-    if (remaining > 0) startAutoClose(remaining);
-  }, [startAutoClose]);
+  useEffect(() => {
+    if (!isMounted) return;
 
-  const dismiss = useCallback(() => {
-    clearTimeout(autoRef.current);
-    setVisible(false);
-    localStorage.setItem(STORAGE_KEY, ANNOUNCEMENT_VERSION);
-  }, []);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isMounted]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    closeButtonRef.current?.focus();
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        dismiss();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [dismiss, isMounted]);
+
+  if (!isMounted) return null;
 
   return (
     <>
       <style>{ANNOUNCEMENT_STYLES}</style>
 
-      <div
-        className="sa-wrap"
-        data-visible={visible}
-        data-paused={paused}
-        role="status"
-        onMouseEnter={onEnter}
-        onMouseLeave={onLeave}
-      >
-        <div className="sa-card">
-          <div className="sa-mark" aria-hidden="true">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+      <div className="notice-root" data-state={isOpen ? "open" : "closed"}>
+        <div className="notice-backdrop" onClick={() => dismiss()} aria-hidden="true" />
+
+        <section
+          className="notice-shell"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="site-announcement-title"
+          aria-describedby="site-announcement-lead"
+        >
+          <div className="notice-paper">
+            <button
+              ref={closeButtonRef}
+              type="button"
+              className="notice-close"
+              onClick={() => dismiss()}
+              aria-label="关闭公告"
             >
-              <path d="M8 7.5h8" />
-              <path d="M8 12h8" />
-              <path d="M8 16.5h5" />
-              <rect x="4.5" y="4.5" width="15" height="15" rx="3" />
-            </svg>
-          </div>
-          <div className="sa-copy">
-            <p className="sa-eyebrow">研发公告</p>
-            <p className="sa-title">评论系统升级中</p>
-            <p className="sa-desc">
-              评论功能仍在建设中，<strong>KV 存储方案研发中</strong>
-              ，地点展示与数据稳定性会随升级逐步补齐。
-            </p>
-            <div className="sa-status" aria-hidden="true">
-              KV Storage R&amp;D
+              <span>Close</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+
+            <div className="notice-content">
+              <p className="notice-eyebrow">System Bulletin</p>
+              <h2 id="site-announcement-title" className="notice-title">
+                系统架构升级公告
+              </h2>
+
+              <div className="notice-meta">
+                <span>
+                  <strong>文献编号：</strong>
+                  {NOTICE_ID}
+                </span>
+                <span>
+                  <strong>执行状态：</strong>
+                  {NOTICE_STATUS}
+                </span>
+              </div>
+
+              <div className="notice-rule" aria-hidden="true" />
+
+              <div className="notice-body">
+                <p className="notice-salutation">致各位访客与同行：</p>
+                <p id="site-announcement-lead" className="notice-lead">
+                  鉴于站点主干正在进行阶段性的系统整理，本次公告用于说明当前更新方向。现阶段的重点事项为
+                  <strong> 评论 KV 存储完善中 </strong>
+                  ，其余页面架构与阅读交互也在按既定方案持续调整，概要如下：
+                </p>
+
+                <div className="notice-list">
+                  {UPDATE_ITEMS.map((item) => (
+                    <article
+                      key={item.title}
+                      className={`notice-item${item.tone === "accent" ? " is-accent" : ""}`}
+                    >
+                      <div className="notice-marker" aria-hidden="true">
+                        ■
+                      </div>
+                      <div className="notice-item-main">
+                        <h3 className="notice-item-title">{item.title}</h3>
+                        <p className="notice-item-desc">{item.desc}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+
+                <div className="notice-note">
+                  当前页面刷新后会再次提示一次；按 <kbd>Esc</kbd> 或下方按钮可关闭本次公告。
+                </div>
+              </div>
+
+              <footer className="notice-footer">
+                <div className="notice-sign">
+                  <strong>文献编号：{NOTICE_ID}</strong>
+                  <span>
+                    执行状态：{NOTICE_STATUS} | {NOTICE_DATE}
+                  </span>
+                </div>
+
+                <button type="button" className="notice-action" onClick={() => dismiss()}>
+                  知悉并进入
+                </button>
+              </footer>
             </div>
           </div>
-          <button type="button" className="sa-close" onClick={dismiss} aria-label="关闭">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
-        </div>
+        </section>
       </div>
     </>
   );

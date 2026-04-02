@@ -38,10 +38,7 @@ export async function POST(request: Request) {
     const message = data.message?.trim() ?? "";
 
     if (!message) {
-      return NextResponse.json(
-        { success: false, error: "请填写留言内容" },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: "请填写留言内容" }, { status: 400 });
     }
 
     await transporter.sendMail({
@@ -70,9 +67,6 @@ export async function POST(request: Request) {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "发送失败";
     console.error("Mail send error:", error);
-    return NextResponse.json(
-      { success: false, error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 }

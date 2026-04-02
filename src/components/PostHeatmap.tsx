@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo } from "react";
+import type React from "react";
+import { useMemo } from "react";
 
 interface PostHeatmapProps {
   posts: { pubDatetime: string | Date }[];
@@ -55,7 +56,20 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts }) => {
       weeksData.push(week);
     }
 
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     const monthsData: { name: string; index: number }[] = [];
     let lastMonth = -1;
     weeksData.forEach((week, i) => {
@@ -82,7 +96,7 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts }) => {
             <span
               key={m.name + m.index}
               className={`month-label ${monthIndex % 2 === 1 ? "month-label-alt" : ""}`}
-              style={{ left: `${(m.index * columnGap / svgWidth) * 100}%` }}
+              style={{ left: `${((m.index * columnGap) / svgWidth) * 100}%` }}
             >
               {m.name}
             </span>
@@ -97,7 +111,10 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts }) => {
         >
           <title>过去一年文章发布热力图</title>
           {weeks.map((week, i) => (
-            <g key={i} transform={`translate(${i * columnGap}, 0)`}>
+            <g
+              key={week[0]?.date.toISOString() ?? `week-${i}`}
+              transform={`translate(${i * columnGap}, 0)`}
+            >
               {week.map((day, j) => (
                 <rect
                   key={day.date.toISOString()}
@@ -111,7 +128,9 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts }) => {
                   data-date={day.date.toDateString()}
                   data-count={day.count}
                 >
-                  <title>{day.count} 篇文章 - {day.date.toLocaleDateString()}</title>
+                  <title>
+                    {day.count} 篇文章 - {day.date.toLocaleDateString()}
+                  </title>
                 </rect>
               ))}
             </g>
