@@ -1,5 +1,5 @@
-import type { NextConfig } from "next";
 import withPWAInit from "@ducanh2912/next-pwa";
+import type { NextConfig } from "next";
 
 const withPWA = withPWAInit({
   dest: "public",
@@ -16,17 +16,22 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
   outputFileTracingExcludes: {
-    '*': [
-      'node_modules/pagefind/**/*',
-      'node_modules/@swc/core/**/*',
-      'node_modules/@resvg/resvg-js/**/*',
-      'node_modules/sharp/**/*',
+    "*": [
+      "node_modules/pagefind/**/*",
+      "node_modules/@swc/core/**/*",
+      "node_modules/@resvg/resvg-js/**/*",
+      "node_modules/sharp/**/*",
     ],
   },
   images: {
     unoptimized: true,
     qualities: [80],
     remotePatterns: [
+      { protocol: "https", hostname: "api.qrserver.com" },
+      { protocol: "https", hostname: "github.com" },
+      { protocol: "https", hostname: "img1.tucang.cc" },
+      { protocol: "https", hostname: "q1.qlogo.cn" },
+      { protocol: "https", hostname: "qlogo.cn" },
       { protocol: "https", hostname: "**.chenguitao.com" },
       { protocol: "https", hostname: "**.zhimg.com" },
       { protocol: "https", hostname: "**.yuque.com" },
