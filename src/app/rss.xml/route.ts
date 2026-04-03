@@ -1,5 +1,6 @@
 import { getSortedPosts } from "@/lib/blog";
 import { SITE } from "@/lib/config";
+import { DEFAULT_SHARE_IMAGE, SEO_BRAND_NAME } from "@/lib/seo";
 
 export async function GET() {
   const sortedPosts = await getSortedPosts();
@@ -20,12 +21,17 @@ export async function GET() {
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>${SITE.title}</title>
+    <title>${SEO_BRAND_NAME}</title>
     <link>${SITE.website}</link>
     <description>${SITE.desc}</description>
     <language>zh-CN</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${SITE.website}rss.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>${DEFAULT_SHARE_IMAGE.url}</url>
+      <title>${SEO_BRAND_NAME}</title>
+      <link>${SITE.website}</link>
+    </image>
     ${items}
   </channel>
 </rss>`;

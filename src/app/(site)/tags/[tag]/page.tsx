@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Card } from "@/components/Card";
 import { Tag } from "@/components/Tag";
 import { getSortedPosts, getUniqueTags } from "@/lib/blog";
-import { SITE } from "@/lib/config";
+import { createPageMetadata } from "@/lib/seo";
 
 interface PageProps {
   params: Promise<{ tag: string }>;
@@ -20,10 +20,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const tagInfo = tags.find((t) => t.tag === tag);
   if (!tagInfo) return {};
 
-  return {
+  return createPageMetadata({
+    description: `浏览所有包含标签「${tagInfo.tagName}」的公开文章。`,
+    keywords: [tagInfo.tagName, "标签归档", "技术文章"],
+    pathname: `/tags/${tagInfo.tag}`,
     title: `标签: ${tagInfo.tagName}`,
-    description: `所有包含标签「${tagInfo.tagName}」的文章`,
-  };
+  });
 }
 
 export default async function TagPage({ params }: PageProps) {

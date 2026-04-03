@@ -8,11 +8,15 @@ import { LinkButton } from "@/components/LinkButton";
 import { Socials } from "@/components/Socials";
 import { getSortedPosts } from "@/lib/blog";
 import { SITE, SOCIALS } from "@/lib/config";
+import { createPageMetadata, SEO_BRAND_NAME } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "序栈",
-  description: "记录成长，分享价值。信息安全专业学生，Web 开发爱好者。",
-};
+export const metadata: Metadata = createPageMetadata({
+  absoluteTitle: true,
+  description: SITE.desc,
+  keywords: ["Perimsx", "信息安全博客", "Web 开发博客", "技术博客"],
+  pathname: "/",
+  title: SEO_BRAND_NAME,
+});
 
 export default async function HomePage() {
   const sortedPosts = await getSortedPosts();

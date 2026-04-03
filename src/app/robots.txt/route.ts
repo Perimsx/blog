@@ -1,22 +1,15 @@
-import { SITE } from "@/lib/config";
+import { getCanonicalUrl } from "@/lib/seo";
 
 export async function GET() {
-  const sitemapURL = new URL("/sitemap.xml", SITE.website);
+  const sitemapURL = getCanonicalUrl("/sitemap.xml");
+  const host = new URL(getCanonicalUrl("/")).host;
   const robotsTxt = `User-agent: *
 Allow: /
-Disallow: /page/
+Disallow: /api/comments
+Disallow: /api/contact
 
-User-agent: Googlebot
-Allow: /
-
-User-agent: Baiduspider
-Allow: /
-
-User-agent: bingbot
-Allow: /
-
-Sitemap: ${sitemapURL.href}
-Host: ${SITE.website}
+Sitemap: ${sitemapURL}
+Host: ${host}
 `;
 
   return new Response(robotsTxt, {
