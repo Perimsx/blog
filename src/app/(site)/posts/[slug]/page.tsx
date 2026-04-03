@@ -27,6 +27,7 @@ import {
   mdxRemarkPlugins,
 } from "@/lib/blog";
 import { SITE } from "@/lib/config";
+import { getPostCanonicalUrl, getPostShareImage, toAbsoluteUrl } from "@/lib/seo";
 import { slugifyStr } from "@/lib/slugify";
 
 interface PageProps {
@@ -44,42 +45,34 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!post) return {};
 
   const { title, description, pubDatetime, modDatetime, coverImage, ogImage, author } = post.data;
-  const postUrl = `/posts/${post.url}`;
-
-  let ogImageUrl: string | undefined;
-  const articleImage = getPostImage(post.data);
-
-  if (typeof articleImage === "string") {
-    ogImageUrl = articleImage;
-  } else if (typeof ogImage === "string") {
-    ogImageUrl = ogImage;
-  } else if (SITE.dynamicOgImage) {
-    ogImageUrl = `${postUrl}/index.png`;
-  }
-
-  const computedCanonicalURL = post.data.canonicalURL ?? new URL(postUrl, SITE.website).href;
+  const postPath = `/posts/${post.url}`;
+  const canonicalUrl = getPostCanonicalUrl(post.url, post.data.canonicalURL);
+  const shareImage = getPostShareImage(post.url, title);
 
   return {
     title,
     description,
-    authors: [{ name: author || SITE.author }],
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    authors: [{ name: author || SITE.author, url: SITE.profile }],
+    keywords: post.data.tags ?? [],
     openGraph: {
-      type: "article",
-      title,
       description,
-      url: computedCanonicalURL,
-      ...(ogImageUrl ? { images: [{ url: ogImageUrl }] } : {}),
+      images: [shareImage],
+      locale: "zh_CN",
       publishedTime: new Date(pubDatetime).toISOString(),
+      siteName: "Perimsx",
+      title,
+      type: "article",
       ...(modDatetime ? { modifiedTime: new Date(modDatetime).toISOString() } : {}),
+      url: canonicalUrl,
     },
     twitter: {
       card: "summary_large_image",
-      title,
       description,
-      ...(ogImageUrl ? { images: [ogImageUrl] } : {}),
-    },
-    alternates: {
-      canonical: computedCanonicalURL,
+      images: [shareImage.url],
+      title,
     },
   };
 }
@@ -125,6 +118,7 @@ export default async function PostPage({ params }: PageProps) {
       : null;
 
   const postUrl = `/posts/${post.url}`;
+  const canonicalUrl = getPostCanonicalUrl(post.url, post.data.canonicalURL);
   const articleImage = getPostImage(post.data);
   const uniqueTags = Array.from(
     new Map((tags ?? []).map((tag) => [slugifyStr(tag), tag])).entries()
@@ -133,31 +127,66 @@ export default async function PostPage({ params }: PageProps) {
   // JSON-LD structured data
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: title,
-    description,
-    author: {
-      "@type": "Person",
-      name: post.data.author || SITE.author,
-      url: `${SITE.website}about`,
-    },
-    datePublished: new Date(pubDatetime).toISOString(),
-    dateModified: new Date(modDatetime ?? pubDatetime).toISOString(),
-    publisher: {
-      "@type": "Organization",
-      name: SITE.title,
-      url: SITE.website,
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": new URL(postUrl, SITE.website).href,
-    },
-    image: articleImage || `${SITE.website}og-image.jpg`,
-    articleSection: tags?.[0] || "Technology",
-    keywords: tags?.join(", ") || "",
-    wordCount,
-    timeRequired: readingTime ? `PT${Math.ceil(parseInt(readingTime, 10))}M` : undefined,
-    inLanguage: SITE.lang || "zh-CN",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            item: SITE.website,
+            name: "首页",
+            position: 1,
+          },
+          {
+            "@type": "ListItem",
+            item: `${SITE.website}posts`,
+            name: "文章归档",
+            position: 2,
+          },
+          {
+            "@type": "ListItem",
+            item: canonicalUrl,
+            name: title,
+            position: 3,
+          },
+        ],
+      },
+      {
+        "@type": "BlogPosting",
+        articleSection: tags?.[0] || "Technology",
+        author: {
+          "@type": "Person",
+          name: post.data.author || SITE.author,
+          url: `${SITE.website}about`,
+        },
+        dateModified: new Date(modDatetime ?? pubDatetime).toISOString(),
+        datePublished: new Date(pubDatetime).toISOString(),
+        description,
+        headline: title,
+        image: [
+          getPostShareImage(post.url, title).url,
+          articleImage ? toAbsoluteUrl(articleImage) : "",
+        ].filter(Boolean),
+        inLanguage: SITE.lang || "zh-CN",
+        keywords: tags?.join(", ") || "",
+        mainEntityOfPage: {
+          "@id": canonicalUrl,
+          "@type": "WebPage",
+        },
+        publisher: {
+          "@type": "Organization",
+          logo: {
+            "@type": "ImageObject",
+            url: `${SITE.website}android-chrome-512x512.png`,
+          },
+          name: "Perimsx",
+          url: SITE.website,
+        },
+        timeRequired: readingTime ? `PT${Math.ceil(parseInt(readingTime, 10))}M` : undefined,
+        url: canonicalUrl,
+        wordCount,
+      },
+    ],
   };
 
   return (

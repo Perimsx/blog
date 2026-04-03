@@ -4,11 +4,7 @@ import { Card } from "@/components/Card";
 import { Pagination } from "@/components/Pagination";
 import { getSortedPosts } from "@/lib/blog";
 import { getPostsByGroupCondition } from "@/lib/getPostsByGroupCondition";
-
-export const metadata: Metadata = {
-  title: "文章归档",
-  description: "按时间浏览 Perimsx 的全部公开文章，涵盖信息安全、Web 开发与技术实践。",
-};
+import { createPageMetadata } from "@/lib/seo";
 
 const MONTHS = [
   "一月",
@@ -29,6 +25,26 @@ const POSTS_PER_PAGE = 10;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const page = Number.parseInt(slug, 10);
+
+  if (Number.isNaN(page) || page < 2) {
+    return {};
+  }
+
+  return createPageMetadata({
+    description: `第 ${page} 页文章归档，用于继续浏览 Perimsx 的历史文章。`,
+    keywords: ["文章归档", `第 ${page} 页`, "历史文章"],
+    pathname: `/posts/page/${page}`,
+    robots: {
+      follow: true,
+      index: false,
+    },
+    title: `文章归档 - 第 ${page} 页`,
+  });
 }
 
 export default async function PostPaginationPage({ params }: PageProps) {

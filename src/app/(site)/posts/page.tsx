@@ -3,11 +3,14 @@ import { Card } from "@/components/Card";
 import { Pagination } from "@/components/Pagination";
 import { getSortedPosts } from "@/lib/blog";
 import { getPostsByGroupCondition } from "@/lib/getPostsByGroupCondition";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "文章归档",
+export const metadata: Metadata = createPageMetadata({
   description: "按时间浏览 Perimsx 的全部公开文章，涵盖信息安全、Web 开发与技术实践。",
-};
+  keywords: ["文章归档", "信息安全文章", "Web 开发文章", "技术实践"],
+  pathname: "/posts",
+  title: "文章归档",
+});
 
 const MONTHS = [
   "一月",

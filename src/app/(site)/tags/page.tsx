@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { Tag } from "@/components/Tag";
 import { getUniqueTags } from "@/lib/blog";
-import { SITE } from "@/lib/config";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
+  description: "按标签浏览 Perimsx 的全部公开文章与知识主题。",
+  keywords: ["标签页", "技术标签", "分类浏览"],
+  pathname: "/tags",
   title: "标签",
-  description: "按标签浏览所有博客文章",
-};
+});
 
 export default async function TagsPage() {
   const tags = await getUniqueTags();

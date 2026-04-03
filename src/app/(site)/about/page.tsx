@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import { AdaptiveImage } from "@/components/AdaptiveImage";
 import { PostHeatmap } from "@/components/PostHeatmap";
 import { getSortedPosts } from "@/lib/blog";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
+  description: "了解 Perimsx 的背景、学习方向、近期活动与博客开源计划。",
+  keywords: ["关于 Perimsx", "信息安全学习", "开发经历", "技术博客作者"],
+  pathname: "/about",
   title: "关于",
-  description: "Perimsx | 记录成长，分享价值",
-};
+});
 
 export default async function AboutPage() {
   const sortedPosts = await getSortedPosts();

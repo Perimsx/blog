@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
-import { SITE } from "@/lib/config";
+import { SITE, SOCIALS } from "@/lib/config";
+import { DEFAULT_SHARE_IMAGE, getCanonicalUrl, SEO_BRAND_NAME, toAbsoluteUrl } from "@/lib/seo";
 import "./globals.css";
 
 const inter = Inter({
@@ -10,28 +11,83 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const BROWSER_TITLE = SEO_BRAND_NAME;
+
+const siteJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": `${getCanonicalUrl("/")}#person`,
+      "@type": "Person",
+      image: toAbsoluteUrl(SITE.avatar),
+      name: SITE.author,
+      sameAs: SOCIALS.filter((social) => social.active).map((social) => social.href),
+      url: SITE.profile,
+    },
+    {
+      "@id": `${getCanonicalUrl("/")}#website`,
+      "@type": "WebSite",
+      alternateName: SITE.title,
+      description: SITE.desc,
+      inLanguage: SITE.lang,
+      name: SEO_BRAND_NAME,
+      publisher: {
+        "@id": `${getCanonicalUrl("/")}#person`,
+      },
+      url: SITE.website,
+    },
+    {
+      "@id": `${getCanonicalUrl("/")}#blog`,
+      "@type": "Blog",
+      alternateName: SEO_BRAND_NAME,
+      description: SITE.desc,
+      inLanguage: SITE.lang,
+      name: SITE.title,
+      publisher: {
+        "@id": `${getCanonicalUrl("/")}#person`,
+      },
+      url: SITE.website,
+    },
+  ],
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.website),
   title: {
-    default: SITE.title,
-    template: `%s | ${SITE.title}`,
+    default: BROWSER_TITLE,
+    template: `%s | ${BROWSER_TITLE}`,
   },
+  applicationName: BROWSER_TITLE,
   description: SITE.desc,
   keywords: ["博客", "技术", "信息安全", "Web开发", "Perimsx"],
-  authors: [{ name: SITE.author }],
+  authors: [{ name: SITE.author, url: SITE.profile }],
   creator: SITE.author,
+  publisher: SITE.author,
+  alternates: {
+    canonical: SITE.website,
+    types: {
+      "application/rss+xml": [{ url: "rss.xml", title: `${SITE.title} RSS Feed` }],
+    },
+  },
+  formatDetection: {
+    address: false,
+    email: false,
+    telephone: false,
+  },
   openGraph: {
-    type: "website",
-    locale: "zh_CN",
-    url: SITE.website,
-    siteName: SITE.title,
-    title: SITE.title,
     description: SITE.desc,
+    images: [DEFAULT_SHARE_IMAGE],
+    locale: "zh_CN",
+    siteName: SEO_BRAND_NAME,
+    title: BROWSER_TITLE,
+    type: "website",
+    url: SITE.website,
   },
   twitter: {
     card: "summary_large_image",
-    title: SITE.title,
     description: SITE.desc,
+    images: [DEFAULT_SHARE_IMAGE.url],
+    title: BROWSER_TITLE,
   },
   robots: {
     index: true,
@@ -42,12 +98,6 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
-    },
-  },
-  alternates: {
-    canonical: SITE.website,
-    types: {
-      "application/rss+xml": [{ url: "rss.xml", title: `${SITE.title} RSS Feed` }],
     },
   },
 };
@@ -80,6 +130,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="stylesheet" href="https://fontsapi.zeoseven.com/382/main/result.css" />
         <Script id="theme-initializer" strategy="beforeInteractive">
           {themeInitializer}
+        </Script>
+        <Script id="site-json-ld" type="application/ld+json" strategy="beforeInteractive">
+          {JSON.stringify(siteJsonLd)}
         </Script>
       </head>
       <body className={inter.className}>{children}</body>
