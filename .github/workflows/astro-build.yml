@@ -1,4 +1,4 @@
-name: Astro Build
+name: Next Build
 
 on:
   push:
@@ -8,7 +8,6 @@ on:
 
 env:
   NODE_VERSION: "20"
-  ASTRO_TELEMETRY_DISABLED: "1"
 
 jobs:
   build:
@@ -27,8 +26,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Astro site
+      - name: Run typecheck
+        run: npm run typecheck
+
+      - name: Build Next.js site
         run: npm run build
 
-      - name: Check build output
-        run: ls -la dist/
+      - name: Verify Pagefind output
+        run: test -d public/pagefind
