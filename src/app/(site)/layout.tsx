@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { BackToTop } from "@/components/BackToTop";
 import { ContactModal } from "@/components/ContactModal";
 import { Footer } from "@/components/Footer";
@@ -16,6 +18,9 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         Skip to content
       </a>
       <Header />
+      <Suspense fallback={null}>
+        <AnalyticsTracker />
+      </Suspense>
       {children}
       <Footer noMarginTop />
       <BackToTop />

@@ -7,6 +7,8 @@ export async function GET() {
 Allow: /
 Disallow: /api/comments
 Disallow: /api/contact
+Disallow: /api/analytics
+Disallow: /api/analytics/snapshot
 
 Sitemap: ${sitemapURL}
 Host: ${host}

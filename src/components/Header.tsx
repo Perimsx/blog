@@ -5,7 +5,14 @@ import { usePathname } from "next/navigation";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Hr as HrComponent } from "@/components/Hr";
-import { IconMenuDeep, IconMoon, IconSearch, IconSunHigh, IconX } from "@/components/icons";
+import {
+  IconMenuDeep,
+  IconMonitor,
+  IconMoon,
+  IconSearch,
+  IconSunHigh,
+  IconX,
+} from "@/components/icons";
 import { SITE } from "@/lib/config";
 
 export const Header: React.FC = () => {
@@ -13,16 +20,6 @@ export const Header: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleOpenContact = () => {
-      document.dispatchEvent(new CustomEvent("open-contact-modal"));
-    };
-    const handleOpenSearch = () => {
-      document.dispatchEvent(new CustomEvent("open-search-modal"));
-    };
-
-    document.addEventListener("open-contact-modal", handleOpenContact);
-    document.addEventListener("open-search-modal", handleOpenSearch);
-
     // System Theme Listener (replicating Astro implementation)
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleSystemThemeChange = (e: MediaQueryListEvent) => {
@@ -48,11 +45,14 @@ export const Header: React.FC = () => {
     mediaQuery.addEventListener("change", handleSystemThemeChange);
 
     return () => {
-      document.removeEventListener("open-contact-modal", handleOpenContact);
-      document.removeEventListener("open-search-modal", handleOpenSearch);
       mediaQuery.removeEventListener("change", handleSystemThemeChange);
     };
   }, []);
+
+  useEffect(() => {
+    if (pathname == null) return;
+    setMenuOpen(false);
+  }, [pathname]);
 
   const toggleTheme = (e: React.MouseEvent<HTMLButtonElement>) => {
     const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
@@ -142,6 +142,8 @@ export const Header: React.FC = () => {
     return currentPath === path || currentArray[0] === pathArray[0];
   };
 
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <header>
       <div
@@ -185,6 +187,7 @@ export const Header: React.FC = () => {
               <li className="col-span-2">
                 <Link
                   href="/posts"
+                  onClick={closeMenu}
                   className={`block px-4 py-2 text-center font-medium hover:text-accent sm:px-2 sm:py-1 ${isActive("/posts") ? "active-nav" : ""}`}
                 >
                   Posts
@@ -193,6 +196,7 @@ export const Header: React.FC = () => {
               <li className="col-span-2">
                 <Link
                   href="/tags"
+                  onClick={closeMenu}
                   className={`block px-4 py-2 text-center font-medium hover:text-accent sm:px-2 sm:py-1 ${isActive("/tags") ? "active-nav" : ""}`}
                 >
                   Tags
@@ -201,42 +205,34 @@ export const Header: React.FC = () => {
               <li className="col-span-2">
                 <Link
                   href="/about"
+                  onClick={closeMenu}
                   className={`block px-4 py-2 text-center font-medium hover:text-accent sm:px-2 sm:py-1 ${isActive("/about") ? "active-nav" : ""}`}
                 >
                   About
                 </Link>
               </li>
-              <li className="col-span-2 flex items-center justify-center gap-3 py-1.5 sm:gap-x-5 sm:py-0">
-                <button
-                  id="contact-btn"
-                  className="flex size-10 cursor-pointer items-center justify-center p-2.5 transition-all hover:brightness-110 active:scale-95 sm:size-8 sm:p-1"
-                  title="联系站长"
-                  aria-label="联系站长"
-                  type="button"
-                  onClick={() => document.dispatchEvent(new CustomEvent("open-contact-modal"))}
+              <li className="col-span-2 mx-auto grid w-[10.5rem] grid-cols-3 justify-items-center py-1.5 sm:flex sm:w-auto sm:items-center sm:justify-center sm:gap-x-5 sm:py-0">
+                <Link
+                  href="/monitor"
+                  onClick={closeMenu}
+                  className={`focus-outline flex size-10 items-center justify-center hover:text-accent sm:size-8 sm:p-1 ${isActive("/monitor") ? "text-accent" : ""}`}
+                  aria-label="监控面板"
+                  title="监控面板"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="2" y="4" width="20" height="16" rx="2" fill="#e4393c" />
-                    <path d="M22 4l-10 8L2 4" stroke="white" strokeWidth="2" />
-                    <path d="M2 20l8-8m4 0l8 8" stroke="white" strokeWidth="1.5" opacity="0.4" />
-                  </svg>
-                </button>
+                  <IconMonitor />
+                  <span className="sr-only">Monitor</span>
+                </Link>
 
                 <button
                   id="search-btn"
-                  className="focus-outline flex cursor-pointer p-2.5 sm:p-1"
+                  className="focus-outline flex size-10 items-center justify-center sm:size-8 sm:p-1"
                   aria-label="搜索"
                   title="搜索"
                   type="button"
-                  onClick={() => document.dispatchEvent(new CustomEvent("open-search-modal"))}
+                  onClick={() => {
+                    closeMenu();
+                    document.dispatchEvent(new CustomEvent("open-search-modal"));
+                  }}
                 >
                   <IconSearch />
                 </button>
