@@ -12,6 +12,8 @@ const inter = Inter({
 });
 
 const BROWSER_TITLE = SEO_BRAND_NAME;
+const UMAMI_SCRIPT_SRC = "https://cloud.umami.is/script.js";
+const UMAMI_WEBSITE_ID = "6264d95b-b636-444a-b672-b34c4ca12849";
 
 const siteJsonLd = {
   "@context": "https://schema.org",
@@ -134,6 +136,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script id="site-json-ld" type="application/ld+json" strategy="beforeInteractive">
           {JSON.stringify(siteJsonLd)}
         </Script>
+        {process.env.NODE_ENV === "production" ? (
+          <Script
+            id="umami-analytics"
+            src={UMAMI_SCRIPT_SRC}
+            data-website-id={UMAMI_WEBSITE_ID}
+            strategy="afterInteractive"
+          />
+        ) : null}
       </head>
       <body className={inter.className}>{children}</body>
     </html>
