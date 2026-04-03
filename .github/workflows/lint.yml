@@ -26,5 +26,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Biome Check (includes linting and formatting)
+      - name: Run Biome Check
         run: npm run check
