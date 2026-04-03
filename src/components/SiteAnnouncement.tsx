@@ -3,8 +3,8 @@
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const ENTRY_DELAY_MS = 420;
-const EXIT_ANIMATION_MS = 220;
+const ENTRY_DELAY_MS = 600;
+const EXIT_ANIMATION_MS = 300;
 
 const NOTICE_ID = "CT-SYS-2026-UPGRADE";
 const NOTICE_STATUS = "发布实施";
@@ -33,23 +33,26 @@ const ANNOUNCEMENT_STYLES = `
   .notice-root {
     position: fixed;
     inset: 0;
-    z-index: 220;
+    z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding:
-      max(1.5rem, calc(env(safe-area-inset-top, 0px) + 1.5rem))
-      max(1.25rem, calc(env(safe-area-inset-right, 0px) + 1.25rem))
-      max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 1.5rem))
-      max(1.25rem, calc(env(safe-area-inset-left, 0px) + 1.25rem));
+    padding: max(1.5rem, calc(env(safe-area-inset-top, 0px) + 1.5rem)) 1.25rem;
+    pointer-events: none;
+  }
+
+  .notice-root[data-state="open"] {
+    pointer-events: auto;
   }
 
   .notice-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(245, 245, 244, 0.88);
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     opacity: 0;
-    transition: opacity 0.18s ease;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .notice-root[data-state="open"] .notice-backdrop {
@@ -58,18 +61,16 @@ const ANNOUNCEMENT_STYLES = `
 
   .notice-shell {
     position: relative;
-    width: min(100%, 48rem);
+    width: min(100%, 46rem);
     max-height: 100%;
     opacity: 0;
-    transform: translateY(18px);
-    transition:
-      opacity 0.18s ease,
-      transform 0.28s ease;
+    transform: translateY(20px) scale(0.96);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .notice-root[data-state="open"] .notice-shell {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 
   .notice-paper {
@@ -77,46 +78,45 @@ const ANNOUNCEMENT_STYLES = `
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    max-height: min(90dvh, 56rem);
-    border: 1px solid rgba(17, 24, 39, 0.14);
-    border-radius: 0.4rem;
-    background: #fffdfa;
+    max-height: min(90dvh, 52rem);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
     box-shadow:
-      0 18px 30px -24px rgba(15, 23, 42, 0.22),
-      0 2px 10px rgba(15, 23, 42, 0.04);
+      0 24px 48px -12px rgba(15, 23, 42, 0.15),
+      0 4px 24px -2px rgba(15, 23, 42, 0.05),
+      inset 0 1px 1px rgba(255, 255, 255, 0.6);
   }
 
   .notice-close {
     position: absolute;
-    top: 1.3rem;
-    right: 1.35rem;
-    z-index: 2;
-    width: auto;
-    height: auto;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 10;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
-    border: 0;
-    background: transparent;
-    color: rgba(15, 23, 42, 0.46);
-    font-size: 0.76rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition:
-      transform 0.18s ease,
-      color 0.18s ease;
+    width: 2.2rem;
+    height: 2.2rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.04);
+    color: rgba(15, 23, 42, 0.5);
+    transition: all 0.2s ease;
+    cursor: pointer;
   }
 
   .notice-close:hover {
-    transform: translateX(1px);
-    color: rgba(15, 23, 42, 0.82);
+    background: rgba(15, 23, 42, 0.08);
+    color: rgba(15, 23, 42, 0.9);
+    transform: scale(1.05);
   }
 
-  .notice-close-label {
-    display: inline-flex;
-    align-items: center;
+  .notice-close:active {
+    transform: scale(0.95);
   }
 
   .notice-content {
@@ -124,133 +124,122 @@ const ANNOUNCEMENT_STYLES = `
     z-index: 1;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: 3.45rem 3.05rem 2.45rem;
+    padding: 3rem 3rem 2.5rem;
   }
 
   .notice-eyebrow {
     margin: 0;
-    text-align: center;
-    color: rgba(15, 23, 42, 0.42);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
+    color: rgba(15, 23, 42, 0.45);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
   }
 
   .notice-title {
-    margin: 0.9rem 0 1.15rem;
-    text-align: center;
-    color: #111827;
-    font-family: var(--font-serif);
-    font-size: clamp(1.95rem, 3vw, 2.6rem);
-    font-weight: 700;
-    line-height: 1.18;
-    letter-spacing: -0.04em;
+    margin: 0.5rem 0 1rem;
+    color: #0f172a;
+    font-family: var(--font-serif), ui-serif, Georgia, serif;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
     text-wrap: balance;
   }
 
   .notice-meta {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    color: rgba(15, 23, 42, 0.46);
-    font-size: 0.74rem;
-    font-weight: 700;
-    line-height: 1.5;
-  }
-
-  .notice-meta span {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 0.3rem;
-  }
-
-  .notice-meta span:last-child {
-    justify-content: flex-end;
-    text-align: right;
+    gap: 1.5rem;
+    color: rgba(15, 23, 42, 0.55);
+    font-size: 0.8rem;
+    font-weight: 500;
   }
 
   .notice-meta strong {
-    color: rgba(15, 23, 42, 0.68);
-    font-weight: 800;
+    color: rgba(15, 23, 42, 0.85);
+    font-weight: 700;
   }
 
   .notice-rule {
-    margin: 0.85rem 0 1.45rem;
+    margin: 1.5rem 0;
     height: 1px;
-    background: rgba(17, 24, 39, 0.82);
+    background: linear-gradient(to right, rgba(15, 23, 42, 0.1), transparent);
   }
 
   .notice-body {
-    color: rgba(17, 24, 39, 0.9);
+    color: rgba(30, 41, 59, 0.85);
   }
 
   .notice-salutation {
-    margin: 0;
-    font-size: 0.98rem;
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
     font-weight: 800;
-    line-height: 1.9;
+    color: #0f172a;
   }
 
   .notice-lead {
-    margin: 0.3rem 0 0;
-    font-size: 0.98rem;
-    line-height: 1.98;
-    color: rgba(31, 41, 55, 0.86);
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.8;
   }
 
   .notice-lead strong {
     color: #0f172a;
     font-weight: 800;
+    background: rgba(15, 23, 42, 0.05);
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.25rem;
   }
 
   .notice-list {
-    margin-top: 1.55rem;
-  }
-
-  .notice-item + .notice-item {
-    margin-top: 1.1rem;
+    margin-top: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 
   .notice-item {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: 0.8rem;
+    gap: 1rem;
     align-items: start;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .notice-item:hover {
+    background: rgba(255, 255, 255, 0.7);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
   }
 
   .notice-marker {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 0.9rem;
-    height: 0.9rem;
-    margin-top: 0.28rem;
-    color: #111827;
-    font-size: 0.78rem;
-    line-height: 1;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.06);
+    color: #0f172a;
+    font-size: 0.7rem;
+    margin-top: 0.1rem;
   }
 
   .notice-item.is-accent .notice-marker {
+    background: rgba(3, 105, 161, 0.1);
     color: #0369a1;
   }
 
-  .notice-item-main {
-    padding-left: 0.95rem;
-    border-left: 1px solid rgba(15, 23, 42, 0.14);
-  }
-
-  .notice-item.is-accent .notice-item-main {
-    border-left-color: rgba(3, 105, 161, 0.42);
-  }
-
   .notice-item-title {
-    margin: 0;
-    color: #111827;
-    font-size: 1rem;
+    margin: 0 0 0.25rem;
+    color: #0f172a;
+    font-size: 0.95rem;
     font-weight: 800;
-    line-height: 1.68;
   }
 
   .notice-item.is-accent .notice-item-title {
@@ -258,271 +247,126 @@ const ANNOUNCEMENT_STYLES = `
   }
 
   .notice-item-desc {
-    margin: 0.2rem 0 0;
-    color: rgba(31, 41, 55, 0.82);
-    font-size: 0.93rem;
-    line-height: 1.88;
-  }
-
-  .notice-note {
-    margin-top: 1.55rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(15, 23, 42, 0.08);
-    color: rgba(15, 23, 42, 0.52);
-    font-size: 0.82rem;
-    line-height: 1.8;
-  }
-
-  .notice-note kbd {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.5rem;
-    padding: 0.05rem 0.4rem;
-    border: 1px solid rgba(15, 23, 42, 0.12);
-    border-bottom-width: 2px;
-    border-radius: 0.45rem;
-    background: rgba(255, 255, 255, 0.92);
-    color: rgba(15, 23, 42, 0.7);
-    font-size: 0.75rem;
-    font-weight: 700;
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: rgba(30, 41, 59, 0.75);
   }
 
   .notice-footer {
     display: flex;
-    align-items: end;
+    align-items: center;
     justify-content: space-between;
-    gap: 1.4rem;
-    margin-top: 1.55rem;
-    padding-top: 1.3rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
     border-top: 1px solid rgba(15, 23, 42, 0.08);
   }
 
   .notice-sign {
     display: flex;
     flex-direction: column;
-    gap: 0.34rem;
-    min-width: 0;
+    gap: 0.2rem;
   }
 
   .notice-sign strong {
-    color: #111827;
-    font-size: 0.94rem;
+    color: #0f172a;
+    font-size: 0.9rem;
     font-weight: 800;
-    letter-spacing: 0.02em;
-    line-height: 1.65;
-    text-wrap: balance;
   }
 
   .notice-sign span {
-    color: rgba(15, 23, 42, 0.46);
-    font-size: 0.76rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    line-height: 1.6;
-    text-transform: uppercase;
+    color: rgba(15, 23, 42, 0.5);
+    font-size: 0.75rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
 
   .notice-action {
-    flex-shrink: 0;
-    min-width: 8.8rem;
-    padding: 0.88rem 1.2rem;
-    border: 1px solid rgba(15, 23, 42, 0.78);
-    border-radius: 0;
-    background: transparent;
-    color: #111827;
-    font-size: 0.84rem;
-    font-weight: 800;
-    letter-spacing: 0.03em;
-    transition:
-      transform 0.18s ease,
-      background-color 0.18s ease,
-      color 0.18s ease;
+    padding: 0.75rem 1.6rem;
+    border: none;
+    border-radius: 2rem;
+    background: #0f172a;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
   }
 
   .notice-action:hover {
-    transform: translateX(1px);
-    background: #111827;
-    color: white;
+    background: #1e293b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
   }
 
-  @media (max-width: 900px) {
-    .notice-root {
-      padding:
-        max(1rem, calc(env(safe-area-inset-top, 0px) + 1rem))
-        1rem
-        max(1rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
-    }
-
-    .notice-shell {
-      width: min(100%, 43rem);
-    }
-
-    .notice-paper {
-      max-height: min(92dvh, 54rem);
-    }
-
-    .notice-content {
-      padding: 3.15rem 1.7rem 1.75rem;
-    }
-
-    .notice-title {
-      font-size: clamp(1.9rem, 4.8vw, 2.35rem);
-    }
+  .notice-action:active {
+    transform: translateY(0);
   }
 
   @media (max-width: 720px) {
-    .notice-shell {
-      width: 100%;
-    }
-
-    .notice-content {
-      padding: 3rem 1.15rem 1.35rem;
-    }
-
-    .notice-meta {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.35rem;
-    }
-
-    .notice-meta span:last-child {
-      justify-content: flex-start;
-      text-align: left;
-    }
-
-    .notice-rule {
-      margin-bottom: 1.15rem;
-    }
-
-    .notice-lead {
-      line-height: 1.9;
-    }
-
-    .notice-item-main {
-      padding-left: 0.85rem;
-    }
-
-    .notice-footer {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 1rem;
-    }
-
-    .notice-action {
-      width: 100%;
-    }
+    .notice-content { padding: 2rem 1.5rem; }
+    .notice-meta { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .notice-footer { flex-direction: column; align-items: stretch; gap: 1.5rem; }
   }
 
   @media (max-width: 520px) {
-    .notice-root {
-      align-items: stretch;
-      padding: 0;
-    }
-
-    .notice-shell {
-      width: 100%;
-    }
-
-    .notice-paper {
-      min-height: 100dvh;
-      max-height: 100dvh;
-      border-radius: 0;
-      border-left: 0;
-      border-right: 0;
-      box-shadow: none;
-    }
-
-    .notice-close {
-      top: max(0.95rem, calc(env(safe-area-inset-top, 0px) + 0.4rem));
-      right: 0.9rem;
-    }
-
-    .notice-content {
-      padding:
-        max(3.55rem, calc(env(safe-area-inset-top, 0px) + 2.65rem))
-        1rem
-        max(1.4rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
-    }
-
-    .notice-title {
-      font-size: 1.72rem;
-      line-height: 1.16;
-    }
-
-    .notice-eyebrow,
-    .notice-meta,
-    .notice-sign span {
-      letter-spacing: 0.08em;
-    }
-
-    .notice-close-label {
-      display: none;
-    }
-
-    .notice-lead {
-      margin-top: 0.45rem;
-    }
-
-    .notice-lead,
-    .notice-item-desc {
-      font-size: 0.92rem;
-      line-height: 1.82;
-    }
-
-    .notice-item {
-      gap: 0.65rem;
-    }
-
-    .notice-note {
-      font-size: 0.8rem;
-      line-height: 1.72;
-    }
-
-    .notice-sign strong {
-      font-size: 0.92rem;
-    }
+    .notice-root { padding: 0; align-items: flex-end; }
+    .notice-shell { width: 100%; transform: translateY(100%); }
+    .notice-paper { max-height: 85dvh; border-radius: 1.5rem 1.5rem 0 0; border-bottom: none; border-left: none; border-right: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .notice-backdrop,
-    .notice-shell,
-    .notice-close,
-    .notice-action {
-      transition: none;
-    }
+    .notice-backdrop, .notice-shell, .notice-close, .notice-action, .notice-item { transition: none; }
   }
 `;
 
 export const SiteAnnouncement: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  // 默认视为已隐藏，以防 SSR 时闪烁，直至挂载后读取出未读状态
+  const [isDismissed, setIsDismissed] = useState(true);
 
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const openTimerRef = useRef<number>(0);
   const exitTimerRef = useRef<number>(0);
 
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("site_notice_dismissed");
+      if (stored !== NOTICE_ID) {
+        setIsDismissed(false);
+      }
+    } catch (e) {
+      setIsDismissed(false); // 降级处理
+    }
+  }, []);
+
   const dismiss = useCallback(() => {
-    clearTimeout(openTimerRef.current);
-    clearTimeout(exitTimerRef.current);
     setIsOpen(false);
+    
+    // 写入本地防打扰状态
+    try {
+      localStorage.setItem("site_notice_dismissed", NOTICE_ID);
+    } catch (e) {
+      // ignore
+    }
 
     exitTimerRef.current = window.setTimeout(() => {
       setIsMounted(false);
+      setIsDismissed(true); // 确保从 DOM 中移除
     }, EXIT_ANIMATION_MS);
   }, []);
 
   useEffect(() => {
+    if (isDismissed) return;
+
     openTimerRef.current = window.setTimeout(() => {
       setIsMounted(true);
       window.requestAnimationFrame(() => setIsOpen(true));
     }, ENTRY_DELAY_MS);
 
-    return () => {
-      clearTimeout(openTimerRef.current);
-      clearTimeout(exitTimerRef.current);
-    };
-  }, []);
+    return () => clearTimeout(openTimerRef.current);
+  }, [isDismissed]);
 
   useEffect(() => {
     if (!isMounted) return;
@@ -553,14 +397,14 @@ export const SiteAnnouncement: React.FC = () => {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [dismiss, isMounted]);
 
-  if (!isMounted) return null;
+  if (isDismissed || !isMounted) return null;
 
   return (
     <>
       <style>{ANNOUNCEMENT_STYLES}</style>
 
       <div className="notice-root" data-state={isOpen ? "open" : "closed"}>
-        <div className="notice-backdrop" onClick={() => dismiss()} aria-hidden="true" />
+        <div className="notice-backdrop" onClick={dismiss} aria-hidden="true" />
 
         <section
           className="notice-shell"
@@ -574,18 +418,17 @@ export const SiteAnnouncement: React.FC = () => {
               ref={closeButtonRef}
               type="button"
               className="notice-close"
-              onClick={() => dismiss()}
+              onClick={dismiss}
               aria-label="关闭公告"
             >
-              <span className="notice-close-label">Close</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.1"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -625,7 +468,7 @@ export const SiteAnnouncement: React.FC = () => {
                   {UPDATE_ITEMS.map((item) => (
                     <article
                       key={item.title}
-                      className={`notice-item${item.tone === "accent" ? " is-accent" : ""}`}
+                      className={\`notice-item\${item.tone === "accent" ? " is-accent" : ""}\`}
                     >
                       <div className="notice-marker" aria-hidden="true">
                         ■
@@ -637,10 +480,6 @@ export const SiteAnnouncement: React.FC = () => {
                     </article>
                   ))}
                 </div>
-
-                <div className="notice-note">
-                  当前页面刷新后会再次提示一次；按 <kbd>Esc</kbd> 或下方按钮可关闭本次公告。
-                </div>
               </div>
 
               <footer className="notice-footer">
@@ -649,7 +488,7 @@ export const SiteAnnouncement: React.FC = () => {
                   <span>{NOTICE_DATE}</span>
                 </div>
 
-                <button type="button" className="notice-action" onClick={() => dismiss()}>
+                <button type="button" className="notice-action" onClick={dismiss}>
                   知悉并进入
                 </button>
               </footer>
