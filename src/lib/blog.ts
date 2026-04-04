@@ -54,6 +54,8 @@ export interface Heading {
 
 export const BLOG_DIR = "src/content/blog";
 
+let _cachedPosts: Post[] | null = null;
+
 function extractCodeBlockTitle(meta: string | undefined) {
   if (!meta) return undefined;
 
@@ -243,6 +245,8 @@ function getAllMarkdownFiles(dir: string): string[] {
 }
 
 export async function getAllPosts(): Promise<Post[]> {
+  if (_cachedPosts) return _cachedPosts;
+
   const blogPath = path.resolve(BLOG_DIR);
 
   if (!fs.existsSync(blogPath)) {
@@ -251,7 +255,7 @@ export async function getAllPosts(): Promise<Post[]> {
 
   const files = getAllMarkdownFiles(blogPath);
 
-  return Promise.all(
+  const posts = await Promise.all(
     files.map(async (filePath) => {
       const raw = fs.readFileSync(filePath, "utf-8");
       const { data, content } = matter(raw);
@@ -274,6 +278,9 @@ export async function getAllPosts(): Promise<Post[]> {
       };
     })
   );
+
+  _cachedPosts = posts;
+  return posts;
 }
 
 export async function getSortedPosts(): Promise<Post[]> {
