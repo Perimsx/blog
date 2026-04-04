@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { escapeHtml } from "@/lib/html";
 
 const PAGEFIND_BUNDLE_PATH = "/pagefind/";
 
@@ -55,14 +56,6 @@ export type SearchItem = {
 type FlatSearchResult = {
   url: string;
 };
-
-const escapeHtml = (value = "") =>
-  value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 
 const uniqueBy = <T>(items: T[], getKey: (item: T) => string) => {
   const seen = new Set<string>();

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { escapeHtml } from "@/lib/html";
 
 type ContactPayload = {
   name?: string;
@@ -20,14 +21,6 @@ const transporter = nodemailer.createTransport({
     pass: MAIL_PASS,
   },
 });
-
-const escapeHtml = (value: string) =>
-  value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
 
 export async function POST(request: Request) {
   try {
