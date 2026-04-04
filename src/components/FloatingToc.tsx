@@ -2,13 +2,8 @@
 
 import { AnimatePresence, motion, useSpring } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { type Heading } from "@/lib/blog";
 import { useToc } from "./TocContext";
-
-export interface Heading {
-  depth: number;
-  slug: string;
-  text: string;
-}
 
 export default function FloatingToc({ toc }: { toc?: Heading[] }) {
   const { isTocOpen: open, setIsTocOpen: setOpen } = useToc();
