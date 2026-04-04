@@ -14,6 +14,17 @@ import { buildCommentTree, buildQqAvatarUrl, countComments } from "./utils";
 
 const COMMENT_DATA_FILE = path.join(process.cwd(), ".data", "comments.local.json");
 
+let commentsDatabaseQueue: Promise<unknown> = Promise.resolve();
+
+function withDatabaseLock<T>(task: () => Promise<T>) {
+  const run = commentsDatabaseQueue.then(task, task);
+  commentsDatabaseQueue = run.then(
+    () => undefined,
+    () => undefined
+  );
+  return run;
+}
+
 type CommentDatabase = {
   comments: CommentRecord[];
 };
@@ -67,52 +78,56 @@ function createCommentRecord(
 }
 
 export async function listApprovedComments(postSlug: string): Promise<CommentListResponse> {
-  const database = await readDatabase();
-  const approvedRecords = database.comments.filter(
-    (comment) => comment.postSlug === postSlug && comment.status === "approved"
-  );
-  const comments = buildCommentTree(approvedRecords);
+  return withDatabaseLock(async () => {
+    const database = await readDatabase();
+    const approvedRecords = database.comments.filter(
+      (comment) => comment.postSlug === postSlug && comment.status === "approved"
+    );
+    const comments = buildCommentTree(approvedRecords);
 
-  return {
-    comments,
-    totalCount: countComments(comments),
-    meta: {
-      storage: "local-file",
-      moderation: getModerationMode(),
-    },
-  };
+    return {
+      comments,
+      totalCount: countComments(comments),
+      meta: {
+        storage: "local-file",
+        moderation: getModerationMode(),
+      },
+    };
+  });
 }
 
 export async function createComment(
   payload: CreateCommentPayload,
   meta: CommentRequestMeta
 ): Promise<CreateCommentResponse> {
-  const database = await readDatabase();
+  return withDatabaseLock(async () => {
+    const database = await readDatabase();
 
-  if (payload.parentId) {
-    const parentComment = database.comments.find(
-      (comment) => comment.id === payload.parentId && comment.postSlug === payload.postSlug
-    );
+    if (payload.parentId) {
+      const parentComment = database.comments.find(
+        (comment) => comment.id === payload.parentId && comment.postSlug === payload.postSlug
+      );
 
-    if (!parentComment) {
-      throw new Error("回复目标不存在，可能已经被删除。");
+      if (!parentComment) {
+        throw new Error("回复目标不存在，可能已经被删除。");
+      }
     }
-  }
 
-  const status: CommentRecord["status"] = SITE.comments.autoApprove ? "approved" : "pending";
-  const record = createCommentRecord(payload, meta, status);
+    const status: CommentRecord["status"] = SITE.comments.autoApprove ? "approved" : "pending";
+    const record = createCommentRecord(payload, meta, status);
 
-  database.comments.push(record);
-  await writeDatabase(database);
+    database.comments.push(record);
+    await writeDatabase(database);
 
-  return {
-    success: true,
-    status,
-    message:
-      status === "approved" ? "评论已发布，感谢你的分享。" : "评论已提交，审核通过后会显示。",
-    meta: {
-      storage: "local-file",
-      moderation: getModerationMode(),
-    },
-  };
+    return {
+      success: true,
+      status,
+      message:
+        status === "approved" ? "评论已发布，感谢你的分享。" : "评论已提交，审核通过后会显示。",
+      meta: {
+        storage: "local-file",
+        moderation: getModerationMode(),
+      },
+    };
+  });
 }
