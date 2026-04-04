@@ -131,7 +131,7 @@ function normalizeIpv6(hostname: string): string | null {
 // Private IP Checks
 // ---------------------------------------------------------------------------
 
-function isPrivateIpv4(hostname: string): boolean {
+export function isPrivateIpv4(hostname: string): boolean {
   if (/^\d{1,3}(?:\.\d{1,3}){3}$/.test(hostname)) {
     const octets = hostname.split(".").map((p) => Number.parseInt(p, 10));
     if (octets.some((p) => Number.isNaN(p) || p < 0 || p > 255)) return false;
@@ -159,7 +159,7 @@ function isPrivateIpv4(hostname: string): boolean {
   );
 }
 
-function isPrivateIpv6(hostname: string): boolean {
+export function isPrivateIpv6(hostname: string): boolean {
   const normalized = normalizeIpv6(hostname);
   if (!normalized) return false;
   const hextets = normalized.split(":");
