@@ -1,3 +1,4 @@
+import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 import GithubSlugger from "github-slugger";
@@ -5,6 +6,7 @@ import matter from "gray-matter";
 import readingTimeLib from "reading-time";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
+import { cache } from "react";
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import { createHighlighter } from "shiki";
@@ -54,7 +56,14 @@ export interface Heading {
 
 export const BLOG_DIR = "src/content/blog";
 
-let _cachedPosts: Post[] | null = null;
+function findPostBySlug(posts: Post[], slug: string) {
+  const exactMatch = posts.find((post) => post.url === slug);
+  if (exactMatch) {
+    return exactMatch;
+  }
+
+  return posts.find((post) => post.slug === slug) ?? null;
+}
 
 function extractCodeBlockTitle(meta: string | undefined) {
   if (!meta) return undefined;
@@ -244,9 +253,7 @@ function getAllMarkdownFiles(dir: string): string[] {
   return files;
 }
 
-export async function getAllPosts(): Promise<Post[]> {
-  if (_cachedPosts) return _cachedPosts;
-
+const loadAllPosts = cache(async (): Promise<Post[]> => {
   const blogPath = path.resolve(BLOG_DIR);
 
   if (!fs.existsSync(blogPath)) {
@@ -255,7 +262,7 @@ export async function getAllPosts(): Promise<Post[]> {
 
   const files = getAllMarkdownFiles(blogPath);
 
-  const posts = await Promise.all(
+  return Promise.all(
     files.map(async (filePath) => {
       const raw = fs.readFileSync(filePath, "utf-8");
       const { data, content } = matter(raw);
@@ -278,28 +285,32 @@ export async function getAllPosts(): Promise<Post[]> {
       };
     })
   );
+});
 
-  _cachedPosts = posts;
-  return posts;
-}
-
-export async function getSortedPosts(): Promise<Post[]> {
-  const posts = await getAllPosts();
+const loadSortedVisiblePosts = cache(async (): Promise<Post[]> => {
+  const posts = await loadAllPosts();
 
   return posts.filter(isPostVisible).sort((a, b) => {
     const dateA = new Date(a.data.modDatetime ?? a.data.pubDatetime).getTime();
     const dateB = new Date(b.data.modDatetime ?? b.data.pubDatetime).getTime();
     return Math.floor(dateB / 1000) - Math.floor(dateA / 1000);
   });
+});
+
+export async function getAllPosts(): Promise<Post[]> {
+  return loadAllPosts();
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | null> {
-  const posts = await getAllPosts();
+export async function getSortedPosts(): Promise<Post[]> {
+  return loadSortedVisiblePosts();
+}
 
-  const exactMatch = posts.find((post) => post.url === slug);
-  if (exactMatch) return exactMatch;
-
-  return posts.find((post) => post.slug === slug) ?? null;
+export async function getPostBySlug(
+  slug: string,
+  options?: { includeHidden?: boolean }
+): Promise<Post | null> {
+  const posts = options?.includeHidden ? await getAllPosts() : await getSortedPosts();
+  return findPostBySlug(posts, slug);
 }
 
 export async function getUniqueTags(): Promise<{ tag: string; tagName: string }[]> {

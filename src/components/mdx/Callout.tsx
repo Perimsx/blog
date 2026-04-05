@@ -31,7 +31,7 @@ export const Callout: React.FC<CalloutProps> = ({
   return (
     <div
       className={[
-        "rounded-xl border px-3 sm:px-4 py-2.5 sm:py-3 shadow-sm my-2 sm:my-3",
+        "not-prose rounded-xl border px-2.5 sm:px-3.5 py-2 sm:py-2.5 shadow-sm my-2 sm:my-3",
         currentAccent,
       ].join(" ")}
     >
@@ -45,12 +45,14 @@ export const Callout: React.FC<CalloutProps> = ({
         </p>
       )}
       {title && (
-        <p className={`text-base font-semibold text-foreground ${eyebrow ? "mt-1.5" : ""}`}>
+        <p className={`text-base font-semibold text-foreground ${eyebrow ? "mt-1" : ""}`}>
           {title}
         </p>
       )}
-      {desc && <p className="mt-1 text-sm leading-6 text-foreground/72">{desc}</p>}
-      <div className="callout-content opacity-90 mt-1">{children}</div>
+      {desc && <p className="mt-0.5 text-sm leading-6 text-foreground/72">{desc}</p>}
+      <div className="callout-content mt-1 opacity-90 text-[0.96rem] leading-[1.68] text-foreground/82 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>p]:my-0 [&>ul]:my-0 [&>ol]:my-0 [&>blockquote]:my-0">
+        {children}
+      </div>
     </div>
   );
 };

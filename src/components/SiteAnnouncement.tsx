@@ -4,7 +4,13 @@ import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const EXIT_MS = 300;
-const NOTICE_ID = "CT-SYS-2026-UPGRADE";
+const NOTICE = {
+  id: "CT-SYS-2026-STAGE-20260405B",
+  dateLabel: "2026年04月05日",
+  signedDateLabel: "二〇二六年四月五日",
+  stampDateLabel: "2026.04.05",
+  title: "关于站点阶段整理与后续更新的通知",
+} as const;
 
 const STYLES = `
   .gw-overlay {
@@ -118,79 +124,114 @@ const STYLES = `
   .gw-item.is-key .gw-item-t { color: #b91c1c; }
   .gw-item.is-key .gw-item-n { color: rgba(185,28,28,0.5); }
 
-  /* 落款 */
+  /* 落款区域优化 */
   .gw-sign {
-    margin-top: 1rem;
-    padding-top: 0.8rem;
+    margin-top: 1.2rem;
+    padding-top: 1rem;
     border-top: 1px solid rgba(15,23,42,0.06);
-    display: flex; align-items: flex-end; justify-content: flex-end;
-    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.5rem;
   }
-  .gw-sign-info { text-align: right; display: flex; flex-direction: column; gap: 0.1rem; }
-  .gw-sign-name { color: #0f172a; font-size: 0.82rem; font-weight: 800; }
-  .gw-sign-date { color: rgba(15,23,42,0.45); font-size: 0.72rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-
-  .gw-stamp {
-    position: absolute; right: -0.3rem; bottom: -0.8rem;
-    width: 4.8rem; height: 4.8rem;
-    opacity: 0.15; transform: rotate(-8deg);
+  .gw-sign-block {
+    position: relative;
+    padding: 0.5rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease;
+  }
+  .gw-sign-info {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
     pointer-events: none;
   }
+  .gw-sign-name { 
+    color: #0f172a; 
+    font-size: 0.82rem; 
+    font-weight: 800; 
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+  .gw-sign-date { 
+    color: rgba(15,23,42,0.5); 
+    font-size: 0.7rem; 
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; 
+    white-space: nowrap; 
+    letter-spacing: -0.01em;
+  }
 
-  /* 底栏 */
-  .gw-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0.55rem 2rem;
-    border-top: 1px solid rgba(15,23,42,0.06);
-    background: rgba(15,23,42,0.015);
-    border-radius: 0 0 0.5rem 0.5rem;
+  .gw-stamp {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 5.2rem; height: 5.2rem;
+    color: rgba(185, 28, 28, 0.18);
+    opacity: 1;
+    transform: translate(-45%, -48%) rotate(-12deg);
+    pointer-events: none;
+    z-index: 1;
   }
-  .gw-hint {
-    color: rgba(15,23,42,0.35); font-size: 0.68rem;
-  }
-  .gw-hint kbd {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 1.2rem; padding: 0 0.25rem;
-    border: 1px solid rgba(15,23,42,0.1); border-bottom-width: 2px;
-    border-radius: 0.25rem; background: white;
-    color: rgba(15,23,42,0.55);
-    font-size: 0.62rem; font-weight: 700;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  .gw-sign-action {
+    flex-shrink: 0;
+    margin-bottom: 0.2rem;
   }
   .gw-btn {
-    padding: 0.45rem 1.2rem;
-    border: none; border-radius: 0.3rem;
+    padding: 0.5rem 1.4rem;
+    border: none; border-radius: 0.4rem;
     background: #0f172a; color: white;
-    font-size: 0.76rem; font-weight: 700;
-    cursor: pointer; transition: background 0.15s ease;
+    font-size: 0.78rem; font-weight: 700;
+    cursor: pointer; 
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(15,23,42,0.1), 0 2px 4px -2px rgba(15,23,42,0.1);
   }
-  .gw-btn:hover { background: #1e293b; }
+  .gw-btn:hover { 
+    background: #1e293b; 
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(15,23,42,0.15);
+  }
+  .gw-btn:active { transform: translateY(0); }
 
-  /* 移动端 */
+  /* 移动端适配 */
   @media (max-width: 640px) {
     .gw-overlay { padding: 0; align-items: flex-end; }
     .gw-doc { width: 100%; transform: translateY(100%); }
     .gw-overlay[data-open="true"] .gw-doc { transform: translateY(0); }
     .gw-paper {
-      border-radius: 1rem 1rem 0 0;
+      border-radius: 1.25rem 1.25rem 0 0;
       border-bottom: none;
-      max-height: 92dvh;
+      max-height: 90dvh;
       overflow-y: auto;
       overscroll-behavior: contain;
     }
     .gw-paper::before {
       content: ''; display: block;
-      width: 2rem; height: 0.18rem;
-      margin: 0.5rem auto 0;
+      width: 2.5rem; height: 0.25rem;
+      margin: 0.6rem auto 0;
       border-radius: 1rem;
-      background: rgba(15,23,42,0.15);
+      background: rgba(15,23,42,0.1);
     }
-    .gw-head { padding: 1.3rem 1.3rem 0; }
-    .gw-head::after { margin-left: -1.3rem; margin-right: -1.3rem; }
-    .gw-ref { padding: 0.45rem 1.3rem; }
-    .gw-body { padding: 0.9rem 1.3rem 1.2rem; }
-    .gw-bar { padding: 0.5rem 1.3rem; border-radius: 0; }
-    .gw-hint { display: none; }
+    .gw-head { padding: 1.5rem 1.5rem 0; }
+    .gw-head::after { margin-left: -1.5rem; margin-right: -1.5rem; }
+    .gw-ref { padding: 0.5rem 1.5rem; }
+    .gw-body { padding: 1rem 1.5rem 1.5rem; }
+    
+    .gw-sign { 
+      flex-direction: row; 
+      justify-content: space-between; 
+      align-items: flex-end;
+      margin-top: 1rem;
+      padding-top: 0.8rem;
+    }
+    .gw-sign-block { padding: 0.2rem; transform: scale(0.9); transform-origin: left bottom; }
+    .gw-btn { padding: 0.45rem 1.1rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -201,20 +242,21 @@ const STYLES = `
 export const SiteAnnouncement: React.FC = () => {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
-  const [dismissed, setDismissed] = useState(true);
+  const [dismissed, setDismissed] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const exitRef = useRef<number>(0);
 
-  useEffect(() => {
-    try {
-      if (localStorage.getItem("site_notice_dismissed") !== NOTICE_ID) setDismissed(false);
-    } catch { setDismissed(false); }
-  }, []);
-
   const dismiss = useCallback(() => {
     setOpen(false);
-    try { localStorage.setItem("site_notice_dismissed", NOTICE_ID); } catch {}
     exitRef.current = window.setTimeout(() => { setMounted(false); setDismissed(true); }, EXIT_MS);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (exitRef.current) {
+        window.clearTimeout(exitRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -252,60 +294,76 @@ export const SiteAnnouncement: React.FC = () => {
               <h1 className="gw-org">Cotovo 站点通知</h1>
             </div>
             <div className="gw-ref">
-              <span>{NOTICE_ID}</span>
+              <span>{NOTICE.id}</span>
               <span className="gw-ref-dot" aria-hidden="true" />
-              <span>2026年04月02日</span>
+              <span>{NOTICE.dateLabel}</span>
             </div>
 
             <div className="gw-body">
-              <h2 className="gw-title">关于系统架构升级的通知</h2>
+              <h2 className="gw-title">{NOTICE.title}</h2>
               <p className="gw-para">
-                站点主干正在进行阶段性整理，现将当前更新方向通知如下。
+                站点当前进入阶段整理期，近期更新将围绕内容收束、链路校正、评论存储与监控修复同步推进，现将主要方向统一说明如下。
               </p>
 
               <ul className="gw-items">
                 <li className="gw-item">
                   <span className="gw-item-n">一、</span>
                   <div>
-                    <p className="gw-item-t">全站渲染链路重整</p>
-                    <p className="gw-item-d">已迁入 Next.js App Router，构建与静态产出链路统一整理中。</p>
+                    <p className="gw-item-t">内容体系继续收束</p>
+                    <p className="gw-item-d">文章将继续围绕精选内容进行整理，旧稿、测试稿与不再保留的历史内容会逐步下线或归档，避免内容池继续无边界扩张。</p>
                   </div>
                 </li>
                 <li className="gw-item">
                   <span className="gw-item-n">二、</span>
                   <div>
-                    <p className="gw-item-t">视图编排与阅读交互更新</p>
-                    <p className="gw-item-d">目录层级与组件边界重构，阅读路径将逐步对齐新版架构。</p>
+                    <p className="gw-item-t">站点逻辑与路由边界校正</p>
+                    <p className="gw-item-d">文章访问、分页、公告、分享图、元信息等链路正在逐项修正，后续会优先保证公开内容、页面地址和对外分享结果保持一致。</p>
                   </div>
                 </li>
                 <li className="gw-item is-key">
                   <span className="gw-item-n">三、</span>
                   <div>
-                    <p className="gw-item-t">评论 KV 存储完善中（重点）</p>
-                    <p className="gw-item-d">进入存储补全阶段，处理写入稳定性与扩展兼容。</p>
+                    <p className="gw-item-t">评论 KV 存储仍是当前重点</p>
+                    <p className="gw-item-d">评论系统正处于存储修复与切换阶段，优先解决写入稳定性、运行兼容性与后续审核扩展能力问题。</p>
+                  </div>
+                </li>
+                <li className="gw-item">
+                  <span className="gw-item-n">四、</span>
+                  <div>
+                    <p className="gw-item-t">监控与统计口径持续校准</p>
+                    <p className="gw-item-d">监控页展示、访问统计、来源识别与页面标题聚合等细节会继续校正，减少展示层与真实运行状态之间的偏差。</p>
+                  </div>
+                </li>
+                <li className="gw-item">
+                  <span className="gw-item-n">五、</span>
+                  <div>
+                    <p className="gw-item-t">后续更新以稳为先</p>
+                    <p className="gw-item-d">短期内不会追求功能数量扩张，更新会优先落在内容质量、结构稳定、页面一致性和长期维护成本这几条线上。</p>
                   </div>
                 </li>
               </ul>
 
               <div className="gw-sign">
-                <div className="gw-sign-info">
-                  <span className="gw-sign-name">Perimsx（1722288011）</span>
-                  <span className="gw-sign-date">二〇二六年四月二日</span>
+                <div className="gw-sign-block">
+                  <div className="gw-sign-info">
+                    <span className="gw-sign-name">Perimsx（1722288011）</span>
+                    <span className="gw-sign-date">{NOTICE.signedDateLabel}</span>
+                  </div>
+                  <svg className="gw-stamp" viewBox="0 0 100 100" aria-hidden="true">
+                    <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="3" />
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="1" />
+                    <text x="50" y="38" textAnchor="middle" fill="currentColor" fontSize="11" fontWeight="800" letterSpacing="0.15em">COTOVO</text>
+                    <line x1="22" y1="44" x2="78" y2="44" stroke="currentColor" strokeWidth="0.8" />
+                    <text x="50" y="58" textAnchor="middle" fill="currentColor" fontSize="10" fontWeight="700">站点公告</text>
+                    <text x="50" y="72" textAnchor="middle" fill="currentColor" fontSize="7" fontWeight="600">{NOTICE.stampDateLabel}</text>
+                  </svg>
                 </div>
-                <svg className="gw-stamp" viewBox="0 0 100 100" aria-hidden="true">
-                  <circle cx="50" cy="50" r="46" fill="none" stroke="#b91c1c" strokeWidth="3" />
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="#b91c1c" strokeWidth="1" />
-                  <text x="50" y="38" textAnchor="middle" fill="#b91c1c" fontSize="11" fontWeight="800" letterSpacing="0.15em">COTOVO</text>
-                  <line x1="22" y1="44" x2="78" y2="44" stroke="#b91c1c" strokeWidth="0.8" />
-                  <text x="50" y="58" textAnchor="middle" fill="#b91c1c" fontSize="10" fontWeight="700">站点公告</text>
-                  <text x="50" y="72" textAnchor="middle" fill="#b91c1c" fontSize="7" fontWeight="600">2026.04.02</text>
-                </svg>
+                <div className="gw-sign-action">
+                  <button ref={btnRef} type="button" className="gw-btn" onClick={dismiss}>
+                    知悉
+                  </button>
+                </div>
               </div>
-            </div>
-
-            <div className="gw-bar">
-              <span className="gw-hint">按 <kbd>Esc</kbd> 关闭</span>
-              <button ref={btnRef} type="button" className="gw-btn" onClick={dismiss}>知悉</button>
             </div>
           </div>
         </article>

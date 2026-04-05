@@ -23,5 +23,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/**/*.css"],
-  "exclude": ["node_modules", ".next"]
+  "exclude": ["node_modules", "src/astro-pages-backup", "src/astro-pages-backup/**/*", "src/utils/**/*", "src/components/**/*.astro", "src/layouts/**/*"]
 }

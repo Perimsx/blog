@@ -3,9 +3,9 @@ import { SITE } from "./config";
 
 export const SEO_BRAND_NAME = "Perimsx";
 export const SEO_SITE_NAME = SEO_BRAND_NAME;
-export const DEFAULT_OG_IMAGE_PATH = "/opengraph-image";
 
 const ABSOLUTE_URL_PATTERN = /^https?:\/\//i;
+export const DEFAULT_OG_IMAGE_PATH = SITE.ogImage ? normalizeLocalPath(SITE.ogImage) : "/og-image.jpg";
 
 export interface ShareImage {
   alt?: string;
@@ -13,6 +13,18 @@ export interface ShareImage {
   type?: string;
   url: string;
   width?: number;
+}
+
+function inferImageMimeType(url: string) {
+  const normalized = url.split("?")[0]?.split("#")[0]?.toLowerCase() ?? "";
+
+  if (normalized.endsWith(".png")) return "image/png";
+  if (normalized.endsWith(".jpg") || normalized.endsWith(".jpeg")) return "image/jpeg";
+  if (normalized.endsWith(".webp")) return "image/webp";
+  if (normalized.endsWith(".gif")) return "image/gif";
+  if (normalized.endsWith(".svg")) return "image/svg+xml";
+
+  return undefined;
 }
 
 function normalizeLocalPath(value: string) {
@@ -43,11 +55,14 @@ export function getCanonicalUrl(pathname = "/") {
 }
 
 export function createShareImage(url: string, alt: string): ShareImage {
+  const absoluteUrl = toAbsoluteUrl(url);
+  const type = inferImageMimeType(absoluteUrl);
+
   return {
     alt,
     height: 630,
-    type: "image/png",
-    url: toAbsoluteUrl(url),
+    ...(type ? { type } : {}),
+    url: absoluteUrl,
     width: 1200,
   };
 }
@@ -108,6 +123,10 @@ export function getPostCanonicalUrl(postUrl: string, canonicalURL?: string) {
   return canonicalURL ?? getCanonicalUrl(`/posts/${postUrl}`);
 }
 
-export function getPostShareImage(postUrl: string, title: string) {
-  return createShareImage(`/posts/${postUrl}/og-image`, `${title} 分享图`);
+export function getPostShareImage(title: string, ...candidates: Array<string | undefined>) {
+  const imageSource = candidates.find((candidate) => typeof candidate === "string" && candidate.trim());
+
+  return imageSource
+    ? createShareImage(imageSource, `${title} 分享图`)
+    : DEFAULT_SHARE_IMAGE;
 }

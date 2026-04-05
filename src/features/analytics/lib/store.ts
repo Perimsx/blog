@@ -6,7 +6,9 @@ import { getAnalyticsRequestMeta, normalizeReferrerSource } from "./request-meta
 const ANALYTICS_DATA_FILE = path.join(process.cwd(), ".data", "analytics.local.json");
 const ANALYTICS_DUPLICATE_WINDOW_MS = 5000;
 const MAX_ANALYTICS_EVENTS = 50000;
+const ANALYTICS_TIME_ZONE = SITE.timezone || "UTC";
 let analyticsDatabaseQueue: Promise<unknown> = Promise.resolve();
+const ANALYTICS_BRAND_TITLES: string[] = [...new Set([SITE.title, SITE.author].filter(Boolean))];
 
 export type AnalyticsEventType = "pageleave" | "pageview";
 
@@ -102,23 +104,94 @@ function normalizePath(value: string) {
   return normalized.startsWith("/") ? normalized : `/${normalized}`;
 }
 
+function stripAnalyticsBranding(title: string | null | undefined) {
+  let normalized = normalizeText(title, 160);
+
+  if (!normalized) {
+    return "";
+  }
+
+  let hasChanged = true;
+
+  while (hasChanged) {
+    hasChanged = false;
+
+    for (const brandTitle of ANALYTICS_BRAND_TITLES) {
+      for (const separator of [" | ", " - ", " · ", " • "]) {
+        const suffix = `${separator}${brandTitle}`;
+
+        if (normalized.endsWith(suffix)) {
+          normalized = normalized.slice(0, -suffix.length).trim();
+          hasChanged = true;
+        }
+      }
+    }
+  }
+
+  return normalized;
+}
+
+function resolveAnalyticsPageTitle(title: string | null | undefined, pathname: string) {
+  const normalizedTitle = stripAnalyticsBranding(title);
+  const isBrandTitle = ANALYTICS_BRAND_TITLES.some((brandTitle) => brandTitle === normalizedTitle);
+
+  if (pathname === "/") {
+    if (!normalizedTitle || isBrandTitle) {
+      return "首页";
+    }
+  }
+
+  return normalizedTitle || pathname;
+}
+
 function round(value: number, digits = 1) {
   const factor = 10 ** digits;
   return Math.round(value * factor) / factor;
 }
 
 function formatDayLabel(dateKey: string) {
-  const [year, month, day] = dateKey.split("-");
+  const [, month, day] = dateKey.split("-");
   return `${month}/${day}`;
 }
 
+function padNumber(value: number) {
+  return value.toString().padStart(2, "0");
+}
+
+function getTimeZoneDateParts(date: Date, timeZone: string) {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone,
+    year: "numeric",
+  });
+
+  const parts = formatter.formatToParts(date);
+
+  return {
+    day: Number(parts.find((part) => part.type === "day")?.value ?? "1"),
+    month: Number(parts.find((part) => part.type === "month")?.value ?? "1"),
+    year: Number(parts.find((part) => part.type === "year")?.value ?? "1970"),
+  };
+}
+
+function createDateKey(year: number, month: number, day: number) {
+  return `${year}-${padNumber(month)}-${padNumber(day)}`;
+}
+
+function getDateKeyInTimeZone(date: Date, timeZone: string) {
+  const parts = getTimeZoneDateParts(date, timeZone);
+  return createDateKey(parts.year, parts.month, parts.day);
+}
+
 function createEmptyTimeseries() {
-  const today = new Date();
+  const today = getTimeZoneDateParts(new Date(), ANALYTICS_TIME_ZONE);
+  const baseDate = new Date(Date.UTC(today.year, today.month - 1, today.day));
 
   return Array.from({ length: 30 }, (_, index) => {
-    const day = new Date(today);
-    day.setDate(today.getDate() - (29 - index));
-    const dateKey = day.toISOString().slice(0, 10);
+    const day = new Date(baseDate);
+    day.setUTCDate(baseDate.getUTCDate() - (29 - index));
+    const dateKey = createDateKey(day.getUTCFullYear(), day.getUTCMonth() + 1, day.getUTCDate());
 
     return {
       date: dateKey,
@@ -250,7 +323,7 @@ export async function recordAnalyticsEvent(
       referrer: normalizeReferrerSource(input.referrer ?? "", SITE.website),
       sessionId: normalizeText(input.sessionId, 96),
       timestamp: new Date().toISOString(),
-      title: normalizeText(input.title, 160) || null,
+      title: stripAnalyticsBranding(input.title) || null,
       type: input.type,
       visitorId: normalizeText(input.visitorId, 96),
     };
@@ -311,12 +384,13 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
         sessionLandingView.set(event.sessionId, event);
       }
 
+      const resolvedTitle = resolveAnalyticsPageTitle(event.title, event.path);
       const page = pages.get(event.path) ?? {
-        title: event.title || event.path,
+        title: resolvedTitle,
         views: 0,
         visitors: new Set<string>(),
       };
-      page.title = page.title || event.path;
+      page.title = page.title || resolvedTitle;
       page.views += 1;
       page.visitors.add(event.visitorId);
       pages.set(event.path, page);
@@ -329,7 +403,7 @@ export async function getAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
       devices.set(device, (devices.get(device) ?? 0) + 1);
       countries.set(country, (countries.get(country) ?? 0) + 1);
 
-      const dateKey = event.timestamp.slice(0, 10);
+      const dateKey = getDateKeyInTimeZone(new Date(event.timestamp), ANALYTICS_TIME_ZONE);
       const bucket = timeseries.get(dateKey);
       if (bucket) {
         bucket.views += 1;

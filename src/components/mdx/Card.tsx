@@ -30,25 +30,25 @@ export const Card: React.FC<CardProps> = ({
   return (
     <aside
       className={[
-        "not-prose my-2 sm:my-3.5 rounded-xl border px-3 sm:px-4.5 py-2.5 sm:py-3 text-[0.85rem] sm:text-[0.88rem] leading-snug shadow-sm",
+        "not-prose my-2 sm:my-3.5 rounded-xl border px-2.5 sm:px-3.5 py-2 sm:py-2.5 text-[0.85rem] sm:text-[0.88rem] leading-snug shadow-sm",
         currentAccent,
       ].join(" ")}
     >
       {eyebrow && (
         <p
-          className={`text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/45 ${title || desc || children ? "mb-2" : ""}`}
+          className={`text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/45 ${title || desc || children ? "mb-1.5" : ""}`}
         >
           {eyebrow}
         </p>
       )}
       {title && (
         <p
-          className={`font-bold tracking-tight text-foreground ${desc || children ? "mb-1.5" : ""}`}
+          className={`font-bold tracking-tight text-foreground ${desc || children ? "mb-1" : ""}`}
         >
           {title}
         </p>
       )}
-      {desc && <p className="mt-1 text-[13px] leading-relaxed text-foreground/70">{desc}</p>}
+      {desc && <p className="mt-0.5 text-[13px] leading-relaxed text-foreground/70">{desc}</p>}
       {children && <div className="callout-content opacity-90">{children}</div>}
     </aside>
   );
