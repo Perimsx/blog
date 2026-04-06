@@ -3,7 +3,11 @@ import path from "node:path";
 import { SITE } from "@/lib/config";
 import { getAnalyticsRequestMeta, normalizeReferrerSource } from "./request-meta";
 
-const ANALYTICS_DATA_FILE = path.join(process.cwd(), ".data", "analytics.local.json");
+const isVercel = !!process.env.VERCEL;
+const defaultAnalyticsPath = isVercel 
+  ? path.join("/tmp", "analytics.local.json") 
+  : path.join(process.cwd(), ".data", "analytics.local.json");
+const ANALYTICS_DATA_FILE = process.env.ANALYTICS_DATA_FILE || defaultAnalyticsPath;
 const ANALYTICS_DUPLICATE_WINDOW_MS = 5000;
 const MAX_ANALYTICS_EVENTS = 50000;
 const ANALYTICS_TIME_ZONE = SITE.timezone || "UTC";
@@ -226,8 +230,12 @@ async function readDatabase(): Promise<AnalyticsDatabase> {
 }
 
 async function writeDatabase(database: AnalyticsDatabase) {
-  await fs.mkdir(path.dirname(ANALYTICS_DATA_FILE), { recursive: true });
-  await fs.writeFile(ANALYTICS_DATA_FILE, `${JSON.stringify(database, null, 2)}\n`, "utf8");
+  try {
+    await fs.mkdir(path.dirname(ANALYTICS_DATA_FILE), { recursive: true });
+    await fs.writeFile(ANALYTICS_DATA_FILE, `${JSON.stringify(database, null, 2)}\n`, "utf8");
+  } catch (err) {
+    console.warn("[Analytics] Failed to write to database buffer (read-only filesystem?)", err);
+  }
 }
 
 function buildEmptySnapshot(): AnalyticsSnapshot {

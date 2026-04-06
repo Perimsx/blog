@@ -277,7 +277,7 @@ function EmptyChart({ className }: { className: string }) {
 
 function TrafficChart({ items }: { items: AnalyticsTimeseriesPoint[] }) {
   return (
-    <div className="h-[14rem] w-full sm:h-[22rem]">
+    <div className="h-[14rem] w-full sm:h-[22rem] min-w-0 min-h-0">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={items} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}>
           <defs>
@@ -340,7 +340,7 @@ function SourcesChart({ items }: { items: AnalyticsBreakdownStat[] }) {
 
   return (
     <div className="grid gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] sm:items-center sm:gap-6 sm:p-6">
-      <div className="relative h-[10rem] w-full sm:h-[12rem]">
+      <div className="relative h-[10rem] w-full sm:h-[12rem] min-w-0 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -406,7 +406,7 @@ function PagesChart({ items }: { items: AnalyticsPageStat[] }) {
     : [{ path: "/", views: 0 }];
 
   return (
-    <div className="h-[16rem] w-full px-4 pb-4 sm:h-[20rem] sm:px-5 sm:pb-5">
+    <div className="h-[16rem] w-full px-4 pb-4 sm:h-[20rem] sm:px-5 sm:pb-5 min-w-0 min-h-0">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={chartData}
@@ -448,7 +448,7 @@ function DevicesChart({ items }: { items: AnalyticsBreakdownStat[] }) {
   const chartData = items.length ? items : [{ label: "Desktop", value: 0 }];
 
   return (
-    <div className="h-[14rem] w-full px-4 pb-4 sm:h-[20rem] sm:px-5 sm:pb-5">
+    <div className="h-[14rem] w-full px-4 pb-4 sm:h-[20rem] sm:px-5 sm:pb-5 min-w-0 min-h-0">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData} margin={{ top: 12, right: 12, left: -24, bottom: 0 }}>
           <CartesianGrid stroke="#888888" strokeOpacity={0.08} vertical={false} />
