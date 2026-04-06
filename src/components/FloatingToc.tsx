@@ -185,19 +185,9 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
     };
   }, [open]);
 
-  const tocProgress = useMemo(() => {
-    if (!tocItems.length || activeIndex < 0) return 0;
-    return (activeIndex + 1) / tocItems.length;
-  }, [activeIndex, tocItems.length]);
-
   const mouseX = useSpring(0, { stiffness: 150, damping: 15 });
   const mouseY = useSpring(0, { stiffness: 150, damping: 15 });
   const [isHovered, setIsHovered] = useState(false);
-
-  // 进度环参数
-  const radius = 20;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - tocProgress * circumference;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -258,37 +248,6 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
               : "opacity-100 scale-100"
           }`}
       >
-        {/* TOC 进度环背景 */}
-        <svg
-          className="absolute inset-0 h-full w-full -rotate-90 pointer-events-none"
-          viewBox="0 0 54 54"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle
-            cx="27"
-            cy="27"
-            r={radius}
-            stroke="currentColor"
-            strokeWidth="2"
-            className="text-foreground/[0.03] dark:text-foreground/[0.06]"
-          />
-          {/* TOC 动态进度环 */}
-          <motion.circle
-            cx="27"
-            cy="27"
-            r={radius}
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            initial={{ strokeDashoffset: circumference }}
-            animate={{ strokeDashoffset }}
-            transition={{ type: "spring", stiffness: 60, damping: 15 }}
-            style={{ strokeDasharray: circumference }}
-            className="text-accent"
-          />
-        </svg>
-
         <motion.div
           className="relative z-10 flex h-full w-full flex-col items-center justify-center overflow-hidden"
           animate={isHovered && !open ? { y: -2 } : { y: 0 }}
