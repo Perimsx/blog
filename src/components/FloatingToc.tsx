@@ -208,13 +208,13 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
       <style>{`
         #floating-toc-btn {
           right: var(--layout-floating-mobile-right) !important;
-          bottom: calc(var(--layout-floating-mobile-bottom) + 3.5rem) !important;
+          bottom: calc(var(--layout-floating-mobile-bottom) + 3.0rem) !important;
           top: auto !important;
         }
         @media (min-width: 640px) {
           #floating-toc-btn {
             right: var(--layout-floating-right) !important;
-            bottom: calc(var(--layout-floating-bottom) + 3.8rem) !important;
+            bottom: calc(var(--layout-floating-bottom) + 3.25rem) !important;
           }
         }
       `}</style>

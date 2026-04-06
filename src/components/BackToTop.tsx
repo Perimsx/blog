@@ -49,14 +49,11 @@ export const BackToTop: React.FC = () => {
         <motion.button
           key="back-to-top"
           id="back-to-top-btn"
-          className="group fixed z-50 flex h-10 w-10 items-center justify-center text-foreground/30 hover:text-accent transition-all hover:-translate-y-1 active:scale-90"
-          className="group fixed z-50 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-[0.85rem] bg-background shadow-[0_4px_16px_rgba(0,0,0,0.08)] ring-1 ring-foreground/[0.04] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:ring-foreground/[0.08] transition-all hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] active:scale-95"
+          className="layout-floating-anchor group fixed z-50 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-[0.85rem] bg-background shadow-[0_4px_16px_rgba(0,0,0,0.08)] ring-1 ring-foreground/[0.04] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:ring-foreground/[0.08] transition-all hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] active:scale-95"
           initial={{ opacity: 0, scale: 0.5, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.8, y: 10, transition: { duration: 0.2 } }}
           style={{
-            right: "var(--layout-floating-mobile-right)",
-            bottom: "var(--layout-floating-mobile-bottom)",
             x: mouseX,
             y: mouseY,
           }}

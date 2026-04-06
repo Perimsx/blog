@@ -207,7 +207,9 @@ const STYLES = `
     .gw-paper {
       border-radius: 1.25rem 1.25rem 0 0;
       border-bottom: none;
+      max-height: 90vh; /* fallback */
       max-height: 90dvh;
+      overflow-x: hidden;
       overflow-y: auto;
       overscroll-behavior: contain;
     }
@@ -224,14 +226,15 @@ const STYLES = `
     .gw-body { padding: 1rem 1.5rem 1.5rem; }
     
     .gw-sign { 
-      flex-direction: row; 
-      justify-content: space-between; 
-      align-items: flex-end;
-      margin-top: 1rem;
-      padding-top: 0.8rem;
+      flex-direction: column; 
+      justify-content: center; 
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      gap: 2rem;
     }
-    .gw-sign-block { padding: 0.2rem; transform: scale(0.9); transform-origin: left bottom; }
-    .gw-btn { padding: 0.45rem 1.1rem; }
+    .gw-sign-block { padding: 0; transform: scale(0.95); transform-origin: center; }
+    .gw-btn { padding: 0.55rem 1.5rem; width: 100%; max-width: 12rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
