@@ -36,7 +36,7 @@ export const BackToTop: React.FC = () => {
   };
 
   // 进度环参数
-  const radius = 20;
+  const radius = 6;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - progress * circumference;
 
@@ -46,75 +46,41 @@ export const BackToTop: React.FC = () => {
     <>
     <AnimatePresence>
       {isVisible && (
-        <motion.div
+        <motion.button
           key="back-to-top"
-          id="back-to-top-group"
-          className="fixed z-50 flex flex-col items-center"
+          id="back-to-top-btn"
+          className="group fixed z-50 flex h-10 w-10 items-center justify-center text-foreground/30 hover:text-accent transition-all hover:-translate-y-1 active:scale-90"
+          className="group fixed z-50 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-[0.85rem] bg-background shadow-[0_4px_16px_rgba(0,0,0,0.08)] ring-1 ring-foreground/[0.04] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:ring-foreground/[0.08] transition-all hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] active:scale-95"
           initial={{ opacity: 0, scale: 0.5, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.8, y: 10, transition: { duration: 0.2 } }}
           style={{
             right: "var(--layout-floating-mobile-right)",
             bottom: "var(--layout-floating-mobile-bottom)",
+            x: mouseX,
+            y: mouseY,
           }}
           aria-label="回到顶部"
+          onClick={handleClick}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={handleMouseLeave}
         >
-          <motion.button
-            className="group relative flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-[1.15rem] bg-background/60 backdrop-blur-2xl ring-1 ring-foreground/[0.06] dark:ring-foreground/[0.1] shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] transition-all hover:bg-background/90 hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
-            onClick={handleClick}
-            onMouseMove={handleMouseMove}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={handleMouseLeave}
-            whileHover={{ scale: 1.05 }}
-            style={{ x: mouseX, y: mouseY }}
-          >
-            {/* 进度环背景 */}
             <svg
-              className="absolute inset-0 h-full w-full -rotate-90 pointer-events-none"
-              viewBox="0 0 54 54"
-              fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-slate-500 transition-colors group-hover:text-accent dark:text-slate-400"
             >
-              <circle
-                cx="27"
-                cy="27"
-                r={radius}
-                stroke="currentColor"
-                className="text-foreground/[0.06] dark:text-foreground/[0.1]"
-              />
-              {/* 动态进度环 */}
-              <motion.circle
-                cx="27"
-                cy="27"
-                r={radius}
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                initial={{ strokeDashoffset: circumference }}
-                animate={{ strokeDashoffset }}
-                transition={{ type: "spring", stiffness: 60, damping: 15 }}
-                className="text-foreground/40 dark:text-foreground/50 group-hover:text-foreground/80 dark:group-hover:text-foreground/90 transition-colors"
-              />
+              <path d="m18 15-6-6-6 6" />
             </svg>
-
-            <div className="relative z-10 flex flex-col items-center justify-center h-full w-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-foreground/50 group-hover:text-foreground/90 transition-colors"
-              >
-                <path d="m18 15-6-6-6 6" />
-              </svg>
-            </div>
           </motion.button>
-        </motion.div>
       )}
     </AnimatePresence>
 

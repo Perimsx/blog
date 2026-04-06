@@ -234,34 +234,24 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
           x: mouseX,
           y: mouseY,
         }}
-        className={`group fixed z-[90] flex items-center justify-center transition-all duration-300 
-          h-11 w-11 sm:h-12 sm:w-12 rounded-[1.15rem] bg-background/60 backdrop-blur-2xl ring-1 ring-foreground/[0.06] dark:ring-foreground/[0.1] 
-          shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)]
-          hover:bg-background/90 hover:-translate-y-0.5 hover:shadow-xl
-          text-foreground/50 hover:text-foreground/90
-          ${
-            open
-              ? "opacity-0 pointer-events-none scale-90"
-              : "opacity-100 scale-100"
-          }`}
+        className={`group fixed z-50 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-[0.85rem] bg-background shadow-[0_4px_16px_rgba(0,0,0,0.08)] ring-1 ring-foreground/[0.04] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:ring-foreground/[0.08] transition-all hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] active:scale-95 ${open ? "opacity-0 pointer-events-none scale-90 translate-x-4" : "opacity-100 scale-100"}`}
       >
-        <div className="relative z-10 flex h-full w-full flex-col items-center justify-center overflow-hidden">
-          {/* 汉堡图标 */}
-          <div className="relative flex h-4 w-4 flex-col items-center justify-center gap-[3px]">
-            <motion.div
-              initial={false}
-              className="h-[2px] w-4 rounded-full bg-current transition-colors"
-            />
-            <motion.div
-              initial={false}
-              className="h-[2px] w-4 rounded-full bg-current transition-colors"
-            />
-            <motion.div
-              initial={false}
-              className="h-[2px] w-2.5 self-start rounded-full bg-current transition-colors"
-            />
-          </div>
-        </div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-slate-500 transition-colors group-hover:text-accent dark:text-slate-400"
+        >
+          <line x1="4" y1="6" x2="20" y2="6" />
+          <line x1="4" y1="12" x2="14" y2="12" />
+          <line x1="4" y1="18" x2="18" y2="18" />
+        </svg>
       </motion.button>
 
       <AnimatePresence>
