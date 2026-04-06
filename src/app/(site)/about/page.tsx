@@ -13,6 +13,7 @@ export const metadata: Metadata = createPageMetadata({
 
 export default async function AboutPage() {
   const sortedPosts = await getSortedPosts();
+  const initialNow = new Date().toISOString();
 
   return (
     <main id="main-content" className="ui-page layout-frame page-shell">
@@ -50,7 +51,10 @@ export default async function AboutPage() {
         {/* Heatmap */}
         <div className="about-block about-block-heatmap">
           <h2>文章热力图</h2>
-          <PostHeatmap posts={sortedPosts.map((p) => ({ pubDatetime: p.data.pubDatetime }))} />
+          <PostHeatmap
+            initialNow={initialNow}
+            posts={sortedPosts.map((p) => ({ pubDatetime: p.data.pubDatetime }))}
+          />
         </div>
 
         {/* Recent activity */}
