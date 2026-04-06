@@ -217,7 +217,22 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
 
   return (
     <>
+      <style>{`
+        #floating-toc-btn {
+          right: var(--layout-floating-mobile-right) !important;
+          bottom: calc(var(--layout-floating-mobile-bottom) + 3.5rem) !important;
+          top: auto !important;
+        }
+        @media (min-width: 640px) {
+          #floating-toc-btn {
+            right: var(--layout-floating-right) !important;
+            bottom: calc(var(--layout-floating-bottom) + 3.8rem) !important;
+          }
+        }
+      `}</style>
+
       <motion.button
+        id="floating-toc-btn"
         type="button"
         aria-label={open ? "关闭目录" : "打开目录"}
         aria-expanded={open}
@@ -233,100 +248,86 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
           y: mouseY,
         }}
         className={`group fixed z-[90] flex items-center justify-center transition-all duration-300 
-          top-[34vh] right-[max(0.35rem,calc(env(safe-area-inset-right)+0.15rem))] h-9 w-[4.6rem] -translate-y-1/2 overflow-hidden rounded-l-full rounded-r-none border border-r-0 border-border/60 bg-background/92 shadow-[0_10px_24px_-18px_rgba(15,23,42,0.32)] backdrop-blur-xl
-          xl:top-[50%] xl:left-auto xl:right-[max(0.75rem,calc(env(safe-area-inset-right)+0.75rem))] xl:bottom-auto xl:h-12 xl:w-auto xl:min-w-[52px] xl:px-3.5 xl:rounded-full xl:border xl:border-border/0 
-          xl:overflow-hidden xl:shadow-[0_8px_30px_rgba(0,0,0,0.12)] xl:bg-background/80 xl:backdrop-blur-2xl dark:xl:shadow-[0_8px_30px_rgb(0,0,0,0.3)]
-          xl:shadow-[0_8px_25px_-5px_rgba(0,0,0,0.1)] xl:hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.15)]
-          text-foreground/80
+          h-11 w-11 sm:h-12 sm:w-12 rounded-full border border-border/60 bg-background/80 backdrop-blur-xl
+          shadow-[0_4px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] 
+          hover:border-accent/30 hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)]
+          text-foreground/60 hover:text-accent
           ${
             open
-              ? "text-accent opacity-0 pointer-events-none"
-              : "text-foreground/80 hover:text-accent"
+              ? "opacity-0 pointer-events-none scale-90"
+              : "opacity-100 scale-100"
           }`}
       >
-        {/* 阅读进度背景深度填充 (仅移动端，且非打开状态) */}
-        {!open && (
-          <motion.div
-            className="absolute inset-0 bg-accent/8 xl:hidden pointer-events-none"
-            initial={{ width: 0 }}
-            animate={{ width: `${tocProgress * 100}%` }}
-            transition={{ type: "spring", stiffness: 50, damping: 20 }}
+        {/* TOC 进度环背景 */}
+        <svg
+          className="absolute inset-0 h-full w-full -rotate-90 pointer-events-none"
+          viewBox="0 0 54 54"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="27"
+            cy="27"
+            r={radius}
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-foreground/[0.03] dark:text-foreground/[0.06]"
           />
-        )}
-
-        <div className="relative z-10 flex h-full w-full items-center justify-center gap-1.5 xl:hidden">
-          <svg
-            aria-hidden="true"
-            className="h-[0.95rem] w-[0.95rem] shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M5 7.5h14M5 12h10M5 16.5h12"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="1.7"
-            />
-          </svg>
-          <span className="text-[10px] font-semibold tracking-[0.06em] text-current/68">
-            {progressLabel}
-          </span>
-        </div>
+          {/* TOC 动态进度环 */}
+          <motion.circle
+            cx="27"
+            cy="27"
+            r={radius}
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset }}
+            transition={{ type: "spring", stiffness: 60, damping: 15 }}
+            style={{ strokeDasharray: circumference }}
+            className="text-accent"
+          />
+        </svg>
 
         <motion.div
-          className="relative z-10 hidden h-5 w-5 flex-shrink-0 flex-col items-center justify-center xl:flex"
+          className="relative z-10 flex h-full w-full flex-col items-center justify-center overflow-hidden"
           animate={isHovered && !open ? { y: -2 } : { y: 0 }}
         >
-          <motion.div
-            initial={false}
-            animate={{
-              rotate: open ? 45 : 0,
-              y: open ? 0 : -6,
-            }}
-            className="absolute top-1/2 left-0 h-[2.5px] w-5 origin-center rounded-full bg-current"
-          />
-          <motion.div
-            initial={false}
-            animate={{
-              opacity: open ? 0 : 1,
-              x: open ? 10 : 0,
-            }}
-            className="absolute top-1/2 left-0 h-[2.5px] w-3.5 -translate-y-1/2 rounded-full bg-current"
-          />
-          <motion.div
-            initial={false}
-            animate={{
-              rotate: open ? -45 : 0,
-              y: open ? 0 : 6,
-            }}
-            className="absolute top-1/2 left-0 h-[2.5px] w-5 origin-center rounded-full bg-current"
-          />
+          {/* 汉堡图标 */}
+          <div className="relative flex h-4 w-4 flex-col items-center justify-center gap-[3px]">
+            <motion.div
+              initial={false}
+              className="h-[2px] w-4 rounded-full bg-current transition-colors"
+            />
+            <motion.div
+              initial={false}
+              className="h-[2px] w-4 rounded-full bg-current transition-colors"
+            />
+            <motion.div
+              initial={false}
+              className="h-[2px] w-2.5 self-start rounded-full bg-current transition-colors"
+            />
+          </div>
 
           <AnimatePresence>
             {isHovered && !open && (
               <motion.span
-                initial={{ opacity: 0, scale: 0.8, y: 12 }}
-                animate={{ opacity: 1, scale: 1, y: 16 }}
-                exit={{ opacity: 0, scale: 0.8, y: 10 }}
-                className="absolute hidden xl:block text-[8px] font-bold tracking-tight text-accent/80 uppercase whitespace-nowrap"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 5 }}
+                className="absolute bottom-1.5 text-[8px] font-bold tracking-tight text-accent/80 uppercase whitespace-nowrap"
               >
-                Menu
+                TOC
               </motion.span>
             )}
           </AnimatePresence>
         </motion.div>
 
-        <span className="hidden text-[14px] font-black tracking-tighter transition-colors xl:ml-2 xl:inline-block group-hover:text-accent">
-          {progressLabel}
-        </span>
-
         {/* 悬浮光晕 */}
         {isHovered && !open && (
           <motion.div
             layoutId="glow-toc"
-            className="absolute inset-[-4px] rounded-full bg-accent/5 blur-md -z-10"
+            className="absolute inset-[-4px] border border-accent/20 rounded-full bg-accent/5 blur-md -z-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

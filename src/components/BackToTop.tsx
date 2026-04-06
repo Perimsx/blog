@@ -60,7 +60,7 @@ export const BackToTop: React.FC = () => {
           aria-label="回到顶部"
         >
           <motion.button
-            className="relative flex h-14 w-14 items-center justify-center rounded-full bg-background/80 backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] transition-all active:scale-95"
+            className="group relative flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-background/80 backdrop-blur-xl border border-border/60 shadow-[0_4px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] transition-all active:scale-95 hover:border-accent/30 hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
             onClick={handleClick}
             onMouseMove={handleMouseMove}
             onMouseEnter={() => setIsHovered(true)}
@@ -70,7 +70,7 @@ export const BackToTop: React.FC = () => {
           >
             {/* 进度环背景 */}
             <svg
-              className="absolute inset-0 h-14 w-14 -rotate-90 pointer-events-none"
+              className="absolute inset-0 h-full w-full -rotate-90 pointer-events-none"
               viewBox="0 0 54 54"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -111,10 +111,10 @@ export const BackToTop: React.FC = () => {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="text-foreground/80 group-hover:text-accent transition-colors"
+                className="text-foreground/60 group-hover:text-accent transition-colors"
               >
                 <path d="M12 19V5M5 12l7-7 7 7" />
               </svg>
