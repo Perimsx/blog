@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const { title, description, pubDatetime, modDatetime, coverImage, ogImage, author } = post.data;
   const canonicalUrl = getPostCanonicalUrl(post.url, post.data.canonicalURL);
-  const shareImage = getPostShareImage(title, ogImage, coverImage, post.data.heroImage);
+  const shareImage = getPostShareImage(title, ogImage, coverImage, post.data.heroImage, `/posts/${slug}/og-image`);
 
   return {
     title,
@@ -119,7 +119,7 @@ export default async function PostPage({ params }: PageProps) {
   const postUrl = `/posts/${post.url}`;
   const canonicalUrl = getPostCanonicalUrl(post.url, post.data.canonicalURL);
   const articleImage = getPostImage(post.data);
-  const shareImage = getPostShareImage(title, post.data.ogImage, post.data.coverImage, articleImage);
+  const shareImage = getPostShareImage(title, post.data.ogImage, post.data.coverImage, articleImage, `/posts/${post.slug}/og-image`);
   const uniqueTags = Array.from(
     new Map((tags ?? []).map((tag) => [slugifyStr(tag), tag])).entries()
   );

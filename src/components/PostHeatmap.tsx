@@ -10,7 +10,7 @@ interface PostHeatmapProps {
 }
 
 interface DayData {
-  date: Date;
+  dateKey: string;
   count: number;
   level: number;
   isFuture: boolean;
@@ -77,22 +77,24 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts, initialNow }) =
       dateCounts[dateKey] = (dateCounts[dateKey] || 0) + 1;
     });
 
-    const todayDate = parseDateKey(getDateKeyInTimeZone(new Date(now), HEATMAP_TIME_ZONE));
+    const todayDateKey = getDateKeyInTimeZone(new Date(now), HEATMAP_TIME_ZONE);
+    const [tYear, tMonth, tDay] = todayDateKey.split("-").map(Number);
+    const todayUTCDate = new Date(Date.UTC(tYear, tMonth - 1, tDay));
     
     // Ensure grid aligns to the Saturday of the current week (GitHub style)
-    const startDayOfWeek = todayDate.getDay();
-    const startDate = new Date(todayDate);
-    startDate.setDate(todayDate.getDate() - startDayOfWeek - 52 * 7);
+    const startDayOfWeek = todayUTCDate.getUTCDay();
+    const startDate = new Date(todayUTCDate.getTime());
+    startDate.setUTCDate(todayUTCDate.getUTCDate() - startDayOfWeek - 52 * 7);
 
     const weeksData: DayData[][] = [];
-    const currentDay = new Date(startDate);
+    const currentDay = new Date(startDate.getTime());
 
     for (let i = 0; i < 53; i++) {
       const week: DayData[] = [];
       for (let j = 0; j < 7; j++) {
-        const currentYear = currentDay.getFullYear();
-        const currentMonth = currentDay.getMonth();
-        const currentD = currentDay.getDate();
+        const currentYear = currentDay.getUTCFullYear();
+        const currentMonth = currentDay.getUTCMonth();
+        const currentD = currentDay.getUTCDate();
         
         const dateKey = createDateKey(currentYear, currentMonth + 1, currentD);
         const count = dateCounts[dateKey] || 0;
@@ -100,51 +102,41 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts, initialNow }) =
         let level = 0;
         if (count > 0) level = Math.min(4, count);
 
-        const normalizedCurrent = new Date(currentYear, currentMonth, currentD);
-
         week.push({
-          date: normalizedCurrent,
+          dateKey,
           count,
           level,
-          isFuture: normalizedCurrent.getTime() > todayDate.getTime(),
+          isFuture: currentDay.getTime() > todayUTCDate.getTime(),
         });
-        currentDay.setDate(currentDay.getDate() + 1);
+        currentDay.setUTCDate(currentDay.getUTCDate() + 1);
       }
       weeksData.push(week);
     }
 
     const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
     const monthsData: { name: string; index: number }[] = [];
     const seenMonths = new Set<string>();
 
-    const firstDay = weeksData[0]?.[0]?.date;
-    if (firstDay) {
-      const monthKey = `${firstDay.getFullYear()}-${firstDay.getMonth()}`;
-      monthsData.push({ name: monthNames[firstDay.getMonth()], index: 0 });
+    const firstDayKey = weeksData[0]?.[0]?.dateKey;
+    if (firstDayKey) {
+      const [y, m, _d] = firstDayKey.split("-").map(Number);
+      const monthKey = `${y}-${m}`;
+      monthsData.push({ name: monthNames[m - 1], index: 0 });
       seenMonths.add(monthKey);
     }
 
     weeksData.forEach((week, weekIndex) => {
       week.forEach((day) => {
-        if (day.date.getDate() !== 1) return;
+        const [y, m, d] = day.dateKey.split("-").map(Number);
+        if (d !== 1) return;
 
-        const monthKey = `${day.date.getFullYear()}-${day.date.getMonth()}`;
+        const monthKey = `${y}-${m}`;
         if (seenMonths.has(monthKey)) return;
 
-        monthsData.push({ name: monthNames[day.date.getMonth()], index: weekIndex });
+        monthsData.push({ name: monthNames[m - 1], index: weekIndex });
         seenMonths.add(monthKey);
       });
     });
@@ -188,13 +180,13 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts, initialNow }) =
 
           {weeks.map((week, i) => (
             <g
-              key={week[0]?.date.toISOString() ?? `week-${i}`}
+              key={week[0]?.dateKey ?? `week-${i}`}
               transform={`translate(${i * columnStep}, ${gridOffsetY})`}
             >
               {week.map((day, j) => (
                 !day.isFuture && (
                   <rect
-                    key={day.date.toISOString()}
+                    key={day.dateKey}
                     width={cellSize}
                     height={cellSize}
                     x="0"
@@ -202,11 +194,11 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts, initialNow }) =
                     rx="2"
                     ry="2"
                     className={`day-rect level-${day.level}`}
-                    data-date={formatDateLabel(day.date)}
+                    data-date={day.dateKey}
                     data-count={day.count}
                   >
                     <title>
-                      {day.count} 篇文章 - {formatDateLabel(day.date)}
+                      {day.count} 篇文章 - {day.dateKey}
                     </title>
                   </rect>
                 )
