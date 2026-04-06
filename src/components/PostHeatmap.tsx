@@ -1,9 +1,11 @@
 "use client";
 
 import type React from "react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { SITE } from "@/lib/config";
 
 interface PostHeatmapProps {
+  initialNow: string;
   posts: { pubDatetime: string | Date }[];
 }
 
@@ -14,25 +16,73 @@ interface DayData {
   isFuture: boolean;
 }
 
-export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts }) => {
+const HEATMAP_TIME_ZONE = SITE.timezone || "UTC";
+
+function padNumber(value: number) {
+  return value.toString().padStart(2, "0");
+}
+
+function getTimeZoneDateParts(date: Date, timeZone: string) {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone,
+    year: "numeric",
+  });
+
+  const parts = formatter.formatToParts(date);
+
+  return {
+    day: Number(parts.find((part) => part.type === "day")?.value ?? "1"),
+    month: Number(parts.find((part) => part.type === "month")?.value ?? "1"),
+    year: Number(parts.find((part) => part.type === "year")?.value ?? "1970"),
+  };
+}
+
+function createDateKey(year: number, month: number, day: number) {
+  return `${year}-${padNumber(month)}-${padNumber(day)}`;
+}
+
+function getDateKeyInTimeZone(date: Date, timeZone: string) {
+  const parts = getTimeZoneDateParts(date, timeZone);
+  return createDateKey(parts.year, parts.month, parts.day);
+}
+
+function parseDateKey(dateKey: string) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function formatDateLabel(date: Date) {
+  return getDateKeyInTimeZone(date, HEATMAP_TIME_ZONE);
+}
+
+export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts, initialNow }) => {
+  const [now, setNow] = useState(initialNow);
+
+  useEffect(() => {
+    const liveNow = new Date().toISOString();
+    if (liveNow !== initialNow) {
+      setNow(liveNow);
+    }
+  }, [initialNow]);
+
   const { weeks, months } = useMemo(() => {
     const postDates = posts.map((post) => {
-      const date = new Date(post.pubDatetime);
-      return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+      return getDateKeyInTimeZone(new Date(post.pubDatetime), HEATMAP_TIME_ZONE);
     });
 
-    const dateCounts: Record<number, number> = {};
-    postDates.forEach((date) => {
-      dateCounts[date] = (dateCounts[date] || 0) + 1;
+    const dateCounts: Record<string, number> = {};
+    postDates.forEach((dateKey) => {
+      dateCounts[dateKey] = (dateCounts[dateKey] || 0) + 1;
     });
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const daysToDisplay = 371;
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() - daysToDisplay + 1);
-    const startDayOfWeek = startDate.getDay();
-    startDate.setDate(startDate.getDate() - startDayOfWeek);
+    const todayDate = parseDateKey(getDateKeyInTimeZone(new Date(now), HEATMAP_TIME_ZONE));
+    
+    // Ensure grid aligns to the Saturday of the current week (GitHub style)
+    const startDayOfWeek = todayDate.getDay();
+    const startDate = new Date(todayDate);
+    startDate.setDate(todayDate.getDate() - startDayOfWeek - 52 * 7);
 
     const weeksData: DayData[][] = [];
     const currentDay = new Date(startDate);
@@ -40,16 +90,23 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts }) => {
     for (let i = 0; i < 53; i++) {
       const week: DayData[] = [];
       for (let j = 0; j < 7; j++) {
-        const time = currentDay.getTime();
-        const count = dateCounts[time] || 0;
+        const currentYear = currentDay.getFullYear();
+        const currentMonth = currentDay.getMonth();
+        const currentD = currentDay.getDate();
+        
+        const dateKey = createDateKey(currentYear, currentMonth + 1, currentD);
+        const count = dateCounts[dateKey] || 0;
+        
         let level = 0;
-        if (count > 0) level = Math.min(4, Math.floor(count / 1) + 1);
+        if (count > 0) level = Math.min(4, count);
+
+        const normalizedCurrent = new Date(currentYear, currentMonth, currentD);
 
         week.push({
-          date: new Date(currentDay),
+          date: normalizedCurrent,
           count,
           level,
-          isFuture: currentDay > today,
+          isFuture: normalizedCurrent.getTime() > todayDate.getTime(),
         });
         currentDay.setDate(currentDay.getDate() + 1);
       }
@@ -71,38 +128,43 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts }) => {
       "Dec",
     ];
     const monthsData: { name: string; index: number }[] = [];
-    let lastMonth = -1;
-    weeksData.forEach((week, i) => {
-      const month = week[0].date.getMonth();
-      if (month !== lastMonth) {
-        monthsData.push({ name: monthNames[month], index: i });
-        lastMonth = month;
-      }
+    const seenMonths = new Set<string>();
+
+    const firstDay = weeksData[0]?.[0]?.date;
+    if (firstDay) {
+      const monthKey = `${firstDay.getFullYear()}-${firstDay.getMonth()}`;
+      monthsData.push({ name: monthNames[firstDay.getMonth()], index: 0 });
+      seenMonths.add(monthKey);
+    }
+
+    weeksData.forEach((week, weekIndex) => {
+      week.forEach((day) => {
+        if (day.date.getDate() !== 1) return;
+
+        const monthKey = `${day.date.getFullYear()}-${day.date.getMonth()}`;
+        if (seenMonths.has(monthKey)) return;
+
+        monthsData.push({ name: monthNames[day.date.getMonth()], index: weekIndex });
+        seenMonths.add(monthKey);
+      });
     });
 
     return { weeks: weeksData, months: monthsData };
-  }, [posts]);
+  }, [now, posts]);
 
-  const columnGap = 12.3;
   const cellSize = 10;
-  const svgWidth = (weeks.length - 1) * columnGap + cellSize;
-  const svgHeight = (7 - 1) * columnGap + cellSize;
+  const cellGap = 2.3;
+  const columnStep = cellSize + cellGap;
+  const rowStep = cellSize + cellGap;
+  const labelHeight = 16;
+  const gridOffsetY = labelHeight + 4;
+  const svgWidth = (weeks.length - 1) * columnStep + cellSize;
+  const gridHeight = (7 - 1) * rowStep + cellSize;
+  const svgHeight = gridOffsetY + gridHeight;
 
   return (
     <div className="post-heatmap-container py-1 sm:py-2">
       <div className="heatmap-shell">
-        <div className="month-row" aria-hidden="true">
-          {months.map((m, monthIndex) => (
-            <span
-              key={m.name + m.index}
-              className={`month-label ${monthIndex % 2 === 1 ? "month-label-alt" : ""}`}
-              style={{ left: `${((m.index * columnGap) / svgWidth) * 100}%` }}
-            >
-              {m.name}
-            </span>
-          ))}
-        </div>
-
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
           className="heatmap-svg"
@@ -110,28 +172,44 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts }) => {
           aria-label="过去一年文章发布热力图"
         >
           <title>过去一年文章发布热力图</title>
+          <g>
+            {months.map((month, monthIndex) => (
+              <text
+                key={month.name + month.index}
+                x={month.index * columnStep}
+                y="0"
+                className={`month-label ${monthIndex % 2 === 1 ? "month-label-alt" : ""}`}
+                dominantBaseline="hanging"
+              >
+                {month.name}
+              </text>
+            ))}
+          </g>
+
           {weeks.map((week, i) => (
             <g
               key={week[0]?.date.toISOString() ?? `week-${i}`}
-              transform={`translate(${i * columnGap}, 0)`}
+              transform={`translate(${i * columnStep}, ${gridOffsetY})`}
             >
               {week.map((day, j) => (
-                <rect
-                  key={day.date.toISOString()}
-                  width={cellSize}
-                  height={cellSize}
-                  x="0"
-                  y={j * columnGap}
-                  rx="2"
-                  ry="2"
-                  className={`day-rect level-${day.level} ${day.isFuture ? "opacity-0" : ""}`}
-                  data-date={day.date.toDateString()}
-                  data-count={day.count}
-                >
-                  <title>
-                    {day.count} 篇文章 - {day.date.toLocaleDateString()}
-                  </title>
-                </rect>
+                !day.isFuture && (
+                  <rect
+                    key={day.date.toISOString()}
+                    width={cellSize}
+                    height={cellSize}
+                    x="0"
+                    y={j * rowStep}
+                    rx="2"
+                    ry="2"
+                    className={`day-rect level-${day.level}`}
+                    data-date={formatDateLabel(day.date)}
+                    data-count={day.count}
+                  >
+                    <title>
+                      {day.count} 篇文章 - {formatDateLabel(day.date)}
+                    </title>
+                  </rect>
+                )
               ))}
             </g>
           ))}
@@ -153,30 +231,16 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts }) => {
           width: 100%;
           max-width: 650px;
           margin-inline: auto;
-          overflow: hidden;
-        }
-        .month-row {
-          position: relative;
-          height: 1rem;
-          margin-bottom: 0.75rem;
-          font-size: 10px;
-          color: color-mix(in srgb, var(--color-foreground) 40%, transparent);
         }
         .month-label {
-          position: absolute;
-          top: 0;
-          left: 0;
-          transform: translateX(-10%);
+          font-size: 10px;
+          fill: color-mix(in srgb, var(--color-foreground) 40%, transparent);
           white-space: nowrap;
-        }
-        .month-label:first-child {
-          transform: translateX(0);
         }
         .heatmap-svg {
           display: block;
           width: 100%;
           height: auto;
-          overflow: visible;
         }
         .heatmap-legend {
           margin-top: 0.5rem;
@@ -207,10 +271,8 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts }) => {
           .post-heatmap-container {
             padding-block: 0.1rem 0;
           }
-          .month-row {
-            height: 0.9rem;
+          .month-label {
             font-size: 9px;
-            margin-bottom: 0.45rem;
           }
           .month-label-alt {
             display: none;
