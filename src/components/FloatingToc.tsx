@@ -187,7 +187,6 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
 
   const mouseX = useSpring(0, { stiffness: 150, damping: 15 });
   const mouseY = useSpring(0, { stiffness: 150, damping: 15 });
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -198,7 +197,6 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
   };
 
   const handleMouseLeave = () => {
-    setIsHovered(false);
     mouseX.set(0);
     mouseY.set(0);
   };
@@ -229,7 +227,6 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
         aria-controls="floating-toc-panel"
         onClick={() => setOpen(!open)}
         onMouseMove={handleMouseMove}
-        onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={handleMouseLeave}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -238,20 +235,17 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
           y: mouseY,
         }}
         className={`group fixed z-[90] flex items-center justify-center transition-all duration-300 
-          h-11 w-11 sm:h-12 sm:w-12 rounded-full border border-border/60 bg-background/80 backdrop-blur-xl
-          shadow-[0_4px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] 
-          hover:border-accent/30 hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)]
-          text-foreground/60 hover:text-accent
+          h-11 w-11 sm:h-12 sm:w-12 rounded-[1.15rem] bg-background/60 backdrop-blur-2xl ring-1 ring-foreground/[0.06] dark:ring-foreground/[0.1] 
+          shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)]
+          hover:bg-background/90 hover:-translate-y-0.5 hover:shadow-xl
+          text-foreground/50 hover:text-foreground/90
           ${
             open
               ? "opacity-0 pointer-events-none scale-90"
               : "opacity-100 scale-100"
           }`}
       >
-        <motion.div
-          className="relative z-10 flex h-full w-full flex-col items-center justify-center overflow-hidden"
-          animate={isHovered && !open ? { y: -2 } : { y: 0 }}
-        >
+        <div className="relative z-10 flex h-full w-full flex-col items-center justify-center overflow-hidden">
           {/* 汉堡图标 */}
           <div className="relative flex h-4 w-4 flex-col items-center justify-center gap-[3px]">
             <motion.div
@@ -267,31 +261,7 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
               className="h-[2px] w-2.5 self-start rounded-full bg-current transition-colors"
             />
           </div>
-
-          <AnimatePresence>
-            {isHovered && !open && (
-              <motion.span
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 5 }}
-                className="absolute bottom-1.5 text-[8px] font-bold tracking-tight text-accent/80 uppercase whitespace-nowrap"
-              >
-                TOC
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </motion.div>
-
-        {/* 悬浮光晕 */}
-        {isHovered && !open && (
-          <motion.div
-            layoutId="glow-toc"
-            className="absolute inset-[-4px] border border-accent/20 rounded-full bg-accent/5 blur-md -z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          />
-        )}
+        </div>
       </motion.button>
 
       <AnimatePresence>

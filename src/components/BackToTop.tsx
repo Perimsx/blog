@@ -60,7 +60,7 @@ export const BackToTop: React.FC = () => {
           aria-label="回到顶部"
         >
           <motion.button
-            className="group relative flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-background/80 backdrop-blur-xl border border-border/60 shadow-[0_4px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)] transition-all active:scale-95 hover:border-accent/30 hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
+            className="group relative flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-[1.15rem] bg-background/60 backdrop-blur-2xl ring-1 ring-foreground/[0.06] dark:ring-foreground/[0.1] shadow-lg dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] transition-all hover:bg-background/90 hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
             onClick={handleClick}
             onMouseMove={handleMouseMove}
             onMouseEnter={() => setIsHovered(true)}
@@ -80,8 +80,7 @@ export const BackToTop: React.FC = () => {
                 cy="27"
                 r={radius}
                 stroke="currentColor"
-                strokeWidth="2"
-                className="text-foreground/[0.03] dark:text-foreground/[0.06]"
+                className="text-foreground/[0.06] dark:text-foreground/[0.1]"
               />
               {/* 动态进度环 */}
               <motion.circle
@@ -94,56 +93,26 @@ export const BackToTop: React.FC = () => {
                 initial={{ strokeDashoffset: circumference }}
                 animate={{ strokeDashoffset }}
                 transition={{ type: "spring", stiffness: 60, damping: 15 }}
-                style={{ strokeDasharray: circumference }}
-                className="text-accent"
+                className="text-foreground/40 dark:text-foreground/50 group-hover:text-foreground/80 dark:group-hover:text-foreground/90 transition-colors"
               />
             </svg>
 
-            {/* 内部图标 */}
-            <motion.div
-              className="relative z-10 flex flex-col items-center justify-center overflow-hidden h-full w-full"
-              animate={isHovered ? { y: -2 } : { y: 0 }}
-            >
+            <div className="relative z-10 flex flex-col items-center justify-center h-full w-full">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="text-foreground/60 group-hover:text-accent transition-colors"
+                className="text-foreground/50 group-hover:text-foreground/90 transition-colors"
               >
-                <path d="M12 19V5M5 12l7-7 7 7" />
+                <path d="m18 15-6-6-6 6" />
               </svg>
-              
-              <AnimatePresence>
-                {isHovered && (
-                  <motion.span
-                    key="hover-label"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 5 }}
-                    className="absolute bottom-2 text-[8px] font-bold tracking-tight text-accent/80 uppercase"
-                  >
-                    Top
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.div>
-
-            {/* 悬浮光晕 */}
-            {isHovered && (
-              <motion.div
-                layoutId="glow"
-                className="absolute inset-[-4px] rounded-full bg-accent/5 blur-md -z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              />
-            )}
+            </div>
           </motion.button>
         </motion.div>
       )}
