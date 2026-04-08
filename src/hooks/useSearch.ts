@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { escapeHtml } from "@/lib/html";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const PAGEFIND_BUNDLE_PATH = "/pagefind/";
 
@@ -56,14 +57,6 @@ type FlatSearchResult = {
   url: string;
 };
 
-const escapeHtml = (value = "") =>
-  value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-
 const uniqueBy = <T>(items: T[], getKey: (item: T) => string) => {
   const seen = new Set<string>();
   return items.filter((item) => {
@@ -76,15 +69,15 @@ const uniqueBy = <T>(items: T[], getKey: (item: T) => string) => {
 
 const normalizeResultUrl = (rawUrl = "") => {
   if (!rawUrl) return "#";
-  
+
   const cleanPathname = (p: string) => {
     let res = p;
     // Remove .html extension
-    if (res.endsWith('.html')) {
+    if (res.endsWith(".html")) {
       res = res.slice(0, -5);
     }
     // Remove Next.js route groups like /(site)
-    res = res.replace(/\/\([^/]+\)/g, '');
+    res = res.replace(/\/\([^/]+\)/g, "");
     if (res.startsWith("/client/")) {
       res = res.slice("/client".length);
     } else if (res === "/client") {
@@ -93,10 +86,10 @@ const normalizeResultUrl = (rawUrl = "") => {
     if (res.length > 1 && res.endsWith("/")) {
       res = res.slice(0, -1);
     }
-    if (res && !res.startsWith('/') && !res.startsWith('#')) {
-      res = '/' + res;
+    if (res && !res.startsWith("/") && !res.startsWith("#")) {
+      res = "/" + res;
     }
-    return res || '/';
+    return res || "/";
   };
 
   try {
@@ -105,7 +98,7 @@ const normalizeResultUrl = (rawUrl = "") => {
     return `${pathname}${normalized.search}${normalized.hash}`;
   } catch {
     const pathname = cleanPathname(rawUrl.trim());
-    return pathname === '/' && rawUrl.includes('#') ? rawUrl : pathname;
+    return pathname === "/" && rawUrl.includes("#") ? rawUrl : pathname;
   }
 };
 
@@ -127,14 +120,14 @@ export function useSearch() {
   const searchSerialRef = useRef(0);
   const flatResultsRef = useRef<FlatSearchResult[]>([]);
 
-  const ensurePagefindBundle = async () => {
+  const ensurePagefindBundle = useCallback(async () => {
     try {
       const response = await fetch(`${PAGEFIND_BUNDLE_PATH}pagefind.js`, { cache: "no-store" });
       return response.ok;
     } catch {
       return false;
     }
-  };
+  }, []);
 
   const initSearchRuntime = useCallback(async () => {
     if (pagefindApiRef.current || isInitializingRef.current) return;
@@ -144,9 +137,15 @@ export function useSearch() {
     try {
       if (!(await ensurePagefindBundle())) return;
 
-      // Use new Function to bypass Turbopack/webpack dynamic import resolution
-      const dynamicImport = new Function("specifier", "return import(specifier)");
-      pagefindApiRef.current = (await dynamicImport(`${PAGEFIND_BUNDLE_PATH}pagefind.js`)) as unknown as PagefindApi;
+      // Dynamically import pagefind with webpackIgnore hint for proper code splitting
+      // eslint-disable-next-line @typescript-eslint/no-implied-eval
+      const dynamicImport = new Function(
+        "specifier",
+        "return import(/* webpackIgnore: true */ specifier)"
+      );
+      pagefindApiRef.current = (await dynamicImport(
+        `${PAGEFIND_BUNDLE_PATH}pagefind.js`
+      )) as unknown as PagefindApi;
       await pagefindApiRef.current.options({
         basePath: PAGEFIND_BUNDLE_PATH,
         excerptLength: 28,
@@ -156,86 +155,89 @@ export function useSearch() {
     } finally {
       isInitializingRef.current = false;
     }
-  }, []);
+  }, [ensurePagefindBundle]);
 
-  const performSearch = useCallback(async (rawQuery: string) => {
-    const query = rawQuery.trim();
-    searchSerialRef.current += 1;
-    const currentSerial = searchSerialRef.current;
+  const performSearch = useCallback(
+    async (rawQuery: string) => {
+      const query = rawQuery.trim();
+      searchSerialRef.current += 1;
+      const currentSerial = searchSerialRef.current;
 
-    if (!query) {
-      setSearchState({ status: "idle" });
-      flatResultsRef.current = [];
-      setActiveResultIndex(0);
-      return;
-    }
-
-    await initSearchRuntime();
-
-    if (!pagefindApiRef.current) {
-      setSearchState({ status: "unavailable" });
-      return;
-    }
-
-    setSearchState((prev) => 
-      prev.status === "results" || prev.status === "loading"
-        ? { status: "loading", items: prev.items }
-        : { status: "loading" }
-    );
-
-    try {
-      const response = await pagefindApiRef.current.debouncedSearch(query, {}, 120);
-      if (currentSerial !== searchSerialRef.current || !response) return;
-
-      const results = await Promise.all(
-        (response.results || []).slice(0, 8).map(async (entry) => {
-          const data = await entry.data();
-          const pageTitle = data.meta?.title || "未命名文章";
-          const pageUrl = normalizeResultUrl(data.url || data.meta?.url || "#");
-          const pathLabel = pageUrl.replace(/^\/+/, "/");
-          const matches = uniqueBy(
-            (Array.isArray(data.sub_results) ? data.sub_results : [])
-              .map((item) => ({
-                heading: item?.title && item.title !== pageTitle ? item.title.trim() : "",
-                url: normalizeResultUrl(item?.url || pageUrl),
-                excerpt: item?.excerpt || "",
-              }))
-              .filter((item) => item.heading || item.excerpt),
-            (item) => `${item.url}::${item.heading}`
-          ).slice(0, 3);
-
-          return {
-            title: pageTitle,
-            pageUrl,
-            pathLabel,
-            excerpt: data.excerpt || "",
-            matches,
-          };
-        })
-      );
-
-      if (currentSerial !== searchSerialRef.current) return;
-
-      if (!results.length) {
-        setSearchState({ status: "empty", query });
+      if (!query) {
+        setSearchState({ status: "idle" });
         flatResultsRef.current = [];
         setActiveResultIndex(0);
         return;
       }
 
-      flatResultsRef.current = results.flatMap((item) => [
-        { url: item.pageUrl },
-        ...item.matches.map((match) => ({ url: match.url })),
-      ]);
-      setActiveResultIndex(0);
-      setSearchState({ status: "results", items: results });
-    } catch {
-      if (currentSerial !== searchSerialRef.current) return;
-      setSearchState({ status: "error", message: "搜索失败了" });
-      flatResultsRef.current = [];
-      setActiveResultIndex(0);
-    }
-  }, [initSearchRuntime]);
+      await initSearchRuntime();
+
+      if (!pagefindApiRef.current) {
+        setSearchState({ status: "unavailable" });
+        return;
+      }
+
+      setSearchState((prev) =>
+        prev.status === "results" || prev.status === "loading"
+          ? { status: "loading", items: prev.items }
+          : { status: "loading" }
+      );
+
+      try {
+        const response = await pagefindApiRef.current.debouncedSearch(query, {}, 120);
+        if (currentSerial !== searchSerialRef.current || !response) return;
+
+        const results = await Promise.all(
+          (response.results || []).slice(0, 8).map(async (entry) => {
+            const data = await entry.data();
+            const pageTitle = data.meta?.title || "未命名文章";
+            const pageUrl = normalizeResultUrl(data.url || data.meta?.url || "#");
+            const pathLabel = pageUrl.replace(/^\/+/, "/");
+            const matches = uniqueBy(
+              (Array.isArray(data.sub_results) ? data.sub_results : [])
+                .map((item) => ({
+                  heading: item?.title && item.title !== pageTitle ? item.title.trim() : "",
+                  url: normalizeResultUrl(item?.url || pageUrl),
+                  excerpt: item?.excerpt || "",
+                }))
+                .filter((item) => item.heading || item.excerpt),
+              (item) => `${item.url}::${item.heading}`
+            ).slice(0, 3);
+
+            return {
+              title: pageTitle,
+              pageUrl,
+              pathLabel,
+              excerpt: data.excerpt || "",
+              matches,
+            };
+          })
+        );
+
+        if (currentSerial !== searchSerialRef.current) return;
+
+        if (!results.length) {
+          setSearchState({ status: "empty", query });
+          flatResultsRef.current = [];
+          setActiveResultIndex(0);
+          return;
+        }
+
+        flatResultsRef.current = results.flatMap((item) => [
+          { url: item.pageUrl },
+          ...item.matches.map((match) => ({ url: match.url })),
+        ]);
+        setActiveResultIndex(0);
+        setSearchState({ status: "results", items: results });
+      } catch {
+        if (currentSerial !== searchSerialRef.current) return;
+        setSearchState({ status: "error", message: "搜索失败了" });
+        flatResultsRef.current = [];
+        setActiveResultIndex(0);
+      }
+    },
+    [initSearchRuntime]
+  );
 
   const navigateToResult = useCallback((url: string) => {
     const normalizedUrl = normalizeResultUrl(url);

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import DOMPurify from "dompurify";
 import { useSearch } from "@/hooks/useSearch";
 
 export const SearchModal: React.FC = () => {
@@ -185,10 +186,13 @@ export const SearchModal: React.FC = () => {
                           </div>
                         </div>
                         {item.excerpt && (
-                          <p 
+                          <p
                             className="line-clamp-2 text-[0.82rem] leading-relaxed text-slate-500 dark:text-slate-400"
-                            dangerouslySetInnerHTML={{ 
-                                __html: item.excerpt.replace(/<mark>(.*?)<\/mark>/g, '<span class="search-highlight">$1</span>') 
+                            dangerouslySetInnerHTML={{
+                              __html: DOMPurify.sanitize(
+                                item.excerpt.replace(/<mark>(.*?)<\/mark>/g, '<span class="search-highlight">$1</span>'),
+                                { ALLOWED_TAGS: ["mark", "span"], ALLOWED_ATTR: ["class"] }
+                              ),
                             }}
                           />
                         )}

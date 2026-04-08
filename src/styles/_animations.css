@@ -1,0 +1,31 @@
+.theme-animating,
+.theme-animating body,
+.theme-animating header,
+.theme-animating main,
+.theme-animating section,
+.theme-animating footer,
+.theme-animating div,
+.theme-animating a,
+.theme-animating button,
+.theme-animating input,
+.theme-animating textarea,
+.theme-animating svg {
+  transition:
+    background-color 0.32s ease,
+    color 0.32s ease,
+    border-color 0.32s ease,
+    fill 0.32s ease,
+    stroke 0.32s ease,
+    box-shadow 0.32s ease;
+}
+
+.theme-toggle-btn {
+  transition:
+    transform 0.35s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.theme-toggle-btn.is-animating {
+  transform: rotate(180deg) scale(1.06);
+}

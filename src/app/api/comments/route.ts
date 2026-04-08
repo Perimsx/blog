@@ -1,17 +1,10 @@
 import { NextResponse } from "next/server";
-import { getCommentRequestMeta } from "@/features/comments/lib/request-meta";
 import { createComment, listApprovedComments } from "@/features/comments/lib/store";
 import type { CreateCommentPayload } from "@/features/comments/lib/types";
-import { SITE } from "@/lib/config";
+import { apiSuccess, jsonError } from "@/lib/api";
+import { getCommentRequestMeta } from "@/lib/request-meta";
 
 export const dynamic = "force-dynamic";
-
-function moderationMeta() {
-  return {
-    storage: "local-file" as const,
-    moderation: SITE.comments.autoApprove ? "auto-approve" : "manual",
-  };
-}
 
 function normalizeInput(value: unknown, maxLength: number) {
   if (typeof value !== "string") {
@@ -19,22 +12,6 @@ function normalizeInput(value: unknown, maxLength: number) {
   }
 
   return value.replace(/\s+/g, " ").trim().slice(0, maxLength);
-}
-
-function jsonError(message: string, status = 400) {
-  return NextResponse.json(
-    {
-      success: false,
-      error: message,
-      meta: moderationMeta(),
-    },
-    {
-      status,
-      headers: {
-        "Cache-Control": "no-store",
-      },
-    }
-  );
 }
 
 export async function GET(request: Request) {
@@ -46,7 +23,7 @@ export async function GET(request: Request) {
   }
 
   const payload = await listApprovedComments(postSlug);
-  return NextResponse.json(payload, {
+  return NextResponse.json(apiSuccess(payload), {
     headers: {
       "Cache-Control": "no-store",
     },
@@ -101,7 +78,7 @@ export async function POST(request: Request) {
       getCommentRequestMeta(request)
     );
 
-    return NextResponse.json(result, {
+    return NextResponse.json(apiSuccess(result), {
       headers: {
         "Cache-Control": "no-store",
       },

@@ -1,0 +1,33 @@
+.layout-frame {
+  /* 给 header、main 等块级容器复用同一套内容宽度。 */
+  margin-inline: auto;
+  width: 100%;
+  max-width: min(100%, var(--layout-page-max-width));
+  padding-inline: var(--layout-page-gutter);
+}
+
+.page-shell {
+  padding-bottom: 1.75rem;
+}
+
+.layout-floating-anchor {
+  right: var(--layout-floating-mobile-right);
+  bottom: var(--layout-floating-mobile-bottom);
+}
+
+@media (min-width: 640px) {
+  .layout-floating-anchor {
+    right: var(--layout-floating-right);
+    bottom: var(--layout-floating-bottom);
+  }
+}
+
+.active-nav {
+  @apply underline decoration-wavy decoration-2 underline-offset-4;
+}
+
+@media (max-width: 640px) {
+  .page-shell {
+    padding-bottom: 1.5rem;
+  }
+}

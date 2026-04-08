@@ -1,0 +1,45 @@
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+:root,
+html[data-theme="light"] {
+  --background: #fdfdfd;
+  --foreground: #282728;
+  --accent: #006cac;
+  --muted: #e6e6e6;
+  --border: #ece9e9;
+  /* 统一正文宽度、页面留白和悬浮控件安全区，避免组件各自维护一套尺寸。 */
+  --layout-page-max-width: 48rem;
+  --layout-page-gutter: 1rem;
+  --layout-floating-mobile-right: max(0.75rem, calc(env(safe-area-inset-right, 0px) + 0.6rem));
+  --layout-floating-mobile-bottom: max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 0.75rem));
+  --layout-floating-right: clamp(3.5rem, 8vw, 6rem);
+  --layout-floating-bottom: max(1.75rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
+}
+
+html[data-theme="dark"] {
+  --background: #212737;
+  --foreground: #eaedf3;
+  --accent: #73bdf2;
+  --muted: #343f60bf;
+  --border: #415572;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@theme {
+  --color-*: initial;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --font-sans: "Inter Variable", "Inter", "MiSans", "HarmonyOS Sans SC", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: "LXGW WenKai GB Screen", "LXGW WenKai", "Kaiti SC", "STKaiti", "Songti SC", "Noto Serif SC", Georgia, serif;
+  --font-mono: "Fira Code Variable", "Fira Code", "Cascadia Code", "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --layout-page-gutter: 0.75rem;
+  }
+}

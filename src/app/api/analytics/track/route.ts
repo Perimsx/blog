@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import {
-  recordAnalyticsEvent,
   type AnalyticsEventType,
   type RecordAnalyticsInput,
+  recordAnalyticsEvent,
 } from "@/features/analytics/lib/store";
+import { apiSuccess, jsonError } from "@/lib/api";
 
 type TrackPayload = {
   durationMs?: number;
@@ -14,18 +15,6 @@ type TrackPayload = {
   type?: AnalyticsEventType;
   visitorId?: string;
 };
-
-function jsonError(message: string, status = 400) {
-  return NextResponse.json(
-    { error: message, success: false },
-    {
-      headers: {
-        "Cache-Control": "no-store, max-age=0, must-revalidate",
-      },
-      status,
-    }
-  );
-}
 
 export async function POST(request: Request) {
   let payload: TrackPayload;
@@ -57,16 +46,15 @@ export async function POST(request: Request) {
   try {
     const result = await recordAnalyticsEvent(input, request);
 
-    return NextResponse.json(
-      { ...result, success: true },
-      {
-        headers: {
-          "Cache-Control": "no-store, max-age=0, must-revalidate",
-        },
-        status: 202,
-      }
-    );
+    return NextResponse.json(apiSuccess(result), {
+      headers: {
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
+      },
+      status: 202,
+    });
   } catch {
-    return jsonError("failed to store analytics event", 500);
+    return jsonError("failed to store analytics event", 500, {
+      "Cache-Control": "no-store, max-age=0, must-revalidate",
+    });
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useSpring } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToc } from "./TocContext";
 
 export interface Heading {
@@ -10,7 +10,54 @@ export interface Heading {
   text: string;
 }
 
-export default function FloatingToc({ toc }: { toc?: Heading[] }) {
+const TocItem = memo(function TocItem({
+  item,
+  isActive,
+  onClose,
+}: {
+  item: { targetId: string; url: string; text: string; depth: number };
+  isActive: boolean;
+  onClose: () => void;
+}) {
+  const handleClick = (_e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (window.innerWidth < 1280) {
+      onClose();
+    }
+  };
+
+  return (
+    <li className="relative leading-normal">
+      <a
+        href={item.url}
+        data-target={item.targetId}
+        aria-current={isActive ? "location" : undefined}
+        onClick={handleClick}
+        className={`group relative flex items-start py-1 transition-colors duration-200 ${
+          isActive ? "text-accent font-medium" : "text-foreground/60 hover:text-foreground/90"
+        }`}
+        style={{
+          paddingLeft: `${Math.max(0, item.depth - 2) * 10 + 8}px`,
+          fontSize: item.depth === 2 ? "12.5px" : "12px",
+        }}
+      >
+        {isActive && (
+          <motion.div
+            layoutId="active-toc-indicator"
+            className="absolute top-1 bottom-1 left-[-1px] w-[2px] bg-accent"
+            transition={{
+              type: "tween",
+              ease: [0.25, 1, 0.5, 1],
+              duration: 0.4,
+            }}
+          />
+        )}
+        <span className={isActive ? "whitespace-normal break-words" : "truncate"}>{item.text}</span>
+      </a>
+    </li>
+  );
+});
+
+const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading[] }) {
   const { isTocOpen: open, setIsTocOpen: setOpen } = useToc();
   const [activeId, setActiveId] = useState("");
   const listContainerRef = useRef<HTMLElement | null>(null);
@@ -306,48 +353,14 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
                 }
               >
                 <ul className="relative border-l border-border/70 pt-1 pb-4 text-[0.78rem] space-y-px">
-                  {tocItems.map((item) => {
-                    const isActive = activeId === item.targetId;
-                    return (
-                      <li key={item.targetId} className="relative leading-normal">
-                        <a
-                          href={item.url}
-                          data-target={item.targetId}
-                          aria-current={isActive ? "location" : undefined}
-                          onClick={() => {
-                            if (window.innerWidth < 1280) {
-                              // xl breakpoint
-                              setOpen(false);
-                            }
-                          }}
-                          className={`group relative flex items-start py-1 transition-colors duration-200 ${
-                            isActive
-                              ? "text-accent font-medium"
-                              : "text-foreground/60 hover:text-foreground/90"
-                          }`}
-                          style={{
-                            paddingLeft: `${Math.max(0, item.depth - 2) * 10 + 8}px`,
-                            fontSize: item.depth === 2 ? "12.5px" : "12px",
-                          }}
-                        >
-                          {isActive && (
-                            <motion.div
-                              layoutId="active-toc-indicator"
-                              className="absolute top-1 bottom-1 left-[-1px] w-[2px] bg-accent"
-                              transition={{
-                                type: "tween",
-                                ease: [0.25, 1, 0.5, 1],
-                                duration: 0.4,
-                              }}
-                            />
-                          )}
-                          <span className={isActive ? "whitespace-normal break-words" : "truncate"}>
-                            {item.text}
-                          </span>
-                        </a>
-                      </li>
-                    );
-                  })}
+                  {tocItems.map((item) => (
+                    <TocItem
+                      key={item.targetId}
+                      item={item}
+                      isActive={activeId === item.targetId}
+                      onClose={() => setOpen(false)}
+                    />
+                  ))}
                 </ul>
               </nav>
             </div>
@@ -356,4 +369,6 @@ export default function FloatingToc({ toc }: { toc?: Heading[] }) {
       </AnimatePresence>
     </>
   );
-}
+});
+
+export default memo(FloatingTocInner);

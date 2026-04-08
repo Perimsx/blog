@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { apiError, apiSuccess } from "@/lib/api";
+import { escapeHtml } from "@/lib/html";
 
 type ContactPayload = {
   name?: string;
@@ -21,14 +23,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const escapeHtml = (value: string) =>
-  value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-
 export async function POST(request: Request) {
   try {
     const data = (await request.json()) as ContactPayload;
@@ -38,7 +32,7 @@ export async function POST(request: Request) {
     const message = data.message?.trim() ?? "";
 
     if (!message) {
-      return NextResponse.json({ success: false, error: "请填写留言内容" }, { status: 400 });
+      return NextResponse.json(apiError("请填写留言内容"), { status: 400 });
     }
 
     await transporter.sendMail({
@@ -63,10 +57,10 @@ export async function POST(request: Request) {
             </div>`,
     });
 
-    return NextResponse.json({ success: true, message: "邮件发送成功！" });
+    return NextResponse.json(apiSuccess(null, { message: "邮件发送成功！" }));
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "发送失败";
     console.error("Mail send error:", error);
-    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
+    return NextResponse.json(apiError(errorMessage), { status: 500 });
   }
 }

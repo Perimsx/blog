@@ -40,7 +40,7 @@
         "noForEach": "off"
       },
       "correctness": {
-        "noUnusedVariables": "off",
+        "noUnusedVariables": "warn",
         "noUnusedImports": "off"
       },
       "a11y": {

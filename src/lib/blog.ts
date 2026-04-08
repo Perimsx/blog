@@ -3,15 +3,17 @@ import fs from "node:fs";
 import path from "node:path";
 import GithubSlugger from "github-slugger";
 import matter from "gray-matter";
+import type { Html, Image, Parent, Root } from "mdast";
+import { cache } from "react";
 import readingTimeLib from "reading-time";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
-import { cache } from "react";
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import { createHighlighter } from "shiki";
 import type { PluggableList } from "unified";
 import { unified } from "unified";
+import type { Node } from "unist";
 import { visit } from "unist-util-visit";
 import { SITE } from "./config";
 import { escapeHtml } from "./html";
@@ -84,36 +86,44 @@ function extractCodeBlockTitle(meta: string | undefined) {
   return undefined;
 }
 
-function visitChildren(node: any) {
+type MDExtraNode = Node & {
+  type?: string;
+  name?: string;
+  attributes?: Array<{ type: string; name: string; value: unknown }>;
+  meta?: string | null;
+  data?: Record<string, unknown> & { hProperties?: Record<string, unknown> };
+};
+
+function visitChildren(node: Parent) {
   if (!node || !Array.isArray(node.children)) return;
 
   for (let index = 0; index < node.children.length; index += 1) {
-    const child = node.children[index];
+    const child = node.children[index] as MDExtraNode;
 
     if (child?.type === "code") {
-      const title = extractCodeBlockTitle(child.meta);
+      const title = extractCodeBlockTitle(child.meta ?? undefined);
       if (title) {
         node.children.splice(index, 0, {
           type: "html",
           value: `<div class="code-block-title">${escapeHtml(title)}</div>`,
-        });
+        } satisfies Html);
         index += 1;
       }
     }
 
-    visitChildren(child);
+    visitChildren(child as Parent);
   }
 }
 
 function remarkCodeBlockTitle() {
-  return (tree: any) => {
+  return (tree: Root) => {
     visitChildren(tree);
   };
 }
 
 function remarkLazyLoadImages() {
-  return (tree: any) => {
-    visit(tree, "image", (node: any) => {
+  return (tree: Root) => {
+    visit(tree, "image", (node: Image) => {
       node.data = node.data || {};
       node.data.hProperties = node.data.hProperties || {};
       node.data.hProperties.loading = "lazy";
@@ -127,25 +137,28 @@ function normalizePublicAssetPath(value?: string) {
 }
 
 function remarkProxyExternalImages() {
-  return (tree: any) => {
-    visit(tree, "image", (node: any) => {
+  return (tree: Root) => {
+    visit(tree, "image", (node: Image) => {
       if (typeof node.url !== "string") return;
 
       if (shouldProxyExternalImage(node.url)) {
         node.url = toImageProxyUrl(node.url);
       } else {
-        node.url = normalizePublicAssetPath(node.url);
+        const normalized = normalizePublicAssetPath(node.url);
+        node.url = normalized ?? node.url;
       }
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     visit(
       tree,
       (node: any) => node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement",
       (node: any) => {
-        if (!["img", "AdaptiveImage"].includes(node.name)) return;
+        if (!["img", "AdaptiveImage"].includes(node.name ?? "")) return;
 
-        const srcAttr = node.attributes?.find(
-          (attr: any) => attr.type === "mdxJsxAttribute" && attr.name === "src"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const srcAttr = (node.attributes as any[])?.find(
+          (attr) => attr.type === "mdxJsxAttribute" && attr.name === "src"
         );
         if (!srcAttr || typeof srcAttr.value !== "string") return;
 
@@ -156,8 +169,9 @@ function remarkProxyExternalImages() {
         }
 
         if (node.name === "img") {
-          const loadingAttr = node.attributes?.find(
-            (attr: any) => attr.type === "mdxJsxAttribute" && attr.name === "loading"
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const loadingAttr = (node.attributes as any[])?.find(
+            (attr) => attr.type === "mdxJsxAttribute" && attr.name === "loading"
           );
           if (!loadingAttr) {
             node.attributes = node.attributes || [];
