@@ -1,110 +1,162 @@
-# Perimsx / 序栈
+# Coet
 
-一个基于 **Next.js 15** 构建的极简、高性能技术博客。聚焦信息安全、Web 开发、算法笔记与个人知识沉淀。
-
-本项目已由 Astro 架构全面迁移至 Next.js (Static Site Generation)，并在视觉密度、搜索体验与底层架构上进行了极致优化。
+基于 **Next.js 16** 构建的高性能技术博客，聚焦信息安全、Web 开发与个人知识沉淀。
 
 ---
 
-## 核心特性
+## 特性
 
-- 🚀 **极致性能**：基于 Next.js 静态导出 (SSG)，全站预渲染，秒级首屏加载。
-- 🎨 **精密视觉设计**：专注视觉密度与阅读节奏，支持深色模式切换、平滑的主题过渡动画（View Transitions）。
-- 🔍 **智能检索引擎**：内置 **Pagefind** 全文搜索，支持毫秒级标题与章节索引，提供类 Spotlight 的交互体验。
-- 📝 **深度 MDX 集成**：支持 Markdown/MDX 写作，集成 **Shiki** 高亮器、自动生成悬浮目录（TOC）、代码块复制功能。
-- 🛠️ **稳健架构**：使用 Tailwind CSS 4 构建原子化样式系统，严格的类型检查与代码规范。
-- 📈 **SEO 专家级优化**：自动生成 Sitemap、RSS、结构化数据 (JSON-LD)，支持 Canonical URL 与全量元数据控制。
+### 写作体验
+- **MDX 内容创作** — Markdown + JSX 混合写作，支持 Callout、Grid、折叠块等丰富组件
+- **Shiki 语法高亮** — 基于 tree-sitter 的精确语法着色，支持 16 种语言
+- **自动目录生成** — 悬浮式 TOC，支持键盘导航与滚动联动
+
+### 阅读体验
+- **静态站点生成** — 全站 SSG，毫秒级首屏
+- **深色模式** — 系统跟随 + 手动切换，View Transitions 平滑过渡动画
+- **Pagefind 全文搜索** — 无服务端依赖，构建时生成索引，毫秒级检索
+
+### 互动功能
+- **评论系统** — 基于 QQ 号的免注册评论，支持 Markdown 与回复嵌套
+- **页面分析** — 访客地理分布、浏览器/设备/来源追踪，数据本地存储
+- **联系表单** — 站点联系邮件直发
+
+### 工程质量
+- **TypeScript 严格模式** — 全项目类型覆盖，零 `any` 逃逸
+- **Biome 代码规范** — Lint + Format 一体化，Git Hooks 自动化
+- **安全响应头** — CSP / HSTS / X-Frame-Options 等生产级安全配置
+
+---
 
 ## 技术栈
 
-- **框架**: Next.js 15 (App Router)
-- **样式**: Tailwind CSS 4
-- **内容**: MDX + Shiki (Syntax Highlighting)
-- **搜索**: Pagefind (Static Search Engine)
-- **渲染**: Static Site Generation (SSG)
-- **开发工具**: TypeScript, Biome (Linting & Formatting)
+| 领域 | 技术 |
+|------|------|
+| 框架 | Next.js 16 (App Router) |
+| 语言 | TypeScript 5.9 |
+| 样式 | Tailwind CSS 4 |
+| 内容 | MDX + Shiki |
+| 搜索 | Pagefind |
+| 动画 | Framer Motion |
+| 评论 | 本地 JSON 存储 |
+| CI | Biome + Husky |
+
+---
 
 ## 快速开始
 
-### 1. 安装依赖
-
-推荐使用 `pnpm` 以获得最佳的安装速度与依赖管理倾向。
-
 ```bash
+# 安装依赖
 pnpm install
-```
 
-### 2. 本地开发
-
-```bash
+# 本地开发
 pnpm dev
-```
 
-> **注意**：本地开发环境下，搜索功能需要先执行一次完整构建以生成索引。
-
-### 3. 构建与部署
-
-生成静态站点产物及其搜索索引：
-
-```bash
+# 生产构建（生成搜索索引）
 pnpm build
 ```
 
-构建结果将输出至 `out` 目录，可直接部署于 Vercel, Cloudflare Pages 或任何静态托管平台。
+> **提示**：搜索功能需完成一次完整构建后才能使用。
 
-## 项目结构探照
+---
 
-```text
-.
-├── src/
-│   ├── app/                # Next.js App Router (页面与全局配置)
-│   ├── components/         # 核心 UI 组件
-│   │   ├── icons/          # 向量图标库
-│   │   ├── mdx/            # MDX 自定义渲染组件
-│   │   └── ui/             # 通用基础组件
-│   ├── content/
-│   │   └── blog/           # 博客正文 (.md/.mdx) 与封面资源
-│   ├── hooks/              # 自定义 React Hooks (Search, Scroll等)
-│   ├── lib/                # 核心逻辑 (内容解析、配置、工具函数)
-│   └── styles/             # Tailwind & 全局样式系统
-├── public/                 # 静态公共资源
-├── next.config.ts          # Next.js 配置 (含静态导出锁定)
-└── package.json            # 项目依赖与脚本
+## 项目结构
+
+```
+src/
+├── app/                      # Next.js App Router
+│   ├── api/                  # API 路由
+│   │   ├── comments/          # 评论 GET / POST
+│   │   ├── contact/          # 联系表单邮件发送
+│   │   ├── analytics/        # 页面追踪与快照
+│   │   └── image/            # 图片代理（防盗链）
+│   └── (site)/               # 站点页面路由
+├── components/
+│   ├── icons/                # 矢量图标（按模块拆分）
+│   ├── mdx/                  # MDX 渲染组件
+│   ├── analytics/            # 分析追踪器
+│   └── monitor/              # 数据看板
+├── content/blog/             # 博客文章 (.md/.mdx)
+├── features/
+│   ├── comments/             # 评论系统（store + API + 组件）
+│   └── analytics/            # 分析系统（store + monitor）
+├── hooks/
+│   ├── useTheme.ts           # 主题状态管理
+│   ├── useSearch.ts          # Pagefind 搜索封装
+│   └── useBackToTop.ts       # 返回顶部
+├── lib/
+│   ├── api.ts                # 统一 API 响应格式
+│   ├── blog.ts               # MDX 解析与构建
+│   ├── config.ts             # 站点配置
+│   ├── seo.ts                # 元数据与 JSON-LD
+│   ├── imageProxy.ts         # 图片代理规则
+│   ├── request-meta.ts      # 请求元数据提取
+│   └── html.ts               # HTML 转义工具
+└── styles/
+    ├── _variables.css        # CSS 变量与主题
+    ├── _animations.css       # 动画定义
+    └── _layout.css           # 布局样式
 ```
 
-## 写作规范
+---
 
-### Frontmatter 标准
+## 文章规范
 
-每一篇文章均需在头部包含标准的元数据：
+每篇文章需在顶部包含以下元数据：
 
 ```yaml
 ---
 title: "文章标题"
-description: "精炼的文章摘要，将用于 SEO 与搜索预览"
+description: "用于 SEO 和搜索预览的简短描述"
 pubDatetime: 2026-04-01T10:00:00+08:00
 tags:
-  - 标签1
-  - 标签2
-draft: false
-url: "category/post-slug"
+  - 安全
+  - Web
+url: "category/post-slug"     # 决定最终 URL
 coverImage: "./covers/preview.png"
 ---
 ```
 
-### 路由逻辑
-
-- `url` 字段决定了文章的最终访问路径。
-- 图片资源建议存放于文章同级或 `covers` 目录下，并使用相对路径引用。
-
-## 维护建议
-
-1. **原子化提交**：遵循 `feat(scope): message` 规范进行 Git 提交。
-2. **构建验证**：在合并重大变更前，始终执行 `pnpm build` 以验证 SSG 与 Pagefind 索引的完整性。
-3. **视觉一致性**：新增组件应严格遵循 `typography.css` 定义的垂直韵律与间距规范。
+- 文章存放于 `src/content/blog/`，支持 `.md` 和 `.mdx`
+- 图片建议放在文章同级或 `covers/` 目录下，使用相对路径
+- `draft: true` 的文章仅在开发环境可见
 
 ---
 
-## 协议
+## 架构亮点
 
-本项目内容由 **Perimsx** 原创，遵循 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) 协议。代码部分基于 MIT 协议。
+### 评论系统
+- 无数据库依赖，写入 `.data/comments.local.json`
+- QQ 号自动拉取头像，无需注册
+- 管理员可配置自动审核或人工审核
+
+### 图片代理
+- 防盗链图片自动转发（支持知乎、微博、CSDN 等平台）
+- DNS Rebinding 攻击防护
+- 智能 Content-Type 检测与长期缓存
+
+### 分析追踪
+- 纯前端事件收集，无第三方依赖
+- 支持页面浏览时长、跳出率追踪
+- 数据看板展示访客分布与热门页面
+
+---
+
+## 部署
+
+构建产物输出至 `out/` 目录，支持部署至：
+
+- **Vercel** — 零配置部署（推荐）
+- **Cloudflare Pages** — Edge 部署
+- **任意静态托管** — Nginx / 对象存储
+
+```bash
+# 部署前执行
+pnpm build
+```
+
+---
+
+## License
+
+代码基于 MIT 协议开源。
