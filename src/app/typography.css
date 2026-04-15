@@ -41,7 +41,6 @@
   /* ===== Code Blocks & Syntax Highlighting ===== */
   
 
-
   /* Light mode: each span reads its own --shiki-light variable */
   html[data-theme='light'] pre.shiki,
   html[data-theme='light'] .prose pre.shiki {
@@ -220,10 +219,17 @@
     border-radius: 0.5rem;
     transition: opacity 0.2s ease;
   }
-
   .article-detail img.img-loading-error {
     opacity: 0.5;
     min-height: 4rem;
+  }
+
+  .article-detail hr {
+    margin-block: 1rem;
+  }
+
+  .article-detail hr + :is(h2, h3, h4) {
+    margin-top: 0.72rem;
   }
 
   /* ===== Table — 居中 + 响应式横滚 ===== */
@@ -421,11 +427,18 @@
       margin-inline: -0.1rem;
       border-radius: 0.4rem;
     }
-
     .article-detail blockquote {
       font-size: 0.93em;
       padding: 0.42rem 0.58rem;
       margin-block: 0.72rem;
+    }
+
+    .article-detail hr {
+      margin-block: 0.8rem;
+    }
+
+    .article-detail hr + :is(h2, h3, h4) {
+      margin-top: 0.58rem;
     }
 
     .article-detail th,
@@ -454,5 +467,5 @@
     white-space: pre;
   }
 
-
 }
+
