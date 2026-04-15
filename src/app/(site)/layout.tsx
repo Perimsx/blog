@@ -5,7 +5,6 @@ import { ContactModal } from "@/components/ContactModal";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { SearchModal } from "@/components/SearchModal";
-import { SiteAnnouncement } from "@/components/SiteAnnouncement";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -26,7 +25,6 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <BackToTop />
       <SearchModal />
       <ContactModal />
-      <SiteAnnouncement />
     </>
   );
 }
