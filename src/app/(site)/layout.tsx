@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { BackToTop } from "@/components/BackToTop";
-import { ContactModal } from "@/components/ContactModal";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { SearchModal } from "@/components/SearchModal";
@@ -24,7 +23,6 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <Footer noMarginTop />
       <BackToTop />
       <SearchModal />
-      <ContactModal />
     </>
   );
 }
