@@ -1,15 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import Script from "next/script";
 import { SITE, SOCIALS } from "@/lib/config";
 import { DEFAULT_SHARE_IMAGE, getCanonicalUrl, SEO_BRAND_NAME, toAbsoluteUrl } from "@/lib/seo";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
 
 const BROWSER_TITLE = SEO_BRAND_NAME;
 const UMAMI_SCRIPT_SRC = "https://cloud.umami.is/script.js";
@@ -143,7 +136,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           />
         ) : null}
       </head>
-      <body className={inter.className}>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

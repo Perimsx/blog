@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AdaptiveImage } from "@/components/AdaptiveImage";
 import { PostHeatmap } from "@/components/PostHeatmap";
 import { getSortedPosts } from "@/lib/blog";
+import { SITE } from "@/lib/config";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
@@ -14,6 +15,7 @@ export const metadata: Metadata = createPageMetadata({
 export default async function AboutPage() {
   const sortedPosts = await getSortedPosts();
   const initialNow = new Date().toISOString();
+  const siteHost = new URL(SITE.website).host;
 
   return (
     <main id="main-content" className="ui-page layout-frame page-shell">
@@ -62,18 +64,21 @@ export default async function AboutPage() {
           <h2>近期活动</h2>
           <ul className="about-list about-timeline">
             <li>
-              <strong>2026 年 3 月</strong> · 使用 Astro 和 React 框架重构个人博客主站（
-              <a href="https://chenguitao.com" target="_blank" rel="noopener noreferrer">
-                chenguitao.com
+              <strong>2026 年 4 月</strong> · 完成博客主域名迁移，统一 RSS、Sitemap 与分享地址（
+              <a href={SITE.website} target="_blank" rel="noopener noreferrer">
+                {siteHost}
               </a>
               ）
             </li>
             <li>
-              <strong>2026 年 2 月</strong> · 使用 Nuxt 4 重构个人博客（
-              <a href="https://blog.coet.ink" target="_blank" rel="noopener noreferrer">
-                blog.coet.ink
+              <strong>2026 年 3 月</strong> · 使用 Astro 和 React 框架重构个人博客主站（
+              <a href={SITE.website} target="_blank" rel="noopener noreferrer">
+                {siteHost}
               </a>
               ）
+            </li>
+            <li>
+              <strong>2026 年 2 月</strong> · 使用 Nuxt 4 重构个人博客并完成后续迁移准备
             </li>
           </ul>
         </div>

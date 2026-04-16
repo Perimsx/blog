@@ -272,7 +272,7 @@ export default async function PostPage({ params }: PageProps) {
         {SITE.comments.enabled ? (
           <>
             <hr className="mt-6 mb-3 border-dashed sm:mt-7 sm:mb-4" />
-            <Comments postSlug={post.slug} />
+            <Comments path={postUrl} />
           </>
         ) : null}
 

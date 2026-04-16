@@ -75,7 +75,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "img1.tucang.cc" },
       { protocol: "https", hostname: "q1.qlogo.cn" },
       { protocol: "https", hostname: "qlogo.cn" },
-      { protocol: "https", hostname: "**.chenguitao.com" },
+      { protocol: "https", hostname: "**.cot.wiki" },
       { protocol: "https", hostname: "**.zhimg.com" },
       { protocol: "https", hostname: "**.yuque.com" },
       { protocol: "https", hostname: "**.byteimg.com" },

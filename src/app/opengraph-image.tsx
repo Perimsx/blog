@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { SITE } from "@/lib/config";
 import { SEO_BRAND_NAME } from "@/lib/seo";
 
 export const alt = `${SEO_BRAND_NAME} 分享图`;
@@ -7,6 +8,8 @@ export const size = {
   height: 630,
   width: 1200,
 };
+
+const SITE_HOST = new URL(SITE.website).host;
 
 export default function OpenGraphImage() {
   return new ImageResponse(
@@ -111,7 +114,7 @@ export default function OpenGraphImage() {
             fontSize: 24,
           }}
         >
-          chenguitao.com
+          {SITE_HOST}
         </div>
       </div>
     </div>,

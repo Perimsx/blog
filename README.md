@@ -19,7 +19,7 @@
 - **Pagefind 搜索** — 无服务端依赖，构建时生成索引，毫秒级全文检索
 
 ### 互动功能
-- **免注册评论** — 基于 QQ 号自动拉取头像，支持 Markdown 与回复嵌套
+- **Twikoo 评论** — 面向静态博客的评论系统，支持邮件通知、管理面板与回复嵌套
 - **访客分析** — 地理分布、浏览器/设备、来源追踪，纯前端收集无第三方依赖
 - **联系表单** — 邮件直发，无需第三方服务
 
@@ -41,7 +41,7 @@
 | 内容 | MDX + Shiki |
 | 搜索 | Pagefind |
 | 动画 | Framer Motion |
-| 评论 | 本地 JSON 存储 |
+| 评论 | Twikoo |
 | 规范 | Biome + Husky |
 
 ---
@@ -129,9 +129,34 @@ coverImage: "./covers/preview.png"
 ## 架构亮点
 
 ### 评论系统
-- 无数据库依赖，写入 `.data/comments.local.json`
-- QQ 号自动拉取头像，无需注册
-- 可配置自动审核或人工审核
+- 使用 Twikoo 作为静态博客评论后端
+- 前端通过 CDN 挂载，支持 Vercel 地址或腾讯云环境 ID
+- 评论按文章路径隔离，适配自定义 `url` 路由
+
+## Twikoo 配置
+
+在项目根目录创建 `.env.local`，至少填入以下变量：
+
+```bash
+NEXT_PUBLIC_TWIKOO_ENV_ID=https://your-twikoo-service.vercel.app
+NEXT_PUBLIC_TWIKOO_LANG=zh-CN
+NEXT_PUBLIC_TWIKOO_VERSION=1.7.7
+```
+
+- `NEXT_PUBLIC_TWIKOO_ENV_ID`
+  腾讯云部署时填写环境 ID；部署到 Vercel / Netlify / 自建服务时填写完整服务地址
+- `NEXT_PUBLIC_TWIKOO_REGION`
+  仅腾讯云广州等非默认地域需要，例如 `ap-guangzhou`
+- `NEXT_PUBLIC_TWIKOO_VERSION`
+  需要与你部署的 Twikoo 后端版本保持一致
+
+项目会自动判断加载哪种前端包：
+- 腾讯云环境 ID：自动加载 `twikoo.all.min.js`
+- Vercel / Netlify / 自建地址：自动加载 `twikoo.min.js`
+
+Twikoo 官方文档：
+- 前端接入：[twikoo.js.org/frontend](https://twikoo.js.org/frontend)
+- 后端部署：[twikoo.js.org/backend](https://twikoo.js.org/backend)
 
 ### 图片代理
 - 防盗链图片自动转发（支持知乎、微博、CSDN 等平台）

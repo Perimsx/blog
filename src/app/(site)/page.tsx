@@ -13,7 +13,7 @@ import { createPageMetadata, SEO_BRAND_NAME } from "@/lib/seo";
 export const metadata: Metadata = createPageMetadata({
   absoluteTitle: true,
   description: SITE.desc,
-  keywords: ["Perimsx", "信息安全博客", "Web 开发博客", "技术博客"],
+  keywords: ["Perimsx", "信息安全博客", "全栈开发博客", "技术博客"],
   pathname: "/",
   title: SEO_BRAND_NAME,
 });
@@ -63,7 +63,7 @@ export default async function HomePage() {
             <p className="mt-1 text-[0.96rem] leading-7 sm:mt-0.5 sm:text-base">
               记录成长，分享价值。
               <br />
-              信息安全专业学生，Web 开发爱好者。
+              信息安全专业学生，全栈开发爱好者。
             </p>
             {SOCIALS.filter((social) => social.active).length > 0 && (
               <div className="mt-3 flex flex-row items-center justify-center sm:mt-3.5 sm:justify-start">

@@ -1,197 +1,216 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import type {
-  CommentListResponse,
-  CommentModerationMode,
-  CommentTreeItem,
-  CreateCommentResponse,
-} from "@/features/comments/lib/types";
-import { countComments } from "@/features/comments/lib/utils";
-import CommentForm from "./CommentForm";
-import CommentItem from "./CommentItem";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CommentIconMessage } from "./icons";
 
 type CommentsProps = {
-  postSlug: string;
+  path: string;
 };
 
-const defaultMeta = {
-  storage: "local-file" as const,
-  moderation: "auto-approve" as CommentModerationMode,
+type TwikooClient = {
+  init: (options: {
+    el: string;
+    envId: string;
+    lang?: string;
+    path?: string;
+    region?: string;
+  }) => Promise<void> | void;
 };
 
-function CommentChevron({ expanded }: { expanded: boolean }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className={`h-4 w-4 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
-      fill="none"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="m6.75 9.75 5.25 5.25 5.25-5.25"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.75"
-      />
-    </svg>
-  );
+type TwikooWindow = Window & {
+  twikoo?: TwikooClient;
+};
+
+const TWIKOO_VERSION = process.env.NEXT_PUBLIC_TWIKOO_VERSION?.trim() || "1.7.7";
+
+let twikooLoader: Promise<TwikooClient> | null = null;
+let twikooLoaderUrl = "";
+
+function getTwikooScriptUrl(envId: string) {
+  const bundleName =
+    envId.startsWith("https://") || envId.startsWith("http://")
+      ? "twikoo.min.js"
+      : "twikoo.all.min.js";
+
+  return `https://cdn.jsdelivr.net/npm/twikoo@${TWIKOO_VERSION}/dist/${bundleName}`;
 }
 
-export default function Comments({ postSlug }: CommentsProps) {
-  const [comments, setComments] = useState<CommentTreeItem[]>([]);
-  const [meta, setMeta] = useState(defaultMeta);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [hasLoaded, setHasLoaded] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+function loadTwikooScript(scriptUrl: string) {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("Twikoo 只能在浏览器环境中加载。"));
+  }
 
-  const loadComments = useCallback(
-    async (keepPrevious = false) => {
-      if (!keepPrevious) {
-        setLoading(true);
+  const twikoo = (window as TwikooWindow).twikoo;
+  if (twikoo) {
+    return Promise.resolve(twikoo);
+  }
+
+  if (twikooLoader && twikooLoaderUrl === scriptUrl) {
+    return twikooLoader;
+  }
+
+  twikooLoaderUrl = scriptUrl;
+  twikooLoader = new Promise<TwikooClient>((resolve, reject) => {
+    const handleLoad = () => {
+      const loadedTwikoo = (window as TwikooWindow).twikoo;
+      if (loadedTwikoo) {
+        resolve(loadedTwikoo);
+        return;
       }
 
-      setError("");
-
-      try {
-        const response = await fetch(`/api/comments?postSlug=${encodeURIComponent(postSlug)}`, {
-          cache: "no-store",
-        });
-        const payload = (await response.json()) as CommentListResponse & { error?: string };
-
-        if (!response.ok) {
-          throw new Error(payload.error ?? "评论加载失败，请稍后重试。");
-        }
-
-        setComments(payload.comments);
-        setMeta(payload.meta);
-        setHasLoaded(true);
-      } catch (loadError) {
-        setError(loadError instanceof Error ? loadError.message : "评论加载失败，请稍后重试。");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [postSlug]
-  );
-
-  useEffect(() => {
-    const syncExpandedStateFromHash = () => {
-      if (window.location.hash === "#comments") {
-        setIsExpanded(true);
-      }
+      twikooLoader = null;
+      reject(new Error("Twikoo 脚本已加载，但未找到全局实例。"));
     };
 
-    syncExpandedStateFromHash();
-    window.addEventListener("hashchange", syncExpandedStateFromHash);
-    return () => window.removeEventListener("hashchange", syncExpandedStateFromHash);
+    const handleError = () => {
+      twikooLoader = null;
+      reject(new Error("Twikoo 脚本加载失败，请检查网络或 CDN 配置。"));
+    };
+
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[data-twikoo-script="true"]'
+    );
+
+    if (existingScript) {
+      if (existingScript.src !== scriptUrl) {
+        existingScript.remove();
+      } else {
+        existingScript.addEventListener("load", handleLoad, { once: true });
+        existingScript.addEventListener("error", handleError, { once: true });
+        return;
+      }
+    }
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.defer = true;
+    script.src = scriptUrl;
+    script.dataset.twikooScript = "true";
+    script.addEventListener("load", handleLoad, { once: true });
+    script.addEventListener("error", handleError, { once: true });
+    document.head.appendChild(script);
+  });
+
+  return twikooLoader;
+}
+
+export default function Comments({ path }: CommentsProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const envId = process.env.NEXT_PUBLIC_TWIKOO_ENV_ID?.trim() || "";
+  const region = process.env.NEXT_PUBLIC_TWIKOO_REGION?.trim() || "";
+  const lang = process.env.NEXT_PUBLIC_TWIKOO_LANG?.trim() || "zh-CN";
+  const scriptUrl = useMemo(
+    () => (envId ? getTwikooScriptUrl(envId) : ""),
+    [envId]
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const containerId = useMemo(() => "twikoo-comments", []);
+  const envHelp = useMemo(() => {
+    if (process.env.NODE_ENV === "development") {
+      return "请先配置 NEXT_PUBLIC_TWIKOO_ENV_ID；腾讯云填写环境 ID，Vercel/Netlify/自建服务填写完整地址。";
+    }
+
+    return "评论系统暂未开放。";
   }, []);
 
   useEffect(() => {
-    if (!isExpanded || hasLoaded || loading) {
+    const container = containerRef.current;
+    if (!envId || !container || !scriptUrl) {
       return;
     }
 
-    void loadComments();
-  }, [hasLoaded, isExpanded, loadComments, loading]);
+    let cancelled = false;
 
-  const totalCount = useMemo(() => countComments(comments), [comments]);
-  const panelId = `comments-panel-${postSlug}`;
+    setIsLoading(true);
+    setError("");
+    container.innerHTML = "";
 
-  async function handleCommentSubmitted(response: CreateCommentResponse) {
-    setIsExpanded(true);
+    void loadTwikooScript(scriptUrl)
+      .then(async (twikoo) => {
+        if (cancelled) {
+          return;
+        }
 
-    if (response.status === "approved") {
-      await loadComments(true);
-    }
-  }
+        await Promise.resolve(
+          twikoo.init({
+            el: `#${containerId}`,
+            envId,
+            lang,
+            path,
+            region: region || undefined,
+          })
+        );
+
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      })
+      .catch((loadError) => {
+        if (cancelled) {
+          return;
+        }
+
+        setIsLoading(false);
+        setError(
+          loadError instanceof Error
+            ? loadError.message
+            : "Twikoo 初始化失败，请检查环境配置。"
+        );
+      });
+
+    return () => {
+      cancelled = true;
+      if (containerRef.current) {
+        containerRef.current.innerHTML = "";
+      }
+    };
+  }, [containerId, envId, lang, path, region, scriptUrl]);
 
   return (
     <section id="comments" className="mt-1 sm:mt-1.5">
-      <div>
-        <button
-          aria-controls={panelId}
-          aria-expanded={isExpanded}
-          className={`flex w-full justify-between gap-3 text-left transition ${
-            isExpanded ? "items-start py-2.5 sm:py-3" : "items-center py-2 sm:py-2.5"
-          }`}
-          type="button"
-          onClick={() => setIsExpanded((current) => !current)}
-        >
-          <div className="min-w-0 space-y-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="inline-flex items-center gap-2 text-[0.98rem] font-semibold text-accent/92 sm:text-[1.02rem]">
-                <CommentIconMessage className="h-[0.98rem] w-[0.98rem]" />
-                <span>评论</span>
-                {hasLoaded ? (
-                  <span className="text-[0.82rem] font-medium text-foreground/52">
-                    {totalCount > 0 ? `(${totalCount})` : ""}
-                  </span>
-                ) : null}
-              </h2>
-            </div>
+      <div className="space-y-3 border-t border-border/45 pt-3 sm:pt-3.5">
+        <div className="space-y-1">
+          <h2 className="inline-flex items-center gap-2 text-[0.98rem] font-semibold text-accent/92 sm:text-[1.02rem]">
+            <CommentIconMessage className="h-[0.98rem] w-[0.98rem]" />
+            <span>评论</span>
+          </h2>
+          <p className="max-w-2xl pr-2 text-[0.8rem] leading-6 text-foreground/52">
+            由 Twikoo 提供评论与通知能力，按文章路径隔离评论数据。
+          </p>
+        </div>
 
-            <p className="max-w-2xl pr-2 text-[0.8rem] leading-6 text-foreground/52">
-              {isExpanded
-                ? meta.moderation === "manual"
-                  ? "提交后会先进入审核队列，公开评论会显示地点、浏览器和系统信息。"
-                  : "公开评论会显示地点、浏览器和系统信息。"
-                : hasLoaded && totalCount > 0
-                  ? `已有 ${totalCount} 条公开评论，点击展开继续查看或留言。`
-                  : "点击展开查看评论与留言表单。"}
-            </p>
+        {!envId ? (
+          <div className="border border-dashed border-border/60 bg-muted/10 px-4 py-3 text-sm leading-7 text-foreground/60">
+            {envHelp}
           </div>
-
-          <span
-            className={`inline-flex shrink-0 items-center gap-1 text-[0.78rem] font-medium text-foreground/58 transition hover:text-accent ${isExpanded ? "mt-0.5" : ""}`}
-          >
-            <span>{isExpanded ? "收起" : "展开"}</span>
-            <CommentChevron expanded={isExpanded} />
-          </span>
-        </button>
-
-        {isExpanded ? (
-          <div id={panelId} className="border-t border-border/45 pt-3 sm:pt-3.5">
-            <CommentForm onSubmitted={handleCommentSubmitted} postSlug={postSlug} />
-
-            {loading ? (
-              <div className="mt-3 space-y-3">
+        ) : (
+          <>
+            {isLoading ? (
+              <div className="space-y-3" aria-live="polite">
                 <div className="h-[4.5rem] border-b border-border/45 bg-muted/10" />
                 <div className="h-[4.5rem] border-b border-border/35 bg-muted/5" />
               </div>
-            ) : error ? (
-              <div className="mt-3 border-b border-red-200/70 py-3 text-sm text-red-600 dark:border-red-500/30 dark:text-red-300">
+            ) : null}
+
+            {error ? (
+              <div className="border border-red-200/70 px-4 py-3 text-sm text-red-600 dark:border-red-500/30 dark:text-red-300">
                 <p>{error}</p>
-                <button
-                  className="mt-2 text-[0.82rem] font-medium transition hover:opacity-80"
-                  type="button"
-                  onClick={() => void loadComments()}
-                >
-                  重新加载
-                </button>
+                <p className="mt-1 text-[0.82rem] text-current/80">
+                  请确认 Twikoo 后端可访问，并让前端 CDN 版本与后端版本保持一致。
+                </p>
               </div>
-            ) : comments.length === 0 ? (
-              <div className="mt-3 border-b border-dashed border-border/55 py-4 text-sm leading-7 text-foreground/58">
-                这里还没有评论，来留下第一条想法吧。
-              </div>
-            ) : (
-              <ul className="mt-3 flex flex-col">
-                {comments.map((comment) => (
-                  <CommentItem
-                    key={comment.id}
-                    comment={comment}
-                    depth={0}
-                    onCommentSubmitted={handleCommentSubmitted}
-                  />
-                ))}
-              </ul>
-            )}
-          </div>
-        ) : null}
+            ) : null}
+
+            <div
+              id={containerId}
+              ref={containerRef}
+              className={isLoading ? "min-h-[12rem]" : ""}
+              data-twikoo-path={path}
+            />
+          </>
+        )}
       </div>
     </section>
   );

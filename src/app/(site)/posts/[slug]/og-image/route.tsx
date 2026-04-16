@@ -1,10 +1,13 @@
 import { ImageResponse } from "next/og";
 import { getPostBySlug } from "@/lib/blog";
+import { SITE } from "@/lib/config";
 import { SEO_BRAND_NAME } from "@/lib/seo";
 
 interface RouteContext {
   params: Promise<{ slug: string }>;
 }
+
+const SITE_HOST = new URL(SITE.website).host;
 
 function truncate(text: string, maxLength: number) {
   if (text.length <= maxLength) {
@@ -137,7 +140,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
             fontSize: 24,
           }}
         >
-          chenguitao.com
+          {SITE_HOST}
         </div>
       </div>
     </div>,

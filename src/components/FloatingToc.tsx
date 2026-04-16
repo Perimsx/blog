@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion, useSpring } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToc } from "./TocContext";
 
@@ -232,22 +232,6 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
     };
   }, [open]);
 
-  const mouseX = useSpring(0, { stiffness: 150, damping: 15 });
-  const mouseY = useSpring(0, { stiffness: 150, damping: 15 });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    mouseX.set(x * 0.35);
-    mouseY.set(y * 0.35);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-  };
-
   if (!tocItems.length) return null;
 
   return (
@@ -273,15 +257,10 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
         aria-expanded={open}
         aria-controls="floating-toc-panel"
         onClick={() => setOpen(!open)}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        style={{
-          x: mouseX,
-          y: mouseY,
-        }}
-        className={`group fixed z-50 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-[0.85rem] bg-background shadow-[0_4px_16px_rgba(0,0,0,0.08)] ring-1 ring-foreground/[0.04] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:ring-foreground/[0.08] transition-all hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] active:scale-95 ${open ? "opacity-0 pointer-events-none scale-90 translate-x-4" : "opacity-100 scale-100"}`}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ duration: 0.14, ease: "easeOut" }}
+        className={`group fixed z-50 flex h-10 w-10 items-center justify-center rounded-[0.85rem] bg-background shadow-[0_4px_16px_rgba(0,0,0,0.08)] ring-1 ring-foreground/[0.04] transition-[opacity,box-shadow,transform] duration-150 hover:shadow-[0_6px_18px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:ring-foreground/[0.08] dark:hover:shadow-[0_6px_18px_rgba(0,0,0,0.34)] sm:h-11 sm:w-11 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -293,7 +272,7 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="text-slate-500 transition-colors group-hover:text-accent dark:text-slate-400"
+          className="text-slate-500 dark:text-slate-400 group-hover:text-accent"
         >
           <line x1="4" y1="6" x2="20" y2="6" />
           <line x1="4" y1="12" x2="14" y2="12" />

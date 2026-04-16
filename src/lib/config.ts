@@ -1,11 +1,11 @@
 // Site configuration - migrated from Astro src/site.ts
 
 export const SITE = {
-  website: "https://chenguitao.com/",
+  website: "https://blog.cot.wiki/",
   author: "Perimsx",
   avatar: "https://img1.tucang.cc/api/image/show/634a56a76f7455df0e2fb5419533e0cf",
-  profile: "https://chenguitao.com/about",
-  desc: "记录成长，分享价值。信息安全专业学生，Web 开发爱好者。",
+  profile: "https://blog.cot.wiki/about",
+  desc: "记录成长，分享价值。信息安全专业学生，全栈开发爱好者。",
   title: "Cotovo",
   email: "1722288011@qq.com",
   qq: "1722288011",
@@ -27,7 +27,7 @@ export const SITE = {
   comments: {
     enabled: true,
     autoApprove: true,
-    backend: "edgeone-kv-ready-local-adapter",
+    backend: "twikoo",
   },
 } as const;
 
