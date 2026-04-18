@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE } from "@/lib/config";
@@ -9,6 +10,9 @@ const defaultAnalyticsPath = isVercel
   : path.join(process.cwd(), ".data", "analytics.local.json");
 const ANALYTICS_DATA_FILE = process.env.ANALYTICS_DATA_FILE || defaultAnalyticsPath;
 const ANALYTICS_DUPLICATE_WINDOW_MS = 5000;
+const ANALYTICS_DURATION_BUCKET_MS = 1500;
+const ANALYTICS_KV_BINDING = process.env.ANALYTICS_KV_BINDING?.trim() || "cotovo";
+const ANALYTICS_KV_PREFIX = "analytics_event_";
 const MAX_ANALYTICS_EVENTS = 50000;
 const ANALYTICS_TIME_ZONE = SITE.timezone || "UTC";
 let analyticsDatabaseQueue: Promise<unknown> = Promise.resolve();
@@ -34,6 +38,26 @@ export interface AnalyticsEventRecord {
 
 interface AnalyticsDatabase {
   events: AnalyticsEventRecord[];
+}
+
+interface AnalyticsKvListKey {
+  key: string;
+}
+
+interface AnalyticsKvListResult {
+  complete: boolean;
+  cursor: string | null;
+  keys: AnalyticsKvListKey[];
+}
+
+interface AnalyticsKvNamespace {
+  delete(key: string): Promise<void>;
+  get(key: string, options?: string | { type: string }): Promise<unknown>;
+  list(options?: { cursor?: string; limit?: number; prefix?: string }): Promise<AnalyticsKvListResult>;
+  put(
+    key: string,
+    value: ArrayBuffer | ArrayBufferView | ReadableStream | string
+  ): Promise<void>;
 }
 
 export interface AnalyticsOverview {
@@ -89,6 +113,39 @@ export interface RecordAnalyticsInput {
 export interface RecordAnalyticsResult {
   reason?: "bot" | "duplicate" | "ignored";
   stored: boolean;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isAnalyticsKvNamespace(value: unknown): value is AnalyticsKvNamespace {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.delete === "function" &&
+    typeof value.get === "function" &&
+    typeof value.list === "function" &&
+    typeof value.put === "function"
+  );
+}
+
+function isAnalyticsEventRecord(value: unknown): value is AnalyticsEventRecord {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === "string" &&
+    typeof value.path === "string" &&
+    typeof value.referrer === "string" &&
+    typeof value.sessionId === "string" &&
+    typeof value.timestamp === "string" &&
+    typeof value.type === "string" &&
+    typeof value.visitorId === "string"
+  );
 }
 
 function normalizeText(value: string | null | undefined, maxLength = 240) {
@@ -216,7 +273,31 @@ function withDatabaseLock<T>(task: () => Promise<T>) {
   return run;
 }
 
-async function readDatabase(): Promise<AnalyticsDatabase> {
+function getAnalyticsKvNamespace() {
+  const runtimeValue = (globalThis as Record<string, unknown>)[ANALYTICS_KV_BINDING];
+  return isAnalyticsKvNamespace(runtimeValue) ? runtimeValue : null;
+}
+
+function getEventDurationBucket(durationMs: number | null) {
+  return Math.floor((durationMs ?? 0) / ANALYTICS_DURATION_BUCKET_MS);
+}
+
+function createEventStorageKey(record: AnalyticsEventRecord) {
+  const timeBucket = Math.floor(Date.parse(record.timestamp) / ANALYTICS_DUPLICATE_WINDOW_MS);
+  const fingerprint = [
+    record.type,
+    record.sessionId,
+    record.visitorId,
+    record.path,
+    String(timeBucket),
+    record.type === "pageleave" ? String(getEventDurationBucket(record.durationMs)) : "",
+  ].join("|");
+  const hash = createHash("sha256").update(fingerprint).digest("hex").slice(0, 24);
+
+  return `${ANALYTICS_KV_PREFIX}${timeBucket}_${hash}`;
+}
+
+async function readFileDatabase(): Promise<AnalyticsDatabase> {
   try {
     const raw = await fs.readFile(ANALYTICS_DATA_FILE, "utf8");
     const parsed = JSON.parse(raw) as Partial<AnalyticsDatabase>;
@@ -229,13 +310,63 @@ async function readDatabase(): Promise<AnalyticsDatabase> {
   }
 }
 
-async function writeDatabase(database: AnalyticsDatabase) {
+async function writeFileDatabase(database: AnalyticsDatabase) {
   try {
     await fs.mkdir(path.dirname(ANALYTICS_DATA_FILE), { recursive: true });
     await fs.writeFile(ANALYTICS_DATA_FILE, `${JSON.stringify(database, null, 2)}\n`, "utf8");
   } catch (err) {
     console.warn("[Analytics] Failed to write to database buffer (read-only filesystem?)", err);
   }
+}
+
+async function readKvDatabase(namespace: AnalyticsKvNamespace): Promise<AnalyticsDatabase> {
+  const keys: string[] = [];
+  let cursor: string | undefined;
+
+  do {
+    const result = await namespace.list({
+      cursor,
+      limit: 256,
+      prefix: ANALYTICS_KV_PREFIX,
+    });
+
+    for (const item of result.keys) {
+      keys.push(item.key);
+    }
+
+    cursor = result.complete ? undefined : result.cursor ?? undefined;
+  } while (cursor);
+
+  if (!keys.length) {
+    return { events: [] };
+  }
+
+  const records = await Promise.all(
+    keys.map(async (key) => {
+      try {
+        const value = await namespace.get(key, { type: "json" });
+        return isAnalyticsEventRecord(value) ? value : null;
+      } catch {
+        return null;
+      }
+    })
+  );
+
+  return {
+    events: records
+      .filter((record): record is AnalyticsEventRecord => record !== null)
+      .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp))
+      .slice(-MAX_ANALYTICS_EVENTS),
+  };
+}
+
+async function readDatabase(): Promise<AnalyticsDatabase> {
+  const namespace = getAnalyticsKvNamespace();
+  if (namespace) {
+    return readKvDatabase(namespace);
+  }
+
+  return readFileDatabase();
 }
 
 function buildEmptySnapshot(): AnalyticsSnapshot {
@@ -305,7 +436,6 @@ export async function recordAnalyticsEvent(
   request: Request
 ): Promise<RecordAnalyticsResult> {
   return withDatabaseLock(async () => {
-    const database = await readDatabase();
     const meta = getAnalyticsRequestMeta(request);
     const normalizedPath = normalizePath(input.path);
 
@@ -340,6 +470,27 @@ export async function recordAnalyticsEvent(
       throw new Error("missing identifiers");
     }
 
+    const namespace = getAnalyticsKvNamespace();
+
+    if (namespace) {
+      const storageKey = createEventStorageKey(record);
+
+      try {
+        const existing = await namespace.get(storageKey, { type: "json" });
+        if (isAnalyticsEventRecord(existing)) {
+          return { reason: "duplicate", stored: false };
+        }
+      } catch {
+        // Ignore duplicate-check read failures and let the write attempt decide success.
+      }
+
+      await namespace.put(storageKey, JSON.stringify(record));
+
+      return { stored: true };
+    }
+
+    const database = await readFileDatabase();
+
     if (hasRecentDuplicate(database.events, record)) {
       return { reason: "duplicate", stored: false };
     }
@@ -350,7 +501,7 @@ export async function recordAnalyticsEvent(
       database.events = database.events.slice(-MAX_ANALYTICS_EVENTS);
     }
 
-    await writeDatabase(database);
+    await writeFileDatabase(database);
 
     return { stored: true };
   });
