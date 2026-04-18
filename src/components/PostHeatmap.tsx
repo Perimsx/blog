@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { SITE } from "@/lib/config";
 
 interface PostHeatmapProps {
@@ -48,24 +48,11 @@ function getDateKeyInTimeZone(date: Date, timeZone: string) {
   return createDateKey(parts.year, parts.month, parts.day);
 }
 
-function parseDateKey(dateKey: string) {
-  const [year, month, day] = dateKey.split("-").map(Number);
-  return new Date(year, month - 1, day);
-}
-
-function formatDateLabel(date: Date) {
-  return getDateKeyInTimeZone(date, HEATMAP_TIME_ZONE);
-}
-
 export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts, initialNow }) => {
-  const [now, setNow] = useState(initialNow);
-
-  useEffect(() => {
-    const liveNow = new Date().toISOString();
-    if (liveNow !== initialNow) {
-      setNow(liveNow);
-    }
-  }, [initialNow]);
+  const todayDateKey = useMemo(
+    () => getDateKeyInTimeZone(new Date(initialNow), HEATMAP_TIME_ZONE),
+    [initialNow]
+  );
 
   const { weeks, months } = useMemo(() => {
     const postDates = posts.map((post) => {
@@ -77,7 +64,6 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts, initialNow }) =
       dateCounts[dateKey] = (dateCounts[dateKey] || 0) + 1;
     });
 
-    const todayDateKey = getDateKeyInTimeZone(new Date(now), HEATMAP_TIME_ZONE);
     const [tYear, tMonth, tDay] = todayDateKey.split("-").map(Number);
     const todayUTCDate = new Date(Date.UTC(tYear, tMonth - 1, tDay));
     
@@ -142,7 +128,7 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts, initialNow }) =
     });
 
     return { weeks: weeksData, months: monthsData };
-  }, [now, posts]);
+  }, [posts, todayDateKey]);
 
   const cellSize = 10;
   const cellGap = 2.3;
@@ -197,9 +183,7 @@ export const PostHeatmap: React.FC<PostHeatmapProps> = ({ posts, initialNow }) =
                     data-date={day.dateKey}
                     data-count={day.count}
                   >
-                    <title>
-                      {day.count} 篇文章 - {day.dateKey}
-                    </title>
+                    <title>{`${day.count} 篇文章 - ${day.dateKey}`}</title>
                   </rect>
                 )
               ))}

@@ -48,6 +48,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   // Next.js 16 defaults to Turbopack, but @ducanh2912/next-pwa requires webpack
   turbopack: {},
   async headers() {

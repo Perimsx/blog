@@ -4,9 +4,18 @@ import { Card } from "@/components/Card";
 import { Tag } from "@/components/Tag";
 import { getSortedPosts, getUniqueTags } from "@/lib/blog";
 import { createPageMetadata } from "@/lib/seo";
+import { slugifyStr } from "@/lib/slugify";
 
 interface PageProps {
   params: Promise<{ tag: string }>;
+}
+
+function normalizeTagParam(tagParam: string) {
+  try {
+    return slugifyStr(decodeURIComponent(tagParam));
+  } catch {
+    return slugifyStr(tagParam);
+  }
 }
 
 export async function generateStaticParams() {
@@ -16,8 +25,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { tag } = await params;
+  const normalizedTag = normalizeTagParam(tag);
   const tags = await getUniqueTags();
-  const tagInfo = tags.find((t) => t.tag === tag);
+  const tagInfo = tags.find((t) => t.tag === normalizedTag);
   if (!tagInfo) return {};
 
   return createPageMetadata({
@@ -30,18 +40,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function TagPage({ params }: PageProps) {
   const { tag } = await params;
+  const normalizedTag = normalizeTagParam(tag);
   const tags = await getUniqueTags();
-  const tagInfo = tags.find((t) => t.tag === tag);
+  const tagInfo = tags.find((t) => t.tag === normalizedTag);
 
   if (!tagInfo) {
     notFound();
   }
 
   const allPosts = await getSortedPosts();
-  const tagSlug = tag;
-
   const filteredPosts = allPosts.filter((post) =>
-    (post.data.tags ?? []).some((t) => t.toLowerCase() === tagSlug.toLowerCase() || t === tagSlug)
+    (post.data.tags ?? []).some((postTag) => slugifyStr(postTag) === normalizedTag)
   );
 
   return (

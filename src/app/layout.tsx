@@ -46,6 +46,8 @@ const siteJsonLd = {
   ],
 };
 
+const safeSiteJsonLd = JSON.stringify(siteJsonLd).replace(/</g, "\\u003c");
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.website),
   title: {
@@ -121,12 +123,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
         <link rel="stylesheet" href="https://fontsapi.zeoseven.com/382/main/result.css" />
-        <Script id="theme-initializer" strategy="beforeInteractive">
-          {themeInitializer}
-        </Script>
-        <Script id="site-json-ld" type="application/ld+json" strategy="beforeInteractive">
-          {JSON.stringify(siteJsonLd)}
-        </Script>
+        <script id="theme-initializer" dangerouslySetInnerHTML={{ __html: themeInitializer }} />
+        <script
+          id="site-json-ld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeSiteJsonLd }}
+        />
         {process.env.NODE_ENV === "production" ? (
           <Script
             id="umami-analytics"

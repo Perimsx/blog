@@ -44,7 +44,7 @@ export const ShareLinks: React.FC<ShareLinksProps> = ({ url }) => {
                 <button
                   type="button"
                   key={social.name}
-                  className="group inline-block p-2 hover:rotate-6 transition-transform"
+                  className="group inline-block p-1.5 sm:p-2 hover:rotate-6 transition-transform"
                   title={social.linkTitle}
                   aria-haspopup="dialog"
                   onClick={handleWechatClick}
@@ -63,7 +63,7 @@ export const ShareLinks: React.FC<ShareLinksProps> = ({ url }) => {
               <a
                 key={social.name}
                 href={shareUrl}
-                className="inline-block p-2 hover:rotate-6 hover:text-accent"
+                className="inline-block p-1.5 sm:p-2 hover:rotate-6 hover:text-accent"
                 title={social.linkTitle}
                 target="_blank"
                 rel="noopener noreferrer"

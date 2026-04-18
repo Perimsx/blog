@@ -291,7 +291,7 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="fixed right-3 bottom-[max(6.5rem,calc(env(safe-area-inset-bottom)+6.5rem))] z-[105] flex max-h-[40vh] w-[min(80vw,272px)] flex-col overflow-hidden rounded-xl border border-border/55 bg-background/95 backdrop-blur-2xl shadow-xl xl:bottom-auto xl:top-20 xl:left-auto xl:right-3 2xl:right-10 xl:h-auto xl:max-h-[calc(100vh-15rem)] xl:w-[228px] xl:rounded-none xl:border-none xl:bg-transparent xl:shadow-none xl:transform-none select-none"
           >
-            <div className="flex items-center justify-between px-1.5 pt-0.5 pb-0.5 xl:px-0">
+            <div className="flex items-center justify-between px-1.5 pt-2 pb-1 xl:px-0 xl:pt-0.5 xl:pb-0.5">
               <h3 className="text-[12px] font-semibold tracking-[0.18em] text-foreground/65 uppercase">
                 目录
               </h3>
@@ -318,7 +318,7 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
               </button>
             </div>
 
-            <div className="flex min-h-0 flex-1 flex-col px-1 pt-0 pb-0 sm:px-1.5 xl:px-0">
+            <div className="flex min-h-0 flex-1 flex-col px-1 pt-0 pb-2 sm:px-1.5 xl:px-0 xl:pb-0">
               <nav
                 ref={listContainerRef}
                 className="min-h-0 flex-1 overflow-y-auto pr-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -331,7 +331,7 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
                   } as React.CSSProperties
                 }
               >
-                <ul className="relative border-l border-border/70 pt-1 pb-4 text-[0.78rem] space-y-px">
+                <ul className="relative border-l border-border/70 pt-1 pb-0 text-[0.78rem] space-y-px xl:pb-4">
                   {tocItems.map((item) => (
                     <TocItem
                       key={item.targetId}
