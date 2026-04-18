@@ -107,13 +107,11 @@ export default function Comments({ path }: CommentsProps) {
   const [error, setError] = useState("");
 
   const containerId = useMemo(() => "twikoo-comments", []);
-  const envHelp = useMemo(() => {
-    if (process.env.NODE_ENV === "development") {
-      return "请先配置 NEXT_PUBLIC_TWIKOO_ENV_ID；腾讯云填写环境 ID，Vercel/Netlify/自建服务填写完整地址。";
-    }
-
-    return "评论系统暂未开放。";
-  }, []);
+  const envHelp = (
+    <span className="whitespace-nowrap">
+      评论功能暂未开放，如有问题联系<a href="mailto:Cotovo@163.com" className="transition-colors hover:text-accent hover:underline">Cotovo@163.com</a>
+    </span>
+  );
 
   useEffect(() => {
     const container = containerRef.current;
@@ -171,18 +169,13 @@ export default function Comments({ path }: CommentsProps) {
   return (
     <section id="comments" className="mt-1 sm:mt-1.5">
       <div className="space-y-3 border-t border-border/45 pt-3 sm:pt-3.5">
-        <div className="space-y-1">
-          <h2 className="inline-flex items-center gap-2 text-[0.98rem] font-semibold text-accent/92 sm:text-[1.02rem]">
-            <CommentIconMessage className="h-[0.98rem] w-[0.98rem]" />
-            <span>评论</span>
-          </h2>
-          <p className="max-w-2xl pr-2 text-[0.8rem] leading-6 text-foreground/52">
-            由 Twikoo 提供评论与通知能力，按文章路径隔离评论数据。
-          </p>
-        </div>
+        <h2 className="inline-flex items-center gap-2 text-[0.98rem] font-semibold text-accent/92 sm:text-[1.02rem]">
+          <CommentIconMessage className="h-[0.98rem] w-[0.98rem]" />
+          <span>评论</span>
+        </h2>
 
         {!envId ? (
-          <div className="border border-dashed border-border/60 bg-muted/10 px-4 py-3 text-sm leading-7 text-foreground/60">
+          <div className="flex w-full items-center justify-center rounded-xl border border-dashed border-border/60 bg-muted/10 px-4 py-6 text-[0.9rem] text-foreground/60">
             {envHelp}
           </div>
         ) : (
