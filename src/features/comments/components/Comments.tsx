@@ -108,9 +108,15 @@ export default function Comments({ path }: CommentsProps) {
 
   const containerId = useMemo(() => "twikoo-comments", []);
   const envHelp = (
-    <span className="whitespace-nowrap">
-      评论功能暂未开放，如有问题联系<a href="mailto:Cotovo@163.com" className="transition-colors hover:text-accent hover:underline">Cotovo@163.com</a>
-    </span>
+    <div className="flex flex-col items-center gap-1 text-center sm:flex-row sm:gap-2 sm:text-left">
+      <span>评论功能暂未开放，如有问题联系</span>
+      <a
+        href="mailto:Cotovo@163.com"
+        className="font-medium text-accent transition-colors hover:underline"
+      >
+        Cotovo@163.com
+      </a>
+    </div>
   );
 
   useEffect(() => {
