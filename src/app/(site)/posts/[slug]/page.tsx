@@ -113,8 +113,8 @@ export default async function PostPage({ params }: PageProps) {
   const prevPost = currentIndex > 0 ? allPostPaths[currentIndex - 1] : null;
   const nextPost =
     currentIndex >= 0 && currentIndex < allPostPaths.length - 1
-      ? allPostPaths[currentIndex + 1]
-      : null;
+    ? allPostPaths[currentIndex + 1]
+    : null;
 
   const postUrl = `/posts/${post.url}`;
   const canonicalUrl = getPostCanonicalUrl(post.url, post.data.canonicalURL);
@@ -257,7 +257,7 @@ export default async function PostPage({ params }: PageProps) {
         <FloatingToc toc={headings} />
 
         {/* Tags and Share */}
-        <div className="mt-5 mb-5 flex flex-wrap items-center justify-between gap-3 sm:my-7">
+        <div className="mt-5 mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:my-7">
           <ul className="flex flex-wrap gap-x-4 gap-y-2">
             {uniqueTags.map(([tag, tagName]) => (
               <Tag key={tag} tag={tag} tagName={tagName} />

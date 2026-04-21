@@ -30,8 +30,8 @@ export const Socials: React.FC<SocialsProps> = ({ centered = false, compactOnMob
   return (
     <div
       className={[
-        "flex flex-wrap",
-        compactOnMobile ? "gap-0.5 sm:gap-1" : "gap-1",
+        "flex flex-wrap items-center",
+        compactOnMobile ? "gap-2 sm:gap-1" : "gap-3 sm:gap-2",
         centered ? "justify-center" : "justify-center sm:justify-start",
       ].join(" ")}
     >
@@ -43,7 +43,7 @@ export const Socials: React.FC<SocialsProps> = ({ centered = false, compactOnMob
             href={social.href}
             className={[
               "group inline-block hover:text-accent hover:rotate-6",
-              compactOnMobile ? "p-1.5 sm:p-1" : "p-2 sm:p-1",
+              compactOnMobile ? "p-2 sm:p-1" : "p-2.5 sm:p-1",
             ].join(" ")}
             title={social.linkTitle}
           >
