@@ -5,7 +5,7 @@ export const SEO_BRAND_NAME = "Perimsx";
 export const SEO_SITE_NAME = SEO_BRAND_NAME;
 
 const ABSOLUTE_URL_PATTERN = /^https?:\/\//i;
-export const DEFAULT_OG_IMAGE_PATH = SITE.ogImage ? normalizeLocalPath(SITE.ogImage) : "/og-image.jpg";
+export const DEFAULT_OG_IMAGE_PATH = "/android-chrome-512x512.png";
 
 export interface ShareImage {
   alt?: string;

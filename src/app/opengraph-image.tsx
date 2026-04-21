@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { SITE } from "@/lib/config";
-import { SEO_BRAND_NAME } from "@/lib/seo";
+import { SEO_BRAND_NAME, toAbsoluteUrl } from "@/lib/seo";
 
 export const alt = `${SEO_BRAND_NAME} 分享图`;
 export const contentType = "image/png";
@@ -36,13 +36,27 @@ export default function OpenGraphImage() {
       >
         <div
           style={{
+            alignItems: "center",
             display: "flex",
-            fontSize: 32,
-            fontWeight: 700,
-            letterSpacing: 1,
+            gap: 16,
           }}
         >
-          {SEO_BRAND_NAME}
+          <img
+            src={toAbsoluteUrl("/android-chrome-512x512.png")}
+            width={48}
+            height={48}
+            style={{ borderRadius: 10 }}
+          />
+          <div
+            style={{
+              display: "flex",
+              fontSize: 32,
+              fontWeight: 700,
+              letterSpacing: 1,
+            }}
+          >
+            {SEO_BRAND_NAME}
+          </div>
         </div>
         <div
           style={{

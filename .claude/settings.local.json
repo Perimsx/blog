@@ -36,8 +36,8 @@
       "Bash(minimax-mcp-js --help)",
       "Read(//c/Users/Chen/.claude/**)",
       "Read(//c/Users/Chen/.claude/projects/**)",
-      "WebFetch(domain:www.chenguitao.com)",
-      "Bash(curl -s --max-time 10 \"https://www.chenguitao.com/\")",
+      "WebFetch(domain:blog.cot.wiki)",
+      "Bash(curl -s --max-time 10 \"https://blog.cot.wiki/\")",
       "Bash(curl:*)",
       "Bash(rm -rf src/utils/)",
       "Bash(rm -f merge_tags.js tmp_tags.js)",
@@ -56,3 +56,4 @@
     "minimax"
   ]
 }
+

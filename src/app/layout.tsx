@@ -73,6 +73,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     description: SITE.desc,
+    images: [DEFAULT_SHARE_IMAGE],
     locale: "zh_CN",
     siteName: SEO_BRAND_NAME,
     title: BROWSER_TITLE,
@@ -82,6 +83,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     description: SITE.desc,
+    images: [DEFAULT_SHARE_IMAGE.url],
     title: BROWSER_TITLE,
   },
   robots: {
