@@ -41,15 +41,7 @@ const TocItem = memo(function TocItem({
         }}
       >
         {isActive && (
-          <motion.div
-            layoutId="active-toc-indicator"
-            className="absolute top-1 bottom-1 left-[-1px] w-[2px] bg-accent"
-            transition={{
-              type: "spring",
-              stiffness: 400,
-              damping: 30,
-            }}
-          />
+          <div className="absolute top-1 bottom-1 left-[-1px] w-[2px] bg-accent" />
         )}
         <span className={isActive ? "whitespace-normal break-words" : "truncate"}>{item.text}</span>
       </a>
@@ -153,34 +145,6 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
     return () => clearTimeout(timer);
   }, [activeId, open]);
 
-  useEffect(() => {
-    if (!open || !listContainerRef.current) return;
-
-    const handleInteraction = () => {
-      isUserInteractingRef.current = true;
-      if (interactTimerRef.current) {
-        window.clearTimeout(interactTimerRef.current);
-      }
-      interactTimerRef.current = window.setTimeout(() => {
-        isUserInteractingRef.current = false;
-      }, 500);
-    };
-
-    const container = listContainerRef.current;
-    container.addEventListener("wheel", handleInteraction, { passive: true });
-    container.addEventListener("touchstart", handleInteraction, { passive: true });
-    container.addEventListener("touchmove", handleInteraction, { passive: true });
-
-    return () => {
-      container.removeEventListener("wheel", handleInteraction);
-      container.removeEventListener("touchstart", handleInteraction);
-      container.removeEventListener("touchmove", handleInteraction);
-      if (interactTimerRef.current) {
-        window.clearTimeout(interactTimerRef.current);
-      }
-    };
-  }, [open]);
-
   if (!tocItems.length) return null;
 
   return (
@@ -198,16 +162,12 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
         }
       `}</style>
 
-      <motion.button
+      <button
         id="floating-toc-btn"
         type="button"
         aria-label={open ? "关闭目录" : "打开目录"}
-        aria-expanded={open}
         onClick={() => setOpen(!open)}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        transition={{ type: "spring", stiffness: 450, damping: 30 }}
-        className={`fixed z-50 flex h-9 w-9 items-center justify-center rounded-xl bg-background shadow-lg ring-1 ring-foreground/[0.04] transition-opacity duration-200 dark:shadow-black/20 dark:ring-foreground/[0.08] sm:h-10 sm:w-10 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
+        className={`fixed z-50 flex h-9 w-9 items-center justify-center rounded-sm bg-background/90 text-slate-500 shadow-md ring-1 ring-border/50 backdrop-blur-sm transition-all hover:text-accent dark:ring-foreground/10 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -219,23 +179,22 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="text-slate-500 transition-colors dark:text-slate-400 group-hover:text-accent"
         >
           <line x1="4" y1="6" x2="20" y2="6" />
           <line x1="4" y1="12" x2="14" y2="12" />
           <line x1="4" y1="18" x2="18" y2="18" />
         </svg>
-      </motion.button>
+      </button>
 
       <AnimatePresence>
         {open && (
           <motion.aside
             id="floating-toc-panel"
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed right-2 bottom-[max(5.5rem,calc(env(safe-area-inset-bottom)+5.5rem))] z-[105] flex max-h-[45vh] w-[min(85vw,260px)] flex-col overflow-hidden rounded-xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl xl:bottom-auto xl:top-20 xl:right-3 xl:h-auto xl:max-h-[calc(100vh-15rem)] xl:w-[220px] xl:rounded-none xl:border-none xl:bg-transparent xl:shadow-none select-none"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.15 }}
+            className="fixed right-2 bottom-[max(5.5rem,calc(env(safe-area-inset-bottom)+5.5rem))] z-[105] flex max-h-[45vh] w-[min(85vw,260px)] flex-col overflow-hidden rounded-sm border border-border/60 bg-background/95 backdrop-blur-xl shadow-xl xl:bottom-auto xl:top-20 xl:right-3 xl:h-auto xl:max-h-[calc(100vh-15rem)] xl:w-[220px] xl:rounded-none xl:border-none xl:bg-transparent xl:shadow-none select-none"
           >
             <div className="flex items-center justify-between px-3 pt-2.5 pb-1 xl:px-0 xl:pt-0.5 xl:pb-1">
               <h3 className="text-[11px] font-bold tracking-widest text-foreground/50 uppercase">
@@ -244,7 +203,7 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="flex h-5 w-5 items-center justify-center rounded-md text-foreground/40 transition-colors hover:bg-muted/50 hover:text-foreground/70"
+                className="flex h-5 w-5 items-center justify-center rounded-sm text-foreground/40 transition-colors hover:bg-muted/50 hover:text-foreground/70"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
