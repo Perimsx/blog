@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { useToc } from "./TocContext";
 
 export interface Heading {
@@ -32,12 +32,12 @@ const TocItem = memo(function TocItem({
         data-target={item.targetId}
         aria-current={isActive ? "location" : undefined}
         onClick={handleClick}
-        className={`group relative flex items-start py-1 transition-colors duration-200 ${
+        className={`group relative flex items-start py-0.5 transition-colors duration-200 ${
           isActive ? "text-accent font-medium" : "text-foreground/60 hover:text-foreground/90"
         }`}
         style={{
-          paddingLeft: `${Math.max(0, item.depth - 2) * 10 + 8}px`,
-          fontSize: item.depth === 2 ? "12.5px" : "12px",
+          paddingLeft: `${Math.max(0, item.depth - 2) * 8 + 6}px`,
+          fontSize: item.depth === 2 ? "12px" : "11.5px",
         }}
       >
         {isActive && (
@@ -45,9 +45,9 @@ const TocItem = memo(function TocItem({
             layoutId="active-toc-indicator"
             className="absolute top-1 bottom-1 left-[-1px] w-[2px] bg-accent"
             transition={{
-              type: "tween",
-              ease: [0.25, 1, 0.5, 1],
-              duration: 0.4,
+              type: "spring",
+              stiffness: 400,
+              damping: 30,
             }}
           />
         )}
@@ -75,22 +75,9 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
     return tocItems.map((item) => item.targetId);
   }, [tocItems]);
 
-  const activeIndex = useMemo(() => {
-    if (!activeId) return -1;
-    return tocItems.findIndex((item) => item.targetId === activeId);
-  }, [activeId, tocItems]);
-
-  const progressLabel = useMemo(() => {
-    if (!tocItems.length) return "0%";
-    if (activeIndex < 0) return "0%";
-    const percent = Math.round(((activeIndex + 1) / tocItems.length) * 100);
-    return `${percent}%`;
-  }, [activeIndex, tocItems.length]);
-
   useEffect(() => {
     if (!tocIds.length) return;
 
-    // 维护所有标题的可见性状态
     const headingStates = new Map<string, boolean>();
 
     const observer = new IntersectionObserver(
@@ -99,8 +86,6 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
           headingStates.set(entry.target.id, entry.isIntersecting);
         });
 
-        // 找到最后一个在“激活区”及其上方的标题
-        // 激活区由 rootMargin 定义，这里设置为视口顶部到 25% 处
         let lastId = "";
         for (const id of tocIds) {
           if (headingStates.get(id)) {
@@ -111,13 +96,10 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
         if (lastId) {
           setActiveId(lastId);
         } else if (window.scrollY < 100) {
-          // 页面顶部兜底
           setActiveId("");
         }
       },
       {
-        // 捕捉落在视口上半部分 25% 区域内及上方的标题
-        // 将顶部 margin 设为 100% 确保已通过的标题依然被记为可见，维持状态连续性
         rootMargin: "100% 0px -75% 0px",
         threshold: 0,
       }
@@ -159,47 +141,16 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
       const containerRect = container.getBoundingClientRect();
       const linkRect = activeLink.getBoundingClientRect();
       const relativeTop = linkRect.top - containerRect.top;
-      const currentScrollTop = container.scrollTop;
+      const targetScrollTop = container.scrollTop + relativeTop - container.clientHeight * 0.5;
 
-      const isPastLowerBound = relativeTop > container.clientHeight * 0.75;
-      const isPastUpperBound = relativeTop < container.clientHeight * 0.25;
-
-      if (isPastLowerBound || isPastUpperBound) {
-        // 让偏航过多的高亮项永远优雅地回归至视觉居中
-        const targetScrollTop = currentScrollTop + relativeTop - container.clientHeight * 0.5;
-
-        container.scrollTo({
-          top: targetScrollTop,
-          behavior: "smooth",
-        });
-      }
+      container.scrollTo({
+        top: targetScrollTop,
+        behavior: "smooth",
+      });
     };
 
     const timer = setTimeout(scrollToIndex, 100);
     return () => clearTimeout(timer);
-  }, [activeId, open]);
-
-  // 处理面板初次打开时的对齐
-  useEffect(() => {
-    if (open && activeId && listContainerRef.current) {
-      const container = listContainerRef.current;
-      const timer = setTimeout(() => {
-        const activeLink = container.querySelector<HTMLAnchorElement>(
-          `a[data-target="${activeId}"]`
-        );
-        if (activeLink) {
-          const containerRect = container.getBoundingClientRect();
-          const linkRect = activeLink.getBoundingClientRect();
-          const relativeTop = linkRect.top - containerRect.top;
-          const targetScrollTop = container.scrollTop + relativeTop - container.clientHeight * 0.5;
-          container.scrollTo({
-            top: targetScrollTop,
-            behavior: "smooth",
-          });
-        }
-      }, 300);
-      return () => clearTimeout(timer);
-    }
   }, [activeId, open]);
 
   useEffect(() => {
@@ -226,9 +177,7 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
       container.removeEventListener("touchmove", handleInteraction);
       if (interactTimerRef.current) {
         window.clearTimeout(interactTimerRef.current);
-        interactTimerRef.current = null;
       }
-      isUserInteractingRef.current = false;
     };
   }, [open]);
 
@@ -239,13 +188,12 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
       <style>{`
         #floating-toc-btn {
           right: var(--layout-floating-mobile-right) !important;
-          bottom: calc(var(--layout-floating-mobile-bottom) + 3.0rem) !important;
-          top: auto !important;
+          bottom: calc(var(--layout-floating-mobile-bottom) + 2.75rem) !important;
         }
         @media (min-width: 640px) {
           #floating-toc-btn {
             right: var(--layout-floating-right) !important;
-            bottom: calc(var(--layout-floating-bottom) + 3.25rem) !important;
+            bottom: calc(var(--layout-floating-bottom) + 3rem) !important;
           }
         }
       `}</style>
@@ -255,24 +203,23 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
         type="button"
         aria-label={open ? "关闭目录" : "打开目录"}
         aria-expanded={open}
-        aria-controls="floating-toc-panel"
         onClick={() => setOpen(!open)}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        transition={{ duration: 0.14, ease: "easeOut" }}
-        className={`group fixed z-50 flex h-10 w-10 items-center justify-center rounded-[0.85rem] bg-background shadow-[0_4px_16px_rgba(0,0,0,0.08)] ring-1 ring-foreground/[0.04] transition-[opacity,box-shadow,transform] duration-150 hover:shadow-[0_6px_18px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] dark:ring-foreground/[0.08] dark:hover:shadow-[0_6px_18px_rgba(0,0,0,0.34)] sm:h-11 sm:w-11 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 450, damping: 30 }}
+        className={`fixed z-50 flex h-9 w-9 items-center justify-center rounded-xl bg-background shadow-lg ring-1 ring-foreground/[0.04] transition-opacity duration-200 dark:shadow-black/20 dark:ring-foreground/[0.08] sm:h-10 sm:w-10 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
+          width="18"
+          height="18"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="text-slate-500 dark:text-slate-400 group-hover:text-accent"
+          className="text-slate-500 transition-colors dark:text-slate-400 group-hover:text-accent"
         >
           <line x1="4" y1="6" x2="20" y2="6" />
           <line x1="4" y1="12" x2="14" y2="12" />
@@ -284,31 +231,29 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
         {open && (
           <motion.aside
             id="floating-toc-panel"
-            key="toc-panel"
-            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 30, scale: 0.95 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed right-3 bottom-[max(6.5rem,calc(env(safe-area-inset-bottom)+6.5rem))] z-[105] flex max-h-[40vh] w-[min(80vw,272px)] flex-col overflow-hidden rounded-xl border border-border/55 bg-background/95 backdrop-blur-2xl shadow-xl xl:bottom-auto xl:top-20 xl:left-auto xl:right-3 2xl:right-10 xl:h-auto xl:max-h-[calc(100vh-15rem)] xl:w-[228px] xl:rounded-none xl:border-none xl:bg-transparent xl:shadow-none xl:transform-none select-none"
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="fixed right-2 bottom-[max(5.5rem,calc(env(safe-area-inset-bottom)+5.5rem))] z-[105] flex max-h-[45vh] w-[min(85vw,260px)] flex-col overflow-hidden rounded-xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl xl:bottom-auto xl:top-20 xl:right-3 xl:h-auto xl:max-h-[calc(100vh-15rem)] xl:w-[220px] xl:rounded-none xl:border-none xl:bg-transparent xl:shadow-none select-none"
           >
-            <div className="flex items-center justify-between px-1.5 pt-2 pb-1 xl:px-0 xl:pt-0.5 xl:pb-0.5">
-              <h3 className="text-[12px] font-semibold tracking-[0.18em] text-foreground/65 uppercase">
+            <div className="flex items-center justify-between px-3 pt-2.5 pb-1 xl:px-0 xl:pt-0.5 xl:pb-1">
+              <h3 className="text-[11px] font-bold tracking-widest text-foreground/50 uppercase">
                 目录
               </h3>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                title="收起目录"
-                className="flex h-5 w-5 items-center justify-center rounded-sm text-foreground/40 transition-all hover:bg-muted/70 hover:text-foreground/75"
+                className="flex h-5 w-5 items-center justify-center rounded-md text-foreground/40 transition-colors hover:bg-muted/50 hover:text-foreground/70"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
+                  width="14"
+                  height="14"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2.5"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
@@ -318,20 +263,12 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
               </button>
             </div>
 
-            <div className="flex min-h-0 flex-1 flex-col px-1 pt-0 pb-2 sm:px-1.5 xl:px-0 xl:pb-0">
+            <div className="flex min-h-0 flex-1 flex-col px-2 pb-3 xl:px-0 xl:pb-0">
               <nav
                 ref={listContainerRef}
-                className="min-h-0 flex-1 overflow-y-auto pr-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                style={
-                  {
-                    msOverflowStyle: "none",
-                    WebkitMaskImage:
-                      "linear-gradient(to bottom, black 0%, black 95%, transparent 100%)",
-                    maskImage: "linear-gradient(to bottom, black 0%, black 95%, transparent 100%)",
-                  } as React.CSSProperties
-                }
+                className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               >
-                <ul className="relative border-l border-border/70 pt-1 pb-0 text-[0.78rem] space-y-px xl:pb-4">
+                <ul className="relative border-l border-border/50 py-1 text-[0.75rem] space-y-0.5 xl:pb-6">
                   {tocItems.map((item) => (
                     <TocItem
                       key={item.targetId}

@@ -10,8 +10,8 @@ html[data-theme="light"] {
   /* 统一正文宽度、页面留白和悬浮控件安全区，避免组件各自维护一套尺寸。 */
   --layout-page-max-width: 48rem;
   --layout-page-gutter: 1rem;
-  --layout-floating-mobile-right: max(0.75rem, calc(env(safe-area-inset-right, 0px) + 0.6rem));
-  --layout-floating-mobile-bottom: max(1.75rem, calc(env(safe-area-inset-bottom, 0px) + 1.25rem));
+  --layout-floating-mobile-right: max(0.5rem, calc(env(safe-area-inset-right, 0px) + 0.4rem));
+  --layout-floating-mobile-bottom: max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 0.85rem));
   --layout-floating-right: clamp(3.5rem, 8vw, 6rem);
   --layout-floating-bottom: max(1.75rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
 }
