@@ -9,7 +9,6 @@ export const SITE = {
   title: "Cotovo",
   email: "1722288011@qq.com",
   qq: "1722288011",
-  ogImage: "og-image.jpg",
   lightAndDarkMode: true,
   postPerIndex: 10,
   postPerPage: 10,
