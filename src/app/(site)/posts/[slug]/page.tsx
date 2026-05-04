@@ -198,7 +198,7 @@ export default async function PostPage({ params }: PageProps) {
 
       <main
         id="main-content"
-        className="layout-frame w-full pt-5 pb-5 sm:pt-7 sm:pb-6"
+        className="layout-frame w-full pt-5 pb-2 sm:pt-7 sm:pb-4"
         data-pagefind-body
       >
         <h1

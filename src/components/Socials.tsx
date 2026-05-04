@@ -52,7 +52,7 @@ export const Socials: React.FC<SocialsProps> = ({ centered = false, compactOnMob
                 className={[
                   "inline-block fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent",
                   compactOnMobile
-                    ? "size-5 scale-105 sm:size-6 sm:scale-110"
+                    ? "size-[1.45rem] sm:size-6"
                     : "size-6 scale-125 sm:scale-110",
                 ].join(" ")}
               />
