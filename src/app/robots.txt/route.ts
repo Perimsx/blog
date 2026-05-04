@@ -6,8 +6,6 @@ export async function GET() {
   const robotsTxt = `User-agent: *
 Allow: /
 Disallow: /api/comments
-Disallow: /api/analytics
-Disallow: /api/analytics/snapshot
 
 Sitemap: ${sitemapURL}
 Host: ${host}
