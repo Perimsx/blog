@@ -94,16 +94,10 @@ export default async function PostPage({ params }: PageProps) {
   const sortedPosts = await getSortedPosts();
   const { title, description, pubDatetime, modDatetime, timezone, tags } = post.data;
 
-  // Extract headings from raw markdown using lightweight AST traversal
-  // (avoids expensive full MDX compilation + shiki highlighting)
   const headings = extractHeadingsFromMarkdown(post.content);
-  const tocHeadings = headings.filter((h) => h.depth > 1 && h.depth < 4);
-
-  // Reading time and word count
   const wordCount = post.content.split(/\s+/).length;
   const readingTime = post.readingTime;
 
-  // Prev/Next posts
   const allPostPaths = sortedPosts.map((p) => ({
     path: `/posts/${p.url}`,
     slug: p.slug,
@@ -117,14 +111,11 @@ export default async function PostPage({ params }: PageProps) {
       : null;
 
   const postUrl = `/posts/${post.url}`;
-  const canonicalUrl = getPostCanonicalUrl(post.url, post.data.canonicalURL);
   const articleImage = getPostImage(post.data);
-  const shareImage = getPostShareImage(title, post.data.ogImage, post.data.coverImage, articleImage, `/posts/${post.slug}/og-image`);
   const uniqueTags = Array.from(
     new Map((tags ?? []).map((tag) => [slugifyStr(tag), tag])).entries()
   );
 
-  // JSON-LD structured data
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -145,7 +136,7 @@ export default async function PostPage({ params }: PageProps) {
           },
           {
             "@type": "ListItem",
-            item: canonicalUrl,
+            item: getPostCanonicalUrl(post.url, post.data.canonicalURL),
             name: title,
             position: 3,
           },
@@ -164,13 +155,13 @@ export default async function PostPage({ params }: PageProps) {
         description,
         headline: title,
         image: [
-          shareImage.url,
+          getPostShareImage(title, post.data.ogImage, post.data.coverImage, articleImage, `/posts/${post.slug}/og-image`).url,
           articleImage ? toAbsoluteUrl(articleImage) : "",
         ].filter(Boolean),
         inLanguage: SITE.lang || "zh-CN",
         keywords: tags?.join(", ") || "",
         mainEntityOfPage: {
-          "@id": canonicalUrl,
+          "@id": getPostCanonicalUrl(post.url, post.data.canonicalURL),
           "@type": "WebPage",
         },
         publisher: {
@@ -183,7 +174,7 @@ export default async function PostPage({ params }: PageProps) {
           url: SITE.website,
         },
         timeRequired: readingTime ? `PT${Math.ceil(parseInt(readingTime, 10))}M` : undefined,
-        url: canonicalUrl,
+        url: getPostCanonicalUrl(post.url, post.data.canonicalURL),
         wordCount,
       },
     ],
@@ -191,14 +182,13 @@ export default async function PostPage({ params }: PageProps) {
 
   return (
     <TocProvider>
-      {/* JSON-LD Structured Data */}
       <Script id={`post-json-ld-${post.slug}`} type="application/ld+json">
         {JSON.stringify(jsonLd)}
       </Script>
 
       <main
         id="main-content"
-        className="layout-frame w-full pt-5 pb-2 sm:pt-7 sm:pb-4"
+        className="layout-frame w-full pt-5 pb-2 sm:pt-7 sm:pb-3"
         data-pagefind-body
       >
         <h1
@@ -253,10 +243,8 @@ export default async function PostPage({ params }: PageProps) {
           <ArticleEnhancer />
         </article>
 
-        {/* Floating Table of Contents & Scroll Tools */}
         <FloatingToc toc={headings} />
 
-        {/* Tags and Share */}
         <div className="mt-5 mb-5 flex flex-wrap items-center justify-between gap-3 sm:my-7">
           <ul className="flex flex-wrap gap-x-4 gap-y-2">
             {uniqueTags.map(([tag, tagName]) => (
@@ -266,7 +254,6 @@ export default async function PostPage({ params }: PageProps) {
           <ShareLinks url={new URL(postUrl, SITE.website).href} />
         </div>
 
-        {/* Edit Post (mobile) */}
         <EditPost post={post} hideEditPost={post.data.hideEditPost} className="sm:hidden" />
 
         {SITE.comments.enabled ? (
@@ -276,9 +263,8 @@ export default async function PostPage({ params }: PageProps) {
           </>
         ) : null}
 
-        <hr className="mt-1 mb-5 border-dashed sm:mt-1 sm:mb-6" />
+        <hr className="my-5 border-dashed sm:my-6" />
 
-        {/* Prev/Next Post Navigation */}
         <div className="flex flex-col justify-between gap-8 sm:flex-row">
           {prevPost ? (
             <Link href={prevPost.path} className="flex gap-2 hover:opacity-75 items-start">

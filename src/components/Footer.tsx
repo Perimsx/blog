@@ -1,4 +1,3 @@
-import { Hr } from "@/components/Hr";
 import { Socials } from "@/components/Socials";
 
 interface FooterProps {
@@ -7,9 +6,8 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ noMarginTop = false }) => {
   return (
-    <footer className={["w-full", !noMarginTop ? "mt-auto" : ""].join(" ")}>
-      <Hr noPadding />
-      <div className="flex flex-col items-center justify-between pt-2.5 pb-4 sm:flex-row-reverse sm:gap-0 gap-5">
+    <footer className={["w-full", !noMarginTop ? "mt-auto" : "mt-2 sm:mt-4"].join(" ")}>
+      <div className="flex flex-col items-center justify-between py-4 sm:flex-row-reverse sm:gap-0 gap-5">
         <Socials centered compactOnMobile />
         <div className="flex flex-col items-center whitespace-nowrap text-[0.8rem] text-foreground/50 sm:items-start gap-1.5">
           <a

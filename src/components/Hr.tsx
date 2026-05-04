@@ -6,6 +6,6 @@ interface HrProps {
 
 export const Hr: React.FC<HrProps> = ({ noPadding = false }) => (
   <div className={["layout-frame", noPadding ? "px-0" : ""].join(" ")}>
-    <hr className="border-border" aria-hidden />
+    <hr className="m-0 border-border" aria-hidden />
   </div>
 );
