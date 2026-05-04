@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { Hr as HrComponent } from "@/components/Hr";
 import {
   IconMenuDeep,
-  IconMonitor,
   IconMoon,
   IconSearch,
   IconSunHigh,
@@ -105,16 +104,7 @@ export const Header: React.FC = () => {
                 </Link>
               </li>
               <li className="col-span-2 mx-auto grid w-[10.5rem] grid-cols-3 justify-items-center py-1.5 sm:flex sm:w-auto sm:items-center sm:justify-center sm:gap-x-5 sm:py-0">
-                <Link
-                  href="/monitor"
-                  onClick={closeMenu}
-                  className={`focus-outline flex size-10 items-center justify-center hover:text-accent sm:size-8 sm:p-1 ${isActive("/monitor") ? "text-accent" : ""}`}
-                  aria-label="监控面板"
-                  title="监控面板"
-                >
-                  <IconMonitor />
-                  <span className="sr-only">Monitor</span>
-                </Link>
+
 
                 <button
                   id="search-btn"

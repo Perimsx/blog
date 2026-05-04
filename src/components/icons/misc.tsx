@@ -150,34 +150,7 @@ export const IconMenuDeep: React.FC<IconProps> = ({
   </svg>
 );
 
-export const IconMonitor: React.FC<IconProps> = ({
-  className,
-  size = 24,
-  width,
-  height,
-  ...props
-}) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={width ?? size}
-    height={height ?? size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    {...props}
-  >
-    <path d="M0 0h24v24H0z" stroke="none" />
-    <path d="M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" />
-    <path d="M7 20h10" />
-    <path d="M9 17v3" />
-    <path d="M15 17v3" />
-    <path d="M7 11h2l1.5 -3l3 6l1.5 -3h2" />
-  </svg>
-);
+
 
 export const IconMoon: React.FC<IconProps> = ({
   className,

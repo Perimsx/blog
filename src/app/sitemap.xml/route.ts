@@ -61,12 +61,7 @@ export async function GET() {
       loc: getCanonicalUrl("/contact"),
       priority: "0.6",
     }),
-    renderUrlEntry({
-      changefreq: "weekly",
-      lastmod: toDateString(latestUpdate),
-      loc: getCanonicalUrl("/monitor"),
-      priority: "0.7",
-    }),
+
   ];
 
   const postEntries = posts
