@@ -174,14 +174,14 @@ export default function Comments({ path }: CommentsProps) {
 
   return (
     <section id="comments" className="mt-1 sm:mt-1.5">
-      <div className="space-y-3 border-t border-border/45 pt-3 sm:pt-3.5">
+      <div className="space-y-3">
         <h2 className="inline-flex items-center gap-2 text-[0.98rem] font-semibold text-accent/92 sm:text-[1.02rem]">
           <CommentIconMessage className="h-[0.98rem] w-[0.98rem]" />
           <span>评论</span>
         </h2>
 
         {!envId ? (
-          <div className="flex w-full items-center justify-center rounded-xl border border-dashed border-border/60 bg-muted/10 px-4 py-6 text-[0.9rem] text-foreground/60">
+          <div className="flex w-full items-center justify-center rounded-xl border border-dashed border-border/60 bg-muted/10 px-4 py-5 text-[0.9rem] text-foreground/60">
             {envHelp}
           </div>
         ) : (

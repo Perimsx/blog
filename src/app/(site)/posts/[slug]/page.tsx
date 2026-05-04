@@ -271,12 +271,12 @@ export default async function PostPage({ params }: PageProps) {
 
         {SITE.comments.enabled ? (
           <>
-            <hr className="mt-6 mb-3 border-dashed sm:mt-7 sm:mb-4" />
+            <hr className="mt-6 mb-2 border-dashed sm:mt-7 sm:mb-2.5" />
             <Comments path={postUrl} />
           </>
         ) : null}
 
-        <hr className="mt-4 mb-5 border-dashed sm:mt-5 sm:mb-6" />
+        <hr className="mt-1 mb-5 border-dashed sm:mt-1 sm:mb-6" />
 
         {/* Prev/Next Post Navigation */}
         <div className="flex flex-col justify-between gap-8 sm:flex-row">
