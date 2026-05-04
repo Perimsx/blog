@@ -64,13 +64,6 @@ export default async function AboutPage() {
           <h2>近期活动</h2>
           <ul className="about-list about-timeline">
             <li>
-              <strong>2026 年 4 月</strong> · 完成博客主域名迁移，统一 RSS、Sitemap 与分享地址（
-              <a href={SITE.website} target="_blank" rel="noopener noreferrer">
-                {siteHost}
-              </a>
-              ）
-            </li>
-            <li>
               <strong>2026 年 3 月</strong> · 使用 Astro 和 React 框架重构个人博客主站（
               <a href={SITE.website} target="_blank" rel="noopener noreferrer">
                 {siteHost}

@@ -9,9 +9,9 @@ export const Footer: React.FC<FooterProps> = ({ noMarginTop = false }) => {
   return (
     <footer className={["w-full", !noMarginTop ? "mt-auto" : ""].join(" ")}>
       <Hr noPadding />
-      <div className="flex flex-col items-center justify-between py-3 sm:flex-row-reverse sm:py-4">
+      <div className="flex flex-col items-center justify-between py-4 sm:flex-row-reverse sm:gap-0 gap-5">
         <Socials centered compactOnMobile />
-        <div className="my-2 flex flex-col items-center whitespace-nowrap text-[0.8rem] text-foreground/50 sm:items-start">
+        <div className="flex flex-col items-center whitespace-nowrap text-[0.8rem] text-foreground/50 sm:items-start gap-1.5">
           <a
             href="https://github.com/Perimsx/blog"
             target="_blank"
@@ -20,7 +20,7 @@ export const Footer: React.FC<FooterProps> = ({ noMarginTop = false }) => {
           >
             CC BY 4.0 · Code MIT
           </a>
-          <div className="mt-0.5 flex flex-col items-center gap-1.5 opacity-80 sm:flex-row sm:gap-3 text-[0.75rem]">
+          <div className="flex flex-col items-center gap-1.5 opacity-80 sm:flex-row sm:gap-3 text-[0.75rem]">
             <a
               href="https://beian.miit.gov.cn/"
               target="_blank"
