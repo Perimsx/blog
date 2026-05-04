@@ -25,7 +25,7 @@ export const BackToTop: React.FC = () => {
           <motion.button
             key="back-to-top"
             id="back-to-top-btn"
-            className="fixed z-50 flex h-9 w-9 items-center justify-center rounded-sm bg-background/90 text-slate-500 shadow-md ring-1 ring-border/50 backdrop-blur-sm transition-colors hover:text-accent sm:h-10 sm:w-10"
+            className="fixed z-50 flex h-9 w-9 items-center justify-center rounded-sm bg-background/90 text-slate-500 shadow-md ring-1 ring-border/50 backdrop-blur-sm transition-all hover:text-accent dark:ring-foreground/10 sm:h-10 sm:w-10"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
@@ -40,7 +40,7 @@ export const BackToTop: React.FC = () => {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="3.5"
+              strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
             >

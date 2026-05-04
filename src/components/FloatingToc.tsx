@@ -167,16 +167,16 @@ const FloatingTocInner = memo(function FloatingTocInner({ toc }: { toc?: Heading
         type="button"
         aria-label={open ? "关闭目录" : "打开目录"}
         onClick={() => setOpen(!open)}
-        className={`fixed z-50 flex h-9 w-9 items-center justify-center rounded-sm bg-background/90 text-slate-500 shadow-md ring-1 ring-border/50 backdrop-blur-sm transition-all hover:text-accent dark:ring-foreground/10 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
+        className={`fixed z-50 flex h-9 w-9 items-center justify-center rounded-sm bg-background/90 text-slate-500 shadow-md ring-1 ring-border/50 backdrop-blur-sm transition-all hover:text-accent dark:ring-foreground/10 sm:h-10 sm:w-10 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2.5"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
