@@ -50,7 +50,7 @@ export const Header: React.FC = () => {
             href="/"
             className="font-wordmark absolute py-1 text-2xl leading-7 whitespace-nowrap sm:static"
           >
-            &copy; 序栈
+            序栈<sup className="text-sm font-light">&copy;</sup>
           </Link>
           <nav
             id="nav-menu"
