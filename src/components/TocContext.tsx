@@ -13,7 +13,9 @@ export function TocProvider({ children }: { children: ReactNode }) {
   const [isTocOpen, setIsTocOpen] = useState(false);
 
   useEffect(() => {
-    // 桌面端和移动端一样，现在统一默认收起不展示面板
+    if (window.innerWidth >= 1280) {
+      setIsTocOpen(true);
+    }
   }, []);
 
   return <TocContext.Provider value={{ isTocOpen, setIsTocOpen }}>{children}</TocContext.Provider>;
