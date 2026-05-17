@@ -70,13 +70,12 @@ export const Header: React.FC = () => {
             <ul
               id="menu-items"
               className={[
-                "mt-2.5 grid w-40 grid-cols-2 place-content-center gap-1.5",
+                "mt-4 flex w-44 flex-col gap-y-2 sm:mt-0 sm:ml-0 sm:w-auto sm:flex-row sm:gap-x-5 sm:gap-y-0",
                 "[&>li>a]:block [&>li>a]:px-4 [&>li>a]:py-2 [&>li>a]:text-center [&>li>a]:font-medium [&>li>a]:hover:text-accent sm:[&>li>a]:px-2 sm:[&>li>a]:py-1",
                 menuOpen ? "" : "hidden",
-                "sm:mt-0 sm:ml-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0",
               ].join(" ")}
             >
-              <li className="col-span-2">
+              <li>
                 <Link
                   href="/posts"
                   onClick={closeMenu}
@@ -85,7 +84,7 @@ export const Header: React.FC = () => {
                   Posts
                 </Link>
               </li>
-              <li className="col-span-2">
+              <li>
                 <Link
                   href="/tags"
                   onClick={closeMenu}
@@ -94,7 +93,7 @@ export const Header: React.FC = () => {
                   Tags
                 </Link>
               </li>
-              <li className="col-span-2">
+              <li>
                 <Link
                   href="/about"
                   onClick={closeMenu}
@@ -103,7 +102,7 @@ export const Header: React.FC = () => {
                   About
                 </Link>
               </li>
-              <li className="col-span-2 mx-auto grid w-[10.5rem] grid-cols-3 justify-items-center py-1.5 sm:flex sm:w-auto sm:items-center sm:justify-center sm:gap-x-5 sm:py-0">
+              <li className="mx-auto flex w-full justify-center gap-x-5 py-1.5 sm:w-auto sm:items-center sm:py-0">
 
 
                 <button
