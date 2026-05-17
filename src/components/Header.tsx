@@ -50,7 +50,7 @@ export const Header: React.FC = () => {
             href="/"
             className="font-wordmark absolute py-1 text-2xl leading-7 whitespace-nowrap sm:static"
           >
-            {SITE.title}
+            &copy; 序栈
           </Link>
           <nav
             id="nav-menu"
@@ -70,7 +70,7 @@ export const Header: React.FC = () => {
             <ul
               id="menu-items"
               className={[
-                "mt-4 flex w-44 flex-col gap-y-2 sm:mt-0 sm:ml-0 sm:flex sm:w-auto sm:flex-row sm:gap-x-5 sm:gap-y-0",
+                "mt-4 flex w-44 flex-col gap-y-2 sm:mt-0 sm:ml-0 sm:w-auto sm:flex sm:flex-row sm:gap-x-5 sm:gap-y-0",
                 "[&>li>a]:block [&>li>a]:px-4 [&>li>a]:py-2 [&>li>a]:text-center [&>li>a]:font-medium [&>li>a]:hover:text-accent sm:[&>li>a]:px-2 sm:[&>li>a]:py-1",
                 menuOpen ? "" : "hidden",
               ].join(" ")}
