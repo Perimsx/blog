@@ -6,7 +6,7 @@ export const SITE = {
   avatar: "/og-image.jpg",
   profile: "https://blog.cot.wiki/about",
   desc: "记录成长，分享价值。信息安全专业学生，全栈开发爱好者。",
-  title: "Cotovo",
+  title: "序栈",
   email: "1722288011@qq.com",
   qq: "1722288011",
   lightAndDarkMode: true,

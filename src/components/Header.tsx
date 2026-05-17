@@ -48,8 +48,23 @@ export const Header: React.FC = () => {
         >
           <Link
             href="/"
-            className="font-wordmark absolute py-1 text-2xl leading-7 whitespace-nowrap sm:static"
+            className="font-wordmark absolute flex items-center gap-2 py-1 text-2xl leading-7 whitespace-nowrap sm:static"
           >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 12 12 17 22 12"></polyline>
+              <polyline points="2 17 12 22 22 17"></polyline>
+            </svg>
             {SITE.title}
           </Link>
           <nav
