@@ -3,7 +3,7 @@
 export const SITE = {
   website: "https://blog.cot.wiki/",
   author: "Perimsx",
-  avatar: "https://img1.tucang.cc/api/image/show/634a56a76f7455df0e2fb5419533e0cf",
+  avatar: "/og-image.jpg",
   profile: "https://blog.cot.wiki/about",
   desc: "记录成长，分享价值。信息安全专业学生，全栈开发爱好者。",
   title: "Cotovo",
