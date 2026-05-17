@@ -16,7 +16,7 @@ export const Footer: React.FC<FooterProps> = ({ noMarginTop = false }) => {
             rel="noopener noreferrer"
             className="hover:text-accent transition-colors duration-200 font-medium"
           >
-            &copy; {new Date().getFullYear()} 序栈
+            CC BY 4.0 · Code MIT
           </a>
           <div className="flex flex-col items-center gap-1.5 opacity-80 sm:flex-row sm:gap-3 text-[0.75rem]">
             <a
